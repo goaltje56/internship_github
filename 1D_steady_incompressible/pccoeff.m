@@ -23,9 +23,9 @@ function [aE aW aP b Istart_pc pc] = pccoeff(NPI, rho, A, x, x_u, u, d_u, pc)
 %             aP(I) = aE(I) + aW(I) - SP(I);
 %            
 %         else
-%         if I == NPI+2;
+%         if I == NPI+1;
 %             aE(i) = 0;
-% %             pc(I+1) = pc(I);
+%             pc(I+1) = pc(I);
 %             aW(I) = (rho(I-1)+rho(I))*((d_u(i)+d_u(i-1))/2)*A/2;
 %             aP(I) = aW(I) - SP(I);
 %             b(I) = 0.5*(F_u(i-1)*A-F_u(i)*A);
