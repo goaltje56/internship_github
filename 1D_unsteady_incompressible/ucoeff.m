@@ -1,4 +1,4 @@
-function [aP aE aW b d_u Istart_u u T] = ucoeff(NPI, rho, x, x_u, u, p, A, relax_u, d_u,mu, u_in, T)
+function [aP aE aW b d_u Istart_u u T] = ucoeff(NPI, rho, x, x_u, u, p, A, relax_u, d_u,mu, u_in, T, Dt, u_old)
     Istart_u = 3;
     [u T m_in m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T);
     F_u = conv(NPI, rho, x, x_u, u);
@@ -16,34 +16,22 @@ function [aP aE aW b d_u Istart_u u T] = ucoeff(NPI, rho, x, x_u, u, p, A, relax
         % transport by diffusion eq 5.8b
         Dw = (mu(I-1)/(x_u(i)-x_u(i-1)))*A;
         De = (mu(I)/(x_u(i+1)-x_u(i)))*A;
-        
-%         if I == 3
-%             aE(i) = max([-Fe De-Fe/2 0]);
-%             aW(i) = 0;
-%             aP(i) = aE(i) + aW(i) + Fe - Fw;         % but what if u<0 ??        
-%             b(i)  = Fw*u(1);
-                  
-%         if I == NPI + 1
-%             aE(i) = 0;
-%             aW(i) = max([Fw Dw+Fw/2 0]);
-%             aP(i) = Fe;         % but what if u<0 ??        
-%             b(i)  = 0;
-%             
-%         else 
-       
+              
         % coefficients (hybrid differencing scheme)
         aW(i) = max([Fw Dw+Fw/2 0]);
         aE(i) = max([-Fe De-Fe/2 0]);
         b(i)  = 0;
-        aP(i) = aW(i)+aE(i)+ Fe - Fw;
+        
+        aPold = 0.5*(rho(I-1)+rho(I))*A/Dt
+        % without time dependent terms 
+        aP(i) = aW(i)+aE(i)+ Fe - Fw + aPold;
             
-%         end
         % pressure correction 
         d_u(i) = A*relax_u/aP(i);
         
         % putting integrated pressure gradient in RHS
         % to solve with TDMA alogrithm
-        b(i) = b(i) + (p(I-1) - p(I))*A ;
+        b(i) = b(i) + (p(I-1) - p(I))*A +aPold*u_old(i);
         
         % relaxation to aP and put last term on right side into source term
         aP(i) = aP(i)/relax_u;

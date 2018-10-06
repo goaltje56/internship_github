@@ -10,9 +10,9 @@ function [u, p, pc, T, rho, mu, Cp, Gamma, d_u, b, SP, Su, relax_u, relax_pc, re
         p_guess = 0;            % guessed pressure field
         T(I)    = 273;          % Temperature
         rho(I)  = 1;            % Density
-        mu(I)   = 0; % inviscid 2.5*10^(-5);  % Viscosity
+        mu(I)   = 2.5*10^(-5);  % Viscosity
         Cp(I)   = 1013;         % Heat capacity [J/(kg*K)]
-        Gamma(I)= 0.7;%0.0315/Cp(I); % Thermal conductivity
+        Gamma(I)= 0.0315/Cp(I); % Thermal conductivity
         d_u(i)  = 0;            % Variable d[i] to calculate pc
         b(I)    = 0;            % The general constant
         SP(I)   = 0;            % Source term

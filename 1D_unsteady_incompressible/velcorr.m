@@ -1,8 +1,6 @@
 %% To correct the pressure and the volocity see eq 6.24, 6.25
   
 function [p u pc] = velcorr(NPI, pc, p, u, relax_pc, d_u)
-% pc(NPI+1) = 0;
-% p(NPI+2) = p(NPI+1);
     for I=2:NPI+1
         i = I;
         
