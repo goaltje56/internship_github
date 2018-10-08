@@ -1,4 +1,4 @@
-function [aE aW aP b Istart_pc pc] = pccoeff(NPI, rho, A, x, x_u, u, d_u, pc, Dx)
+function [aE aW aP b Istart_pc pc] = pccoeff(NPI, rho, A, x, x_u, u, d_u, pc, Dx, Dt)
     Istart_pc = 2;
 
     F_u = conv(NPI, rho, x, x_u, u);

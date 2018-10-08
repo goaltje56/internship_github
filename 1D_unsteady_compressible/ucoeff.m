@@ -14,8 +14,8 @@ function [aP aE aW b d_u Istart_u u T] = ucoeff(NPI, rho, x, x_u, u, p, A, relax
         Fe = ((F_u(i)+F_u(i+1))/2)*A;
         
         % transport by diffusion eq 5.8b
-        Dw = (mu(I-1)/(x_u(i)-x_u(i-1)))*A;
-        De = (mu(I)/(x_u(i+1)-x_u(i)))*A;
+        Dw = (mu(I-1)/(x_u(i)-x_u(i-1)))*A(I);
+        De = (mu(I)/(x_u(i+1)-x_u(i)))*A(I);
               
         % coefficients (hybrid differencing scheme)
         aW(i) = max([Fw Dw+Fw/2 0]);
@@ -27,11 +27,11 @@ function [aP aE aW b d_u Istart_u u T] = ucoeff(NPI, rho, x, x_u, u, p, A, relax
         aP(i) = aW(i)+aE(i)+ Fe - Fw + aPold;
             
         % pressure correction 
-        d_u(i) = A*relax_u/aP(i);
+        d_u(i) = A(I)*relax_u/aP(i);
         
         % putting integrated pressure gradient in RHS
         % to solve with TDMA alogrithm
-        b(i) = b(i) + (p(I-1) - p(I))*A +aPold*u_old(i);
+        b(i) = b(i) + (p(I-1) - p(I))*A(I) +aPold*u_old(i);
         
         % relaxation to aP and put last term on right side into source term
         aP(i) = aP(i)/relax_u;

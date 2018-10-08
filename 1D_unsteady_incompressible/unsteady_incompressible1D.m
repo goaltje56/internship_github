@@ -33,11 +33,11 @@ for time = Dt:Total_time
     [u, T, m_in, m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T);
     
     % momentum
-    [aP_u, aE_u, aW_u, b_u, d_u, Istart_u, u, T] = ucoeff(NPI, rho, x, x_u, u, p, A, relax_u, d_u, mu, u_in, T, Dt, u_old);
+    [aP_u, aE_u, aW_u, b_u, d_u, Istart_u, u, T] = ucoeff(NPI, rho, x, x_u, u, p, A, relax_u, d_u, mu, u_in, T, Dt, u_old, Dx);
     [u, r_u] = GS_solve2(NPI+1, u, aW_u, aE_u, aP_u, b_u, 10^(-6));
     [u, T, m_in, m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T);
     % pressure correction (modified form of continuity equation)
-    [aE_pc, aW_pc, aP_pc, b_pc, Istart_pc, pc] = pccoeff(NPI, rho, A, x, x_u, u, d_u, pc);
+    [aE_pc, aW_pc, aP_pc, b_pc, Istart_pc, pc] = pccoeff(NPI, rho, A, x, x_u, u, d_u, pc, Dx, Dt);
     [pc, r_pc] = GS_solve(NPI+1,pc, aW_pc, aE_pc, aP_pc, b_pc, 10^(-6));
     
     % correction for pressure and velocity
