@@ -12,11 +12,11 @@ close all;
 clc;
 timerVal = tic;
 %% initializing
-NPI = 10;        % number of grid cells in x-direction [-] 
+NPI = 30;        % number of grid cells in x-direction [-] 
 XMAX = 1;       % length of the domain [m]
 P_atm = 101000; % athmosphesric pressure [Pa]
 u_in = 1;      % inflow velocity [m/s]
-A    = [1:10 10];       % area of one cell
+A    = 1;       % area of one cell
 m_in = 1;       % mass flow in
 m_out = 1;      % mass flow out
 Total_time = 100;
@@ -45,7 +45,7 @@ for time = Dt:Total_time
 
     % Temperature
     [aE_T, aW_T, aP_T, b_T, Istart_T] = Tcoeff(NPI, rho, A, x, x_u, u, T, Gamma, relax_T, Dt, T_old);
-%     [TR, r_T] = GS_solve(NPI+1,T, aW_T, aE_T, aP_T, b_T, 10^(-6));
+    [TR, r_T] = GS_solve(NPI+1,T, aW_T, aE_T, aP_T, b_T, 10^(-6));
  	T = solve_eq(NPI,aE_T, aW_T, aP_T, b_T, T, 2);
 
     [u, T, m_in, m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T);    
@@ -63,17 +63,17 @@ hold on
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 grid on
 xlabel('Geometric position [m] ','LineWidth', 2)
-axis([0 XMAX+Dx 0 4]);
-plot(x(2:NPI+1),p(2:NPI+1),'b','LineWidth',2)
-% plot(x(1:NPI+1),T(1:NPI+1),'b','LineWidth',2)
-plot(x_u(2:NPI+2),u(2:NPI+2),'sr','LineWidth',2);
+axis([0 XMAX+Dx 0 400]);
+% plot(x(2:NPI+1),p(2:NPI+1),'b','LineWidth',2)
+plot(x(1:NPI+1),T(1:NPI+1),'b','LineWidth',2)
+% plot(x_u(2:NPI+2),u(2:NPI+2),'sr','LineWidth',2);
 % plot(x(1:NPI+1),T2(1:NPI+1),'r','LineWidth',2)
 
 % plot(x(1:NPI+2),pc(1:NPI+2),'sb','LineWidth',2)
 % plot(x(2:NPI+1),rho(2:NPI+1),':c','LineWidth',2)
 % plot(x(2:NPI+1),d_u(2:NPI+1),':k','LineWidth',2)
-legend('P','u','Location','NorthWest')
-% legend('T','Location','NorthEast')
+% legend('P','u','P_c','\rho','d_u','Location','SouthWest')
+legend('T','Location','NorthEast')
 
 % for i = 2:NPI+1
 % mdot(i) = rho(i)*u(i)*A;

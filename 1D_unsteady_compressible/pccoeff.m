@@ -11,15 +11,15 @@ function [aE aW aP b Istart_pc pc] = pccoeff(NPI, rho, A, x, x_u, u, d_u, pc)
         Su(I) = 0;
         
         % convective mass flux
-        Fw = ((F_u(i)+F_u(i-1))/2)*A(I);
-        Fe = ((F_u(i)+F_u(i+1))/2)*A(I);
+        Fw = ((F_u(i)+F_u(i-1))/2)*A;
+        Fe = ((F_u(i)+F_u(i+1))/2)*A;
         
         % the coefficients
-        aE(I) = (rho(I+1)+rho(I))*d_u(i+1)*A(I)/2;
-        aW(I) = (rho(I)+rho(I-1))*d_u(i)*A(I)/2;
+        aE(I) = (rho(I+1)+rho(I))*d_u(i+1)*A/2;
+        aW(I) = (rho(I)+rho(I-1))*d_u(i)*A/2;
         
         aP(I) = aE(I) + aW(I) - SP(I);
-        b(I) = F_u(i)*A(I)-F_u(i+1)*A(I);
+        b(I) = F_u(i)*A-F_u(i+1)*A;
 %         end
         
         pc(I) = 0;
