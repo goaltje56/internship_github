@@ -1,5 +1,5 @@
 function [Dx, x, x_u] = grid_gen(NPI, XMAX)
-    % Length of one element
+    % Length of the element
     Dx = XMAX/NPI;
     x(1) = 0;
     x(2) = 0.5*Dx;
@@ -9,6 +9,7 @@ function [Dx, x, x_u] = grid_gen(NPI, XMAX)
         x(I) = x(I-1)+Dx;
     end
     x(NPI+2) = x(NPI+1) + 0.5*Dx;
+%     x(NPI+3) = x(NPI+1) + Dx;
     
     % Length variable for the velocity components u[i] in the x direction
     % Used to make staggered grid
@@ -17,4 +18,5 @@ function [Dx, x, x_u] = grid_gen(NPI, XMAX)
     for i=3:NPI+2
         x_u(i) = x_u(i-1)+Dx;
     end   
+%     x_u(NPI+1) = x_u(NPI)+Dx; 
 end

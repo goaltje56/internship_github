@@ -5,13 +5,13 @@ function [aE aW aP b Istart_T] = Tcoeff(NPI, rho, A, x, x_u, u, T, Gamma, relax_
     for I=Istart_T:NPI+1
         i = I;
         
-        Fw = F_u(i)*A(I);
-        Fe = F_u(i+1)*A(I);
+        Fw = F_u(i)*A;
+        Fe = F_u(i+1)*A;
                 
         % conductivity, Gamma, at the INTERFACE is calculated 
         % with the use of a harmonic mean
-        Dw = ((Gamma(I-1)*Gamma(I))/(Gamma(I-1)*(x(I)-x_u(i)) + Gamma(I)*(x_u(i)-x(I-1))))*A(I);
-        De = ((Gamma(I)*Gamma(I+1))/(Gamma(I)*(x(I+1)-x_u(i+1)) + Gamma(I+1)*(x_u(i+1)-x(I))))*A(I);
+        Dw = ((Gamma(I-1)*Gamma(I))/(Gamma(I-1)*(x(I)-x_u(i)) + Gamma(I)*(x_u(i)-x(I-1))))*A;
+        De = ((Gamma(I)*Gamma(I+1))/(Gamma(I)*(x(I+1)-x_u(i+1)) + Gamma(I+1)*(x_u(i+1)-x(I))))*A;
         
         % source terms
         SP(I) = 0;
