@@ -2,19 +2,16 @@ function [aP aE aW b d_u Istart_u u T] = ucoeff(NPI, rho, x, x_u, u, p, A, relax
     Istart_u = 3;
     [u T m_in m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T);
     F_u = conv(NPI, rho, x, x_u, u);
-    fric_u = u_source(NPI, mu, x, x_u, u);
-    
-    Dh = 0.0001;     % the Hydraulic diameter for pipe friction
+
     for I = 3:NPI+1
         i = I;
            
         % convective mass flux eq 5.8a
-  
+%         Fw = (((rho(I-1)+rho(I))*u(i)/2)+((rho(I-1)+rho(I-2))*u(i-1)/2))*A/2;  % rho*u at west of cell face
+%         Fe = (((rho(I+1)+rho(I))*u(i+1)/2)+((rho(I)+rho(I-1))*u(i)/2))*A/2;    % rho*u at east of cell face
+        
         Fw = ((F_u(i)+F_u(i-1))/2)*A;
         Fe = ((F_u(i)+F_u(i+1))/2)*A;
-        
-        Mw = ((fric_u(i)+fric_u(i-1))/2)/Dh;
-        Me = ((fric_u(i)+fric_u(i+1))/2)/Dh;
         
         % transport by diffusion eq 5.8b
         Dw = (mu(I-1)/(x_u(i)-x_u(i-1)))*A;
@@ -23,7 +20,7 @@ function [aP aE aW b d_u Istart_u u T] = ucoeff(NPI, rho, x, x_u, u, p, A, relax
         % coefficients (hybrid differencing scheme)
         aW(i) = max([Fw Dw+Fw/2 0]);
         aE(i) = max([-Fe De-Fe/2 0]);
-        b(i)  = (Mw + Me)/2;
+        b(i)  = 0;
         
         aPold = 0.5*(rho(I-1)+rho(I))*Dx/Dt;
         % without time dependent terms 
