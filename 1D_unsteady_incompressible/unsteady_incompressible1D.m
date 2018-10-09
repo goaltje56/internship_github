@@ -19,7 +19,7 @@ u_in = 1;      % inflow velocity [m/s]
 A    = 1;       % area of one cell
 m_in = 1;       % mass flow in
 m_out = 1;      % mass flow out
-Total_time = 10;
+Total_time = 40;
 % make a vector with initial values for all parameters
 [u, p, pc, T, rho, mu, Cp, Gamma, d_u, b, SP, Su, relax_u, relax_pc, relax_T, relax_rho, Dt, u_old, T_old, pc_old, rho_old] = param_init(NPI, u_in);
 
@@ -29,7 +29,7 @@ Total_time = 10;
 
 %% The main calculation part
 for time = Dt:Total_time
-    for z =1:10
+    for z =1:200
     [u, T, m_in, m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T);
     
     % momentum
@@ -45,7 +45,7 @@ for time = Dt:Total_time
 
     % Temperature
     [aE_T, aW_T, aP_T, b_T, Istart_T] = Tcoeff(NPI, rho, A, x, x_u, u, T, Gamma, relax_T, Dt, T_old, Dx);
-    [TR, r_T] = GS_solve(NPI+1,T, aW_T, aE_T, aP_T, b_T, 10^(-6));
+%     [TR, r_T] = GS_solve(NPI+1,T, aW_T, aE_T, aP_T, b_T, 10^(-6));
  	T = solve_eq(NPI,aE_T, aW_T, aP_T, b_T, T, 2);
 
     [u, T, m_in, m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T);    
@@ -65,9 +65,9 @@ hold on
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 grid on
 xlabel('Geometric position [m] ','LineWidth', 2)
-axis([0 XMAX+Dx 0 4]);
+axis([0 XMAX+Dx 0 400]);
 plot(x(2:NPI+1),p(2:NPI+1),'b','LineWidth',2)
-% plot(x(1:NPI+1),T(1:NPI+1),'b','LineWidth',2)
+plot(x(1:NPI+1),T(1:NPI+1),'k','LineWidth',2)
 % plot(x_u(2:NPI+2),u(2:NPI+2),'sr','LineWidth',2);
 % plot(x(1:NPI+1),T2(1:NPI+1),'r','LineWidth',2)
 
