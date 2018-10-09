@@ -4,7 +4,7 @@ function [u, p, pc, T, rho, mu, Cp, Gamma, d_u, b, SP, Su, relax_u, relax_pc, re
     Dt = 0.1;
     for I=1:NPI+2
         i = I;
-        u(i)    = 0.1;         % Velocity in x-direction
+        u(i)    = 1;         % Velocity in x-direction
         pc(I)   = 0;            % Pressure correction 
         p(I)    = 2;            % Relative pressure
         T(I)    = 273;          % Temperature
