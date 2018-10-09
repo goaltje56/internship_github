@@ -57,16 +57,15 @@ hold on
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 grid on
 xlabel('Geometric position [m] ','LineWidth', 2)
-axis([0 XMAX+Dx 200 500]);
+axis([0 XMAX+Dx 0 400]);
 % plot(x(2:NPI+1),p(2:NPI+1),'b','LineWidth',2)
-plot(x(1:NPI+2),T(1:NPI+2),'k','LineWidth',2)
+plot(x(1:NPI+1),T(1:NPI+1),'b','LineWidth',2)
 % plot(x_u(2:NPI+2),u(2:NPI+2),'sr','LineWidth',2);
 % plot(x(1:NPI+2),pc(1:NPI+2),'sb','LineWidth',2)
 % plot(x(2:NPI+1),rho(2:NPI+1),':c','LineWidth',2)
 % plot(x(2:NPI+1),d_u(2:NPI+1),':k','LineWidth',2)
 % legend('P','u','P_c','\rho','d_u','Location','SouthWest')
 legend('T','Location','NorthEast')
-% legend('P','u','Location','NorthEast')
 
 % for i = 2:NPI+1
 % mdot(i) = rho(i)*u(i)*A;

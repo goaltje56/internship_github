@@ -1,4 +1,4 @@
-function [aP aE aW b d_u Istart_u u T] = ucoeff(NPI, rho, x, x_u, u, p, A, relax_u, d_u,mu, u_in, T, Dt, u_old, Dx)
+function [aP aE aW b d_u Istart_u u T] = ucoeff(NPI, rho, x, x_u, u, p, A, relax_u, d_u,mu, u_in, T, Dt, u_old)
     Istart_u = 3;
     [u T m_in m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T);
     F_u = conv(NPI, rho, x, x_u, u);
@@ -22,7 +22,7 @@ function [aP aE aW b d_u Istart_u u T] = ucoeff(NPI, rho, x, x_u, u, p, A, relax
         aE(i) = max([-Fe De-Fe/2 0]);
         b(i)  = 0;
         
-        aPold = 0.5*(rho(I-1)+rho(I))*Dx/Dt;
+        aPold = 0.5*(rho(I-1)+rho(I))*A/Dt
         % without time dependent terms 
         aP(i) = aW(i)+aE(i)+ Fe - Fw + aPold;
             
