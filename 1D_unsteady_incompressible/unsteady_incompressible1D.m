@@ -12,7 +12,7 @@ close all;
 clc;
 timerVal = tic;
 %% initializing
-NPI = 100;        % number of grid cells in x-direction [-] 
+NPI = 10;        % number of grid cells in x-direction [-] 
 XMAX = 1;       % length of the domain [m]
 P_atm = 101000; % athmosphesric pressure [Pa]
 u_in = 1;      % inflow velocity [m/s]
@@ -21,15 +21,15 @@ m_in = 1;       % mass flow in
 m_out = 1;      % mass flow out
 Total_time = 10;
 % make a vector with initial values for all parameters
-[u, p, pc, T, rho, mu, Cp, Gamma, d_u, b, SP, Su, relax_u, relax_pc, relax_T, relax_rho, Dt, u_old, T_old, pc_old] = param_init(NPI, u_in);
+[u, p, pc, T, rho, mu, Cp, Gamma, d_u, b, SP, Su, relax_u, relax_pc, relax_T, relax_rho, Dt, u_old, T_old, pc_old, rho_old] = param_init(NPI, u_in);
 
 %% grid generation
 [Dx, x, x_u] = grid_gen(NPI,XMAX);   % create staggered grid
 
 
 %% The main calculation part
-% for time = Dt:Total_time
-    for z =1
+for time = Dt:Total_time
+    for z =1:10
     [u, T, m_in, m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T);
     
     % momentum
@@ -37,22 +37,22 @@ Total_time = 10;
     [u, r_u] = GS_solve2(NPI+1, u, aW_u, aE_u, aP_u, b_u, 10^(-6));
     [u, T, m_in, m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T);
     % pressure correction (modified form of continuity equation)
-    [aE_pc, aW_pc, aP_pc, b_pc, Istart_pc, pc] = pccoeff(NPI, rho, A, x, x_u, u, d_u, pc, Dx, Dt);
+    [aE_pc, aW_pc, aP_pc, b_pc, Istart_pc, pc] = pccoeff(NPI, rho, A, x, x_u, u, d_u, pc);
     [pc, r_pc] = GS_solve(NPI+1,pc, aW_pc, aE_pc, aP_pc, b_pc, 10^(-6));
     
     % correction for pressure and velocity
     [p u pc] = velcorr(NPI, pc, p, u, relax_pc, d_u);
 
     % Temperature
-    [aE_T, aW_T, aP_T, b_T, Istart_T] = Tcoeff(NPI, rho, A, x, x_u, u, T, Gamma, relax_T, Dt, T_old);
+    [aE_T, aW_T, aP_T, b_T, Istart_T] = Tcoeff(NPI, rho, A, x, x_u, u, T, Gamma, relax_T, Dt, T_old, Dx);
     [TR, r_T] = GS_solve(NPI+1,T, aW_T, aE_T, aP_T, b_T, 10^(-6));
  	T = solve_eq(NPI,aE_T, aW_T, aP_T, b_T, T, 2);
 
     [u, T, m_in, m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T);    
-    [u_old, pc_old, T_old] = storeresults(NPI, u, pc, T, u_old, pc_old, T_old);
+    [u_old, pc_old, T_old, rho_old] = storeresults(NPI, u, pc, T, rho, u_old, pc_old, T_old, rho_old);
 
     end
-% end
+end
 elapsedTime = toc(timerVal)
 
 figure(1)

@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-function [aE aW aP b Istart_pc pc] = pccoeff(NPI, rho, A, x, x_u, u, d_u, pc, Dx, Dt)
-=======
 function [aE aW aP b Istart_pc pc] = pccoeff(NPI, rho, A, x, x_u, u, d_u, pc)
->>>>>>> parent of 8961bd6... area over time changed in distance over time
     Istart_pc = 2;
 
     F_u = conv(NPI, rho, x, x_u, u);
