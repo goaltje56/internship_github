@@ -49,9 +49,11 @@ for time = Dt:Total_time
  	T = solve_eq(NPI,aE_T, aW_T, aP_T, b_T, T, 2);
 
     [u, T, m_in, m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T);    
-    [u_old, pc_old, T_old, rho_old] = storeresults(NPI, u, pc, T, rho, u_old, pc_old, T_old, rho_old);
 
     end
+    
+    [u_old, pc_old, T_old, rho_old] = storeresults(NPI, u, pc, T, rho, u_old, pc_old, T_old, rho_old);
+
 end
 elapsedTime = toc(timerVal)
 
@@ -63,9 +65,9 @@ hold on
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 grid on
 xlabel('Geometric position [m] ','LineWidth', 2)
-axis([0 XMAX+Dx 0 400]);
-% plot(x(2:NPI+1),p(2:NPI+1),'b','LineWidth',2)
-plot(x(1:NPI+1),T(1:NPI+1),'b','LineWidth',2)
+axis([0 XMAX+Dx 0 4]);
+plot(x(2:NPI+1),p(2:NPI+1),'b','LineWidth',2)
+% plot(x(1:NPI+1),T(1:NPI+1),'b','LineWidth',2)
 % plot(x_u(2:NPI+2),u(2:NPI+2),'sr','LineWidth',2);
 % plot(x(1:NPI+1),T2(1:NPI+1),'r','LineWidth',2)
 
@@ -73,7 +75,7 @@ plot(x(1:NPI+1),T(1:NPI+1),'b','LineWidth',2)
 % plot(x(2:NPI+1),rho(2:NPI+1),':c','LineWidth',2)
 % plot(x(2:NPI+1),d_u(2:NPI+1),':k','LineWidth',2)
 % legend('P','u','P_c','\rho','d_u','Location','SouthWest')
-legend('T','Location','NorthEast')
+legend('P','Location','NorthEast')
 
 % for i = 2:NPI+1
 % mdot(i) = rho(i)*u(i)*A;
