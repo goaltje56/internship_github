@@ -2,8 +2,7 @@ function [aP aE aW b d_u Istart_u u T] = ucoeff(NPI, rho, x, x_u, u, p, A, relax
     Istart_u = 3;
     [u T m_in m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T);
     F_u = conv(NPI, rho, x, x_u, u);
-    fric_u = u_fric(NPI, mu, x, x_u, u);
-    Dh = 0.001;
+
     for I = 3:NPI+1
         i = I;
            
@@ -17,14 +16,11 @@ function [aP aE aW b d_u Istart_u u T] = ucoeff(NPI, rho, x, x_u, u, p, A, relax
         % transport by diffusion eq 5.8b
         Dw = (mu(I-1)/(x_u(i)-x_u(i-1)))*A;
         De = (mu(I)/(x_u(i+1)-x_u(i)))*A;
-
-        Mw = ((fric_u(i)+fric_u(i-1))/2)/Dh;
-        Me = ((fric_u(i)+fric_u(i+1))/2)/Dh;
-        
+              
         % coefficients (hybrid differencing scheme)
         aW(i) = max([Fw Dw+Fw/2 0]);
         aE(i) = max([-Fe De-Fe/2 0]);
-        b(i)  = (Me+Mw)/2;
+        b(i)  = 0;
         
         aPold = 0.5*(rho(I-1)+rho(I))*Dx/Dt;
         % without time dependent terms 
