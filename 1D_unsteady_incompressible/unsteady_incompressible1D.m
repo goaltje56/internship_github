@@ -24,7 +24,7 @@ u_in = 1;      % inflow velocity [m/s]
 A    = 1;       % area of one cell
 m_in = 1;       % mass flow in
 m_out = 1;      % mass flow out
-Total_time = 3;
+Total_time = 4;
 % make a vector with initial values for all parameters
 [u, p, pc, T, rho, mu, Cp, Gamma, d_u, b, SP, Su, relax_u, relax_pc, relax_T, relax_rho, Dt, u_old, T_old, pc_old, rho_old] = param_init(NPI, u_in);
 
@@ -62,12 +62,19 @@ for time = 0:Dt:Total_time
     
     [u_old, pc_old, T_old, rho_old] = storeresults(NPI, u, pc, T, rho, u_old, pc_old, T_old, rho_old);
     
-    if mod(Total_time,time) == 0
+    if time < 10*Dt
         time_x = time*ones(1,length(u));
         test = fopen(path,'a');
-            fprintf(test,'%-12.2f %-12.2f %-12.2f %-12.2f %-12.2f \n',[time_x; x; u; T; p]);    
-            fprintf(test,'\n');        
-            fclose(test);
+        fprintf(test,'%-12.2f %-12.2f %-12.2f %-12.2f %-12.2f \n',[time_x; x; u; T; p]);    
+        fprintf(test,'\n');        
+        fclose(test);
+        
+    elseif mod(Total_time,time) == 0 
+        time_x = time*ones(1,length(u));
+        test = fopen(path,'a');
+        fprintf(test,'%-12.2f %-12.2f %-12.2f %-12.2f %-12.2f \n',[time_x; x; u; T; p]);    
+        fprintf(test,'\n');        
+        fclose(test);
     end
 end
 elapsedTime = toc(timerVal)

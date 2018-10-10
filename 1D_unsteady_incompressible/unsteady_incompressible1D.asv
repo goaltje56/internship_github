@@ -13,16 +13,18 @@ clc;
 timerVal = tic;
 path = 'C:\Users\s137280\Documents\Master_tue\Internship\internship_github\1D_unsteady_incompressible\results\output.txt';
 test = fopen(path,'w');
+fprintf(test,'%-12s %-12s %-12s %-12s %-13s\n', 'Time','Position','velocity','Temperature', 'Pressure');
+fclose(test);
 
 %% initializing
-NPI = 20;        % number of grid cells in x-direction [-] 
+NPI = 50;        % number of grid cells in x-direction [-] 
 XMAX = 1;       % length of the domain [m]
 P_atm = 101000; % athmosphesric pressure [Pa]
 u_in = 1;      % inflow velocity [m/s]
 A    = 1;       % area of one cell
 m_in = 1;       % mass flow in
 m_out = 1;      % mass flow out
-Total_time = 3;
+Total_time = 4;
 % make a vector with initial values for all parameters
 [u, p, pc, T, rho, mu, Cp, Gamma, d_u, b, SP, Su, relax_u, relax_pc, relax_T, relax_rho, Dt, u_old, T_old, pc_old, rho_old] = param_init(NPI, u_in);
 
@@ -60,13 +62,12 @@ for time = 0:Dt:Total_time
     
     [u_old, pc_old, T_old, rho_old] = storeresults(NPI, u, pc, T, rho, u_old, pc_old, T_old, rho_old);
     
-    if mod(Total_time,time) == 0
+%     if mod(Total_time,time) == 0
+    if time < 
         time_x = time*ones(1,length(u));
         test = fopen(path,'a');
-            fprintf(test,'%-12s %-11s %-13s %-13s %-13s\n', 'Time','Position','velocity','Temperature', 'Pressure');
-            fprintf(test,'%-12.2f %-12.2f %-12.2f %-12.2f %-12.2f \n',[time_x; x; u; T; p]);        
-%             fprintf(test,'%6s %12s %12s %12s %12s \n','Time','Position','velocity','Temperature', 'Pressure');
-%             fprintf(test,'%6.2f %6.2f %6.2f %6.2f %6.2f \n',[time_x; x; u; T; p]);
+            fprintf(test,'%-12.2f %-12.2f %-12.2f %-12.2f %-12.2f \n',[time_x; x; u; T; p]);    
+            fprintf(test,'\n');        
             fclose(test);
     end
 end
