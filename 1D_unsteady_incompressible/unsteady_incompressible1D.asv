@@ -11,15 +11,18 @@ clear all;
 close all;
 clc;
 timerVal = tic;
+path = 'C:\Users\s137280\Documents\Master_tue\Internship\internship_github\1D_unsteady_incompressible\results\output.txt';
+test = fopen(path,'w');
+
 %% initializing
-NPI = 10;        % number of grid cells in x-direction [-] 
+NPI = 20;        % number of grid cells in x-direction [-] 
 XMAX = 1;       % length of the domain [m]
 P_atm = 101000; % athmosphesric pressure [Pa]
 u_in = 1;      % inflow velocity [m/s]
 A    = 1;       % area of one cell
 m_in = 1;       % mass flow in
 m_out = 1;      % mass flow out
-Total_time = 40;
+Total_time = 3;
 % make a vector with initial values for all parameters
 [u, p, pc, T, rho, mu, Cp, Gamma, d_u, b, SP, Su, relax_u, relax_pc, relax_T, relax_rho, Dt, u_old, T_old, pc_old, rho_old] = param_init(NPI, u_in);
 
@@ -28,18 +31,20 @@ Total_time = 40;
 
 
 %% The main calculation part
-for time = Dt:Total_time
+for time = 0:Dt:Total_time
     for z =1:200
     [u, T, m_in, m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T);
     
     % momentum
     [aP_u, aE_u, aW_u, b_u, d_u, Istart_u, u, T] = ucoeff(NPI, rho, x, x_u, u, p, A, relax_u, d_u, mu, u_in, T, Dt, u_old, Dx);
-    [u, r_u] = GS_solve2(NPI+1, u, aW_u, aE_u, aP_u, b_u, 10^(-6));
+%     [u, r_u] = GS_solve2(NPI+1, u, aW_u, aE_u, aP_u, b_u, 10^(-6));
+    u = solve_eq(NPI, aE_u, aW_u, aP_u, b_u, u, 3);
+
     [u, T, m_in, m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T);
     % pressure correction (modified form of continuity equation)
     [aE_pc, aW_pc, aP_pc, b_pc, Istart_pc, pc] = pccoeff(NPI, rho, A, x, x_u, u, d_u, pc);
-%     [pc, r_pc] = GS_solve(NPI+1,pc, aW_pc, aE_pc, aP_pc, b_pc, 10^(-6));
-    pc = solve_eq(NPI,aE_pc, aW_pc, aP_pc, b_pc, pc, 2);
+%     [pc, r_pc] = GS_solve(NPI,pc, aW_pc, aE_pc, aP_pc, b_pc, 10^(-6));
+    pc = solve_eq(NPI-1, aE_pc, aW_pc, aP_pc, b_pc, pc, 2);
 
     % correction for pressure and velocity
     [p u pc] = velcorr(NPI, pc, p, u, relax_pc, d_u);
@@ -54,7 +59,16 @@ for time = Dt:Total_time
     end
     
     [u_old, pc_old, T_old, rho_old] = storeresults(NPI, u, pc, T, rho, u_old, pc_old, T_old, rho_old);
-
+    
+    if mod(Total_time,time) == 0
+        time_x = time*ones(1,length(u));
+        test = fopen(path,'a');
+            fprintf(test,'%-12s %-11s %-13s %-13s %-13s\n', 'Time','Position','velocity','Temperature', 'Pressure');
+            fprintf(test,'%-12.2f %-12.2f %-12.2f %-12.2f %-12.2f \n',[time_x; x; u; T; p]);        
+%             fprintf(test,'%6s %12s %12s %12s %12s \n','Time','Position','velocity','Temperature', 'Pressure');
+%             fprintf(test,'%6.2f %6.2f %6.2f %6.2f %6.2f \n',[time_x; x; u; T; p]);
+            fclose(test);
+    end
 end
 elapsedTime = toc(timerVal)
 
@@ -82,20 +96,3 @@ legend('P','Location','NorthEast')
 % mdot(i) = rho(i)*u(i)*A;
 % end
 
-% 
-% for i = 2: length(aP_u)
-%    A(i-1,i-1) = aP_u(i);
-%    B(i-1,i-1) = aP_pc(i);
-%  
-%    if i > 2 && i< length(aP_u)
-%         A(i-1,i) = aE_u(i);
-%         B(i-1,i) = aE_pc(i);  
-%    end
-%    if i >= 3
-%        B(i-1,i-2) = aW_pc(i);
-%        A(i-1,i-2) = aW_u(i);
-%    end
-%    b_new(i-1) = b_u(i);
-%    b_newpc(i-1) = b_pc(i);
-% 
-% end
