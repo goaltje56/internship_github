@@ -10,7 +10,12 @@
 clear all;
 close all;
 clc;
+
+% set timer to indicate the computation time
 timerVal = tic;
+
+% set path to place where values must be stored, clean the old file
+% add name taggs to created file and close file again.
 path = 'C:\Users\s137280\Documents\Master_tue\Internship\internship_github\1D_unsteady_incompressible\results\output.txt';
 test = fopen(path,'w');
 fprintf(test,'%-12s %-12s %-12s %-12s %-13s\n', 'Time','Position','velocity','Temperature', 'Pressure');
@@ -25,6 +30,7 @@ A    = 1;       % area of one cell
 m_in = 1;       % mass flow in
 m_out = 1;      % mass flow out
 Total_time = 4;
+
 % make a vector with initial values for all parameters
 [u, p, pc, T, rho, mu, Cp, Gamma, d_u, b, SP, Su, relax_u, relax_pc, relax_T, relax_rho, Dt, u_old, T_old, pc_old, rho_old] = param_init(NPI, u_in);
 
@@ -39,13 +45,12 @@ for time = 0:Dt:Total_time
     
     % momentum
     [aP_u, aE_u, aW_u, b_u, d_u, Istart_u, u, T] = ucoeff(NPI, rho, x, x_u, u, p, A, relax_u, d_u, mu, u_in, T, Dt, u_old, Dx);
-%     [u, r_u] = GS_solve2(NPI+1, u, aW_u, aE_u, aP_u, b_u, 10^(-6));
     u = solve_eq(NPI, aE_u, aW_u, aP_u, b_u, u, 3);
 
     [u, T, m_in, m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T);
+
     % pressure correction (modified form of continuity equation)
     [aE_pc, aW_pc, aP_pc, b_pc, Istart_pc, pc] = pccoeff(NPI, rho, A, x, x_u, u, d_u, pc);
-%     [pc, r_pc] = GS_solve(NPI,pc, aW_pc, aE_pc, aP_pc, b_pc, 10^(-6));
     pc = solve_eq(NPI-1, aE_pc, aW_pc, aP_pc, b_pc, pc, 2);
 
     % correction for pressure and velocity
@@ -60,8 +65,10 @@ for time = 0:Dt:Total_time
 
     end
     
+    % store results of this run as old restults for next iteration
     [u_old, pc_old, T_old, rho_old] = storeresults(NPI, u, pc, T, rho, u_old, pc_old, T_old, rho_old);
     
+    % store data it different time steps
     if time < 10*Dt
         time_x = time*ones(1,length(u));
         test = fopen(path,'a');

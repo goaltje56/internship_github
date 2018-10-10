@@ -10,7 +10,12 @@
 clear all;
 close all;
 clc;
+
+% set timer to indicate the computation time
 timerVal = tic;
+
+% set path to place where values must be stored, clean the old file
+% 
 path = 'C:\Users\s137280\Documents\Master_tue\Internship\internship_github\1D_unsteady_incompressible\results\output.txt';
 test = fopen(path,'w');
 fprintf(test,'%-12s %-12s %-12s %-12s %-13s\n', 'Time','Position','velocity','Temperature', 'Pressure');
@@ -62,13 +67,19 @@ for time = 0:Dt:Total_time
     
     [u_old, pc_old, T_old, rho_old] = storeresults(NPI, u, pc, T, rho, u_old, pc_old, T_old, rho_old);
     
-%     if mod(Total_time,time) == 0
-    if time < 
+    if time < 10*Dt
         time_x = time*ones(1,length(u));
         test = fopen(path,'a');
-            fprintf(test,'%-12.2f %-12.2f %-12.2f %-12.2f %-12.2f \n',[time_x; x; u; T; p]);    
-            fprintf(test,'\n');        
-            fclose(test);
+        fprintf(test,'%-12.2f %-12.2f %-12.2f %-12.2f %-12.2f \n',[time_x; x; u; T; p]);    
+        fprintf(test,'\n');        
+        fclose(test);
+        
+    elseif mod(Total_time,time) == 0 
+        time_x = time*ones(1,length(u));
+        test = fopen(path,'a');
+        fprintf(test,'%-12.2f %-12.2f %-12.2f %-12.2f %-12.2f \n',[time_x; x; u; T; p]);    
+        fprintf(test,'\n');        
+        fclose(test);
     end
 end
 elapsedTime = toc(timerVal)
