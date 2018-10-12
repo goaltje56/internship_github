@@ -11,31 +11,52 @@ clear all;
 close all;
 clc;
 
-% set timer to indicate the computation time
+% %% Read species data
+% % Make these variable global
+% global Runiv El Sp;
+% 
+% MechanismFile = 'fuels.trot';
+% 
+% % Read the reaction mechanism
+% [El, Sp] = ReadTrotDat(MechanismFile);
+% % Number of species
+% Nsp = length(Sp);
+% % Universal gas constant
+% Runiv = 8.314462175;
+% 
+% % Define some species
+% iO2  = find(strcmp({Sp.Name},'O2'));
+% iCO2 = find(strcmp({Sp.Name},'CO2'));
+% iCO  = find(strcmp({Sp.Name},'CO'));
+% iH2O = find(strcmp({Sp.Name},'H2O'));
+% iH2  = find(strcmp({Sp.Name},'H2'));
+
+%% set timer to indicate the computation time
 timerVal = tic;
 
 % set path to place where values must be stored, clean the old file
 % add name taggs to created file and close file again.
-path = 'C:\Users\s137280\Documents\Master_tue\Internship\internship_github\1D_unsteady_incompressible\results\output.txt';
+path = 'C:\Users\s137280\Documents\Master_tue\Internship\internship_github\species_1D_unsteady_incompressible\results\output.txt';
 test = fopen(path,'w');
-fprintf(test,'%-12s %-12s %-12s %-12s %-13s\n', 'Time','Position','velocity','Temperature', 'Pressure');
+fprintf(test,'%-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s\n', 'Time','Position','density','velocity','Temperature', 'Pressure', 'species1', 'species2');
 fclose(test);
 
 %% initializing
-NPI = 20;        % number of grid cells in x-direction [-] 
+NPI = 50;        % number of grid cells in x-direction [-] 
 XMAX = 1;       % length of the domain [m]
-Patm = 101000; % athmosphesric pressure [Pa]
+Patm = 101325; % athmosphesric pressure [Pa]
 u_in = 1;      % inflow velocity [m/s]
 A    = 1;       % area of one cell
-m_in = 1;       % mass flow in
-m_out = 1;      % mass flow out
 Total_time = 2;
-
-% store specie data                      n       m        rho            p           D              
-[rho_k Y_k D_k p_k m_k M] = species(NPI, 2, [10 0.01], [1000 1.225], [Patm Patm], [24*10^(-6) 22*10^(-6)], [1 28.84]);
+n = 2;          % number of species 
+MW = [18 28.84];
+% store specie data                                        n      m            rho                     p         D              
+[rho_k, Y_k, D_k, p_k, m_k, M, rho, rho_old, f_old] = species(NPI, 2, [10 0.01], [1000 1.225]*10^(-3), [Patm Patm],...
+ [24*10^(-6) 22*10^(-6)], [18 28.84]);
 
 % make a vector with initial values for all parameters
-[u, p, pc, T, rho, mu, Cp, Gamma, d_u, b, SP, Su, relax_u, relax_pc, relax_T, relax_rho, Dt, u_old, T_old, pc_old, rho_old] = param_init(NPI, u_in);
+[u, p, pc, T, mu, Cp, Gamma, d_u, b, SP, Su, relax_u, relax_pc, relax_T, relax_rho, relax_f Dt, u_old, T_old, pc_old]...
+ = param_init(NPI, u_in);
 
 %% grid generation
 [Dx, x, x_u] = grid_gen(NPI,XMAX);   % create staggered grid
@@ -43,14 +64,15 @@ Total_time = 2;
 
 %% The main calculation part
 for time = 0:Dt:Total_time
-    for z =1:200
-    [u, T, m_in, m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T);
+    for z =1:500
+    [u, T, Y_k m_in, m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T, Y_k);
     
     % momentum
-    [aP_u, aE_u, aW_u, b_u, d_u, Istart_u, u, T] = ucoeff(NPI, rho, x, x_u, u, p, A, relax_u, d_u, mu, u_in, T, Dt, u_old, Dx);
+    [aP_u, aE_u, aW_u, b_u, d_u, Istart_u, u, T] = ...
+    ucoeff(NPI, rho, x, x_u, u, p, A, relax_u, d_u, mu, u_in, T, Dt, u_old, Dx);
     u = solve_eq(NPI, aE_u, aW_u, aP_u, b_u, u, 3);
 
-    [u, T, m_in, m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T);
+    [u, T, Y_k, m_in, m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T, Y_k);
 
     % pressure correction (modified form of continuity equation)
     [aE_pc, aW_pc, aP_pc, b_pc, Istart_pc, pc] = pccoeff(NPI, rho, A, x, x_u, u, d_u, pc);
@@ -63,26 +85,33 @@ for time = 0:Dt:Total_time
     [aE_T, aW_T, aP_T, b_T, Istart_T] = Tcoeff(NPI, rho, A, x, x_u, u, T, Gamma, relax_T, Dt, T_old, Dx);
 %     [TR, r_T] = GS_solve(NPI+1,T, aW_T, aE_T, aP_T, b_T, 10^(-6));
  	T = solve_eq(NPI,aE_T, aW_T, aP_T, b_T, T, 2);
-
-    [u, T, m_in, m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T);    
+    
+%    Species 
+    for i = 1:n
+        [aE_f(i,:), aW_f(i,:), aP_f(i,:), b_f(i,:), Istart_f] = Fcoeff(NPI, rho, A, x, x_u, u, Y_k(i,:), D_k(i,:), relax_f, Dt, f_old(i,:), Dx);
+        Y_k(i,:) = solve_eq(NPI,aE_f(i,:), aW_f(i,:), aP_f(i,:), b_f(i,:), Y_k(i,:), 2);
+    end
+    Y_k = species_bound(NPI, n, Y_k);
+    [u, T, Y_k, m_in, m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T, Y_k);    
 
     end
+    [X_k rho] = mole(NPI, n, Y_k, rho_k, MW, rho);
     
-    % store results of this run as old restults for next iteration
-    [u_old, pc_old, T_old, rho_old] = storeresults(NPI, u, pc, T, rho, u_old, pc_old, T_old, rho_old);
+    % store results of this run as old results for next iteration
+    [u_old, pc_old, T_old, rho_old, f_old] = storeresults(NPI, u, pc, T, rho, Y_k, u_old, pc_old, T_old, rho_old, f_old, n);
     
-    % store data it different time steps
+    % store data at different time steps
     if time < 10*Dt
         time_x = time*ones(1,length(u));
         test = fopen(path,'a');
-        fprintf(test,'%-12.2f %-12.2f %-12.2f %-12.2f %-12.2f \n',[time_x; x; u; T; p]);    
+        fprintf(test,'%-12.2f %-12.2f %-12.2f %-12.2f %-12.2f %-12.2f %-12.2f %-12.2f\n',[time_x; x; rho; u; T; p; Y_k(1,:); Y_k(2,:)]);    
         fprintf(test,'\n');        
         fclose(test);
         
     elseif mod(Total_time,time) == 0 
         time_x = time*ones(1,length(u));
         test = fopen(path,'a');
-        fprintf(test,'%-12.2f %-12.2f %-12.2f %-12.2f %-12.2f \n',[time_x; x; u; T; p]);    
+        fprintf(test,'%-12.2f %-12.2f %-12.2f %-12.2f %-12.2f %-12.2f %-12.2f %-12.2f\n',[time_x; x; rho; u; T; p; Y_k(1,:); Y_k(2,:)]);    
         fprintf(test,'\n');        
         fclose(test);
     end
@@ -112,4 +141,14 @@ legend('P','Location','NorthEast')
 % for i = 2:NPI+1
 % mdot(i) = rho(i)*u(i)*A;
 % end
+
+figure(2)
+hold on
+grid on
+xlabel('Geometric position [m] ','LineWidth', 2)
+axis([0 XMAX+Dx 0 4]);
+plot(x_u(2:NPI+2),u(2:NPI+2),'r','LineWidth',2);
+legend('Velocity','Location','NorthEast')
+set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
+
 
