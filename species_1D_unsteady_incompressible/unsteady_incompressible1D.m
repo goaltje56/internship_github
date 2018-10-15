@@ -42,7 +42,7 @@ fprintf(test,'%-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s\n', 'Time','Positi
 fclose(test);
 
 %% initializing
-NPI = 50;        % number of grid cells in x-direction [-] 
+NPI = 10;        % number of grid cells in x-direction [-] 
 XMAX = 1;       % length of the domain [m]
 Patm = 101325; % athmosphesric pressure [Pa]
 u_in = 1;      % inflow velocity [m/s]
@@ -50,9 +50,10 @@ A    = 1;       % area of one cell
 Total_time = 2;
 n = 2;          % number of species 
 MW = [18 28.84];
-% store specie data                                        n      m            rho                     p         D              
-[rho_k, Y_k, D_k, p_k, m_k, M, rho, rho_old, f_old] = species(NPI, 2, [10 0.01], [1000 1.225]*10^(-3), [Patm Patm],...
- [24*10^(-6) 22*10^(-6)], [18 28.84]);
+Y_k = [1 0];
+% store specie data                                        n      Y_k            rho                     p         D              
+[rho_k, D_k, Y_k, p_k, M, rho, rho_old, f_old] = species(NPI, 2, Y_k, [1 1.225], [Patm Patm],...
+ [10^(-30) 10^(-30)], [18 28.84]);
 
 % make a vector with initial values for all parameters
 [u, p, pc, T, mu, Cp, Gamma, d_u, b, SP, Su, relax_u, relax_pc, relax_T, relax_rho, relax_f Dt, u_old, T_old, pc_old]...
@@ -64,12 +65,12 @@ MW = [18 28.84];
 
 %% The main calculation part
 for time = 0:Dt:Total_time
-    for z =1:500
-    [u, T, Y_k m_in, m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T, Y_k);
+    for z =1:3
+    [u, T, Y_k, m_in, m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T, Y_k);
     
     % momentum
-    [aP_u, aE_u, aW_u, b_u, d_u, Istart_u, u, T] = ...
-    ucoeff(NPI, rho, x, x_u, u, p, A, relax_u, d_u, mu, u_in, T, Dt, u_old, Dx);
+    [aP_u, aE_u, aW_u, b_u, d_u, Istart_u, u] = ...
+    ucoeff(NPI, rho, x, x_u, u, p, A, relax_u, d_u, mu, u_in, Dt, u_old, Dx);
     u = solve_eq(NPI, aE_u, aW_u, aP_u, b_u, u, 3);
 
     [u, T, Y_k, m_in, m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T, Y_k);
@@ -138,9 +139,9 @@ plot(x(1:NPI+1),T(1:NPI+1),'k','LineWidth',2)
 % legend('P','u','P_c','\rho','d_u','Location','SouthWest')
 legend('P','Location','NorthEast')
 
-% for i = 2:NPI+1
-% mdot(i) = rho(i)*u(i)*A;
-% end
+for i = 2:NPI+1
+mdot(i) = rho(i)*u(i)*A;
+end
 
 figure(2)
 hold on

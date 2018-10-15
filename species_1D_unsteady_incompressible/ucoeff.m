@@ -1,4 +1,4 @@
-function [aP aE aW b d_u Istart_u u T] = ucoeff(NPI, rho, x, x_u, u, p, A, relax_u, d_u,mu, u_in, T, Dt, u_old, Dx)
+function [aP aE aW b d_u Istart_u u] = ucoeff(NPI, rho, x, x_u, u, p, A, relax_u, d_u,mu, u_in, Dt, u_old, Dx)
     Istart_u = 3;
 %     [u T m_in m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T);
     F_u = conv(NPI, rho, x, x_u, u);

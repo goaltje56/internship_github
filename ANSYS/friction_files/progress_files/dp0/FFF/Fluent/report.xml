@@ -1,0 +1,252 @@
+<FluentXMLReport>
+<version>
+Fluent
+Version: 2d, dp, pbns, spe, lam, transient (2d, double precision, pressure-based,  species, laminar, transient)
+Release: 17.2.0
+Title: 
+</version>
+
+<Models>
+
+Models
+------
+
+   Model                        Settings                       
+   ---------------------------------------------------------
+   Space                        2D                             
+   Time                         Unsteady, 1st-Order Implicit   
+   Viscous                      Laminar                        
+   Heat Transfer                Enabled                        
+   Solidification and Melting   Disabled                       
+   Radiation                    None                           
+   Species                      Non-Reacting (5 species)       
+   Coupled Dispersed Phase      Disabled                       
+   NOx Pollutants               Disabled                       
+   SOx Pollutants               Disabled                       
+   Soot                         Disabled                       
+   Mercury Pollutants           Disabled                       
+
+</Models>
+
+<MaterialProperties>
+Material Properties
+-------------------
+
+   Material: methane-air (mixture)
+
+      Property               Units    Method                 Value(s)              
+      --------------------------------------------------------------------------
+      Mixture Species                 names                  (ch4 o2 co2 h2o n2)   
+      Density                kg/m3    ideal-gas              #f                    
+      Cp (Specific Heat)     j/kg-k   mixing-law             #f                    
+      Thermal Conductivity   w/m-k    constant               0.045400001           
+      Viscosity              kg/m-s   constant               1.72e-05              
+      Mass Diffusivity       m2/s     constant-dilute-appx   (2.8799999e-05)       
+      Speed of Sound         m/s      none                   #f                    
+
+   Material: (nitrogen . methane-air) (fluid)
+
+      Property             Units      Method       Value(s)                                                                                                                                                    
+      ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      Cp (Specific Heat)   j/kg-k     polynomial   (300-1000: 979.04298 0.4179639 -0.0011762792 1.6743943e-06 -7.2562971e-10) (1000-5000: 868.62291 0.44162954 -0.00016872295 2.9967875e-08 -2.0043858e-12)    
+      Molecular Weight     kg/kgmol   constant     28.0134                                                                                                                                                     
+      Speed of Sound       m/s        none         #f                                                                                                                                                          
+
+   Material: (water-vapor . methane-air) (fluid)
+
+      Property             Units      Method       Value(s)                                                                                                                                                  
+      ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      Cp (Specific Heat)   j/kg-k     polynomial   (300-1000: 1563.0767 1.6037546 -0.0029327841 3.2161009e-06 -1.1568268e-09) (1000-5000: 1233.2338 1.4105233 -0.00040291411 5.5427718e-08 -2.949824e-12)    
+      Molecular Weight     kg/kgmol   constant     18.01534                                                                                                                                                  
+      Speed of Sound       m/s        none         #f                                                                                                                                                        
+
+   Material: (carbon-dioxide . methane-air) (fluid)
+
+      Property             Units      Method       Value(s)                                                                                                                                                   
+      -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      Cp (Specific Heat)   j/kg-k     polynomial   (300-1000: 429.92889 1.8744735 -0.001966485 1.2972514e-06 -3.9999562e-10) (1000-5000: 841.37645 0.59323928 -0.00024151675 4.5227279e-08 -3.1531301e-12)    
+      Molecular Weight     kg/kgmol   constant     44.00995                                                                                                                                                   
+      Speed of Sound       m/s        none         #f                                                                                                                                                         
+
+   Material: (oxygen . methane-air) (fluid)
+
+      Property             Units      Method       Value(s)                                                                                                                                                      
+      --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      Cp (Specific Heat)   j/kg-k     polynomial   (300-1000: 834.82647 0.29295801 -0.00014956371 3.4138849e-07 -2.2783585e-10) (1000-5000: 960.75234 0.15941258 -3.2708852e-05 4.6127648e-09 -2.9528324e-13)    
+      Molecular Weight     kg/kgmol   constant     31.9988                                                                                                                                                       
+      Speed of Sound       m/s        none         #f                                                                                                                                                            
+
+   Material: (methane . methane-air) (fluid)
+
+      Property             Units      Method       Value(s)                                                                                                                                               
+      -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      Cp (Specific Heat)   j/kg-k     polynomial   (300-1000: 403.5847 9.0573346 -0.014425086 1.5805188e-05 -6.3430511e-09) (1000-5000: 872.46708 5.3054727 -0.002008295 3.5166462e-07 -2.3339102e-11)    
+      Molecular Weight     kg/kgmol   constant     16.04303                                                                                                                                               
+      Speed of Sound       m/s        none         #f                                                                                                                                                     
+
+   Material: air (fluid)
+
+      Property                        Units      Method      Value(s)        
+      --------------------------------------------------------------------
+      Density                         kg/m3      ideal-gas   #f              
+      Cp (Specific Heat)              j/kg-k     constant    1006.43         
+      Thermal Conductivity            w/m-k      constant    0.0242          
+      Viscosity                       kg/m-s     constant    1.7894001e-05   
+      Molecular Weight                kg/kgmol   constant    28.966          
+      Thermal Expansion Coefficient   1/k        constant    0               
+      Speed of Sound                  m/s        none        #f              
+
+   Material: aluminum (solid)
+
+      Property               Units    Method     Value(s)   
+      ---------------------------------------------------
+      Density                kg/m3    constant   2719       
+      Cp (Specific Heat)     j/kg-k   constant   871        
+      Thermal Conductivity   w/m-k    constant   202.4      
+
+</MaterialProperties>
+
+<CellZoneConditions>
+Cell Zone Conditions
+--------------------
+
+   Zones
+
+      name           id   type    
+      -------------------------
+      surface_body   2    fluid   
+
+   Setup Conditions
+
+      surface_body
+
+         Condition       Value   
+         ---------------------
+         Frame Motion?   no      
+         Mesh Motion?    no      
+
+</CellZoneConditions>
+
+<BoundaryConditions>
+Boundary Conditions
+-------------------
+
+   Zones
+
+      name     id   type                 
+      --------------------------------
+      wall     7    pressure-far-field   
+      inlet    5    velocity-inlet       
+      outlet   6    pressure-outlet      
+
+   Setup Conditions
+
+      wall
+
+         Condition   Value                                                                                                                   
+         ---------------------------------------------------------------------------------------------------------------------------------
+                     (((constant . 0) (profile  )) ((constant . 0) (profile  )) ((constant . 0) (profile  )) ((constant . 0) (profile  )))   
+
+      inlet
+
+         Condition                       Value                                                                                                                     
+         -------------------------------------------------------------------------------------------------------------------------------------------------------
+         Velocity Specification Method   1                                                                                                                         
+         X-Velocity (m/s)                1                                                                                                                         
+                                         (((constant . 0.3) (profile  )) ((constant . 0) (profile  )) ((constant . 0) (profile  )) ((constant . 0) (profile  )))   
+
+      outlet
+
+         Condition   Value                                                                                                                   
+         ---------------------------------------------------------------------------------------------------------------------------------
+         Backflow    (((constant . 0) (profile  )) ((constant . 0) (profile  )) ((constant . 0) (profile  )) ((constant . 0) (profile  )))   
+
+</BoundaryConditions>
+
+<SolverSettings>
+Solver Settings
+---------------
+
+   Equations
+
+      Equation   Solved   
+      -----------------
+      Flow       yes      
+      ch4        yes      
+      o2         yes      
+      co2        yes      
+      h2o        yes      
+      Energy     yes      
+
+   Numerics
+
+      Numeric                         Enabled   
+      ---------------------------------------
+      Absolute Velocity Formulation   yes       
+
+   Unsteady Calculation Parameters
+
+                                           
+      ----------------------------------
+      Time Step (s)                   1    
+      Max. Iterations Per Time Step   20   
+
+   Relaxation
+
+      Variable      Relaxation Factor   
+      -------------------------------
+      Pressure      0.3                 
+      Density       1                   
+      Body Forces   1                   
+      Momentum      0.7                 
+      ch4           1                   
+      o2            1                   
+      co2           1                   
+      h2o           1                   
+      Energy        1                   
+
+   Linear Solver
+
+                   Solver     Termination   Residual Reduction   
+      Variable     Type       Criterion     Tolerance            
+      --------------------------------------------------------
+      Pressure     V-Cycle    0.1                                
+      X-Momentum   Flexible   0.1           0.7                  
+      Y-Momentum   Flexible   0.1           0.7                  
+      ch4          Flexible   0.1           0.7                  
+      o2           Flexible   0.1           0.7                  
+      co2          Flexible   0.1           0.7                  
+      h2o          Flexible   0.1           0.7                  
+      Energy       F-Cycle    0.1                                
+
+   Pressure-Velocity Coupling
+
+      Parameter   Value    
+      ------------------
+      Type        SIMPLE   
+
+   Discretization Scheme
+
+      Variable   Scheme                
+      ------------------------------
+      Pressure   Second Order          
+      Density    Second Order Upwind   
+      Momentum   Second Order Upwind   
+      ch4        Second Order Upwind   
+      o2         Second Order Upwind   
+      co2        Second Order Upwind   
+      h2o        Second Order Upwind   
+      Energy     Second Order Upwind   
+
+   Solution Limits
+
+      Quantity                    Limit   
+      ---------------------------------
+      Minimum Absolute Pressure   1       
+      Maximum Absolute Pressure   5e+10   
+      Minimum Temperature         1       
+      Maximum Temperature         5000    
+
+</SolverSettings>
+
+</FluentXMLReport>

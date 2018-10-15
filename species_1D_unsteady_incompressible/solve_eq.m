@@ -19,7 +19,7 @@ function fi = solve_eq(NPI, aE, aW, aP, b, fi, Istart)
     
     % back substitution
     for I = NPI+1:-1:Istart
-        if I == NPI +1
+        if I == NPI + 1
             fi(I) = Cmri(I);
         else
             fi(I) = Ari(I)*fi(I+1) + Cmri(I);
