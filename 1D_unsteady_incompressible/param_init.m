@@ -1,12 +1,13 @@
-function [u, p, pc, T, rho, mu, Cp, Gamma, d_u, b, SP, Su, relax_u, relax_pc, relax_T, relax_rho, Dt, u_old, T_old, pc_old, rho_old] = param_init(NPI, u_in);
+function [u, u_guess, p, pc, T, rho, mu, Cp, Gamma, d_u, b, SP, Su, relax_u, relax_pc, relax_T, relax_rho, Dt, u_old, T_old, pc_old, rho_old p_old] = param_init(NPI, u_in);
     m_in    = 1;
     m_out   = 1;
     Dt = 0.01;
     for I=1:NPI+2
         i = I;
         u(i)    = 0.1;         % Velocity in x-direction
+        u_guess(i)= 0.1;        
         pc(I)   = 0;            % Pressure correction 
-        p(I)    = 100;            % Relative pressure
+        p(I)    = 1;            % Relative pressure
         T(I)    = 273;          % Temperature
         rho(I)  = 1;            % Density
         mu(I)   = 2.5*10^(-5);  % Viscosity
@@ -18,6 +19,7 @@ function [u, p, pc, T, rho, mu, Cp, Gamma, d_u, b, SP, Su, relax_u, relax_pc, re
         Su(I)   = 0;            % Source term
         u_old(i)= u(i);         % Velocity in x-direction old timestep
         pc_old(i)= pc(i);        % Pressure correction old timestep
+        p_old(i)= p(i);        % Pressure correction old timestep
         T_old(i)= T(i);         % Temperature old timestep
         rho_old(i)= rho(i);         % Temperature old timestep
 

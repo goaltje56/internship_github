@@ -1,6 +1,6 @@
-function [aP aE aW b d_u Istart_u u T] = ucoeff(NPI, rho, x, x_u, u, p, A, relax_u, d_u,mu, u_in, T, Dt, u_old, Dx)
+function [aP aE aW b d_u Istart_u u T u_guess] = ucoeff(NPI, rho, x, x_u, u, p, A, relax_u, d_u,mu, u_in, T, Dt, u_old, Dx, u_guess)
     Istart_u = 3;
-    [u T m_in m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T);
+    [u u_guess T m_in m_out p] = bound(NPI,rho,x,x_u,A,u, u_in, T, u_guess, p);
     F_u = conv(NPI, rho, x, x_u, u);
     u_fric = fric_u(NPI, mu, x, x_u, u);
     Dh = 0.00001;
@@ -33,6 +33,9 @@ function [aP aE aW b d_u Istart_u u T] = ucoeff(NPI, rho, x, x_u, u, p, A, relax
             
         % pressure correction 
         d_u(i) = A*relax_u/aP(i);
+        
+        % guessed velocity
+        u_guess(i) = (aW(i)+aE(i)+b(i)) /aP(i);
         
         % putting integrated pressure gradient in RHS
         % to solve with TDMA alogrithm
