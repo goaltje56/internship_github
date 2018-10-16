@@ -7,7 +7,7 @@ function [u, u_guess, p, pc, T, rho, mu, Cp, Gamma, d_u, b, SP, Su, relax_u, rel
         u(i)    = 0.1;         % Velocity in x-direction
         u_guess(i)= 0.1;        
         pc(I)   = 0;            % Pressure correction 
-        p(I)    = 1;            % Relative pressure
+        p(I)    = 0;            % Relative pressure
         T(I)    = 273;          % Temperature
         rho(I)  = 1;            % Density
         mu(I)   = 2.5*10^(-5);  % Viscosity

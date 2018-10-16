@@ -1,4 +1,4 @@
-function [u T Y_k m_in m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T, Y_k)
+function [u T Y_k m_in m_out p] = bound(NPI,rho,x,x_u,A,u, u_in, T, Y_k, p)
     T(1) = 273;                     % temperature at inlet
     u(2) = u_in;                    % velocity at inlet
     
@@ -10,8 +10,10 @@ function [u T Y_k m_in m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T, Y_k)
     
     u(NPI+2) = u(NPI+1)*m_in/m_out; % velocity at outlet
     T(NPI+1) = T(NPI);
-%     T(NPI+1) = 273;
-    Y_k(1, NPI+1) = Y_k(1, NPI);
-    Y_k(2, NPI+1) = Y_k(2, NPI);
+%     p(NPI+1) = p(NPI);
+
+    %     T(NPI+1) = 273;
+%     Y_k(1, NPI+1) = Y_k(1, NPI);
+%     Y_k(2, NPI+1) = Y_k(2, NPI);
 
 end

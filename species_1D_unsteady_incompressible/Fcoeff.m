@@ -16,13 +16,22 @@ function [aE aW aP b Istart_F] = Fcoeff(NPI, rho, A, x, x_u, u, Y_k, D, relax_f,
         % source terms
         SP(I) = 0;
         Su(I) = 0;
+
+        aPold = rho(I)*Dx/Dt;
         
+        if I == 2
+            aW(i) = 0;
+            aE(i) = max([-Fe De-Fe/2 0]);
+            aP(i) = Fe + aPold;
+            Su(i) = Fw*Y_k(I-1);
+        else
+            
         % the coefficients (with hybrid differencing scheme)
         aW(I) = max([Fw,  Dw+Fw/2, 0]);
         aE(I) = max([-Fe, De-Fe/2, 0]);
-        aPold = rho(I)*Dx/Dt;
         
         aP(I) = aW(I) + aE(I) + Fe - Fw - SP(I) +aPold;
+        end
         b(I) = Su(I) + aPold*f_old(I);
 
         aP(I) = aP(I)/relax_f;              

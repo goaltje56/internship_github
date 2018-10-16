@@ -29,10 +29,10 @@ u_in = 1;      % inflow velocity [m/s]
 A    = 1;       % area of one cell
 m_in = 1;       % mass flow in
 m_out = 1;      % mass flow out
-Total_time = 4;
+Total_time = 2;
 
 % make a vector with initial values for all parameters
-[u, u_guess, p, pc, T, rho, mu, Cp, Gamma, d_u, b, SP, Su, relax_u, relax_pc, relax_T, relax_rho, Dt, u_old, T_old, pc_old, rho_old p_old] = param_init(NPI, u_in);
+[u, u_guess, p, pc, T, rho, mu, Cp, Gamma, d_u, b, SP, Su, relax_u, relax_pc, relax_T, relax_rho, Dt, u_old, T_old, pc_old, rho_old, p_old] = param_init(NPI, u_in);
 
 %% grid generation
 [Dx, x, x_u] = grid_gen(NPI,XMAX);   % create staggered grid
@@ -40,7 +40,7 @@ Total_time = 4;
 
 %% The main calculation part
 for time = 0:Dt:Total_time
-    for z =1:500
+    for z =1:10
     [u, u_guess, T, m_in, m_out, p] = bound(NPI,rho,x,x_u,A,u, u_in, T, u_guess, p);
     
     % momentum

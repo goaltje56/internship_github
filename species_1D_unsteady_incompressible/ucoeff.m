@@ -22,14 +22,23 @@ function [aP aE aW b d_u Istart_u u] = ucoeff(NPI, rho, x, x_u, u, p, A, relax_u
         Mw = ((u_fric(i)+u_fric(i-1))/2)/Dh;
         Me = ((u_fric(i)+u_fric(i+1))/2)/Dh;
         
+        aPold = 0.5*(rho(I-1)+rho(I))*Dx/Dt;
+
+        if I == 3
+            aW(i) = 0;
+            aE(i) = max([-Fe De-Fe/2 0]);
+            b(i)  = Fw*u(i-1)+((Mw + Me) /2); 
+            aP(i) = Fe + aPold;
+
+        else
         % coefficients (hybrid differencing scheme)
         aW(i) = max([Fw Dw+Fw/2 0]);
         aE(i) = max([-Fe De-Fe/2 0]);
         b(i)  = (Mw + Me) /2;
-        
-        aPold = 0.5*(rho(I-1)+rho(I))*Dx/Dt;
-        % without time dependent terms 
         aP(i) = aW(i)+aE(i)+ Fe - Fw + aPold;
+        
+        end
+        % without time dependent terms 
             
         % pressure correction 
         d_u(i) = A*relax_u/aP(i);

@@ -1,6 +1,6 @@
 function [u, p, pc, T, mu, Cp, Gamma, d_u, b, SP, Su, relax_u, relax_pc, relax_T, relax_rho, relax_f, Dt, u_old, T_old, pc_old] = param_init(NPI, u_in);
-    m_in    = 1;
-    m_out   = 1;
+%     m_in    = 1;
+%     m_out   = 1;
     Dt = 0.01;
     for I=1:NPI+2
         i = I;

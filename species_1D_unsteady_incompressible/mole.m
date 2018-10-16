@@ -1,4 +1,5 @@
 function [X_k rho] = mole(NPI, n, Y_k, rho_k, MW, rho)
+global Runiv
     for j = 1:n
         for I = 1:NPI+2
             if j == 1
