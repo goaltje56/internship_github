@@ -96,7 +96,7 @@ for time = 0:Dt:Total_time
     [u, T, Y_k, m_in, m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T, Y_k);    
 
     end
-    [X_k rho] = mole(NPI, n, Y_k, rho_k, MW, rho);
+    [X_k, rho] = mole(NPI, n, Y_k, rho_k, MW, rho);
     
     % store results of this run as old results for next iteration
     [u_old, pc_old, T_old, rho_old, f_old] = storeresults(NPI, u, pc, T, rho, Y_k, u_old, pc_old, T_old, rho_old, f_old, n);
