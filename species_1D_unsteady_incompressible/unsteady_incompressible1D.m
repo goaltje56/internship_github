@@ -42,7 +42,7 @@ fprintf(test,'%-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s\n', 'Time','Positi
 fclose(test);
 
 %% initializing
-NPI = 10;        % number of grid cells in x-direction [-] 
+NPI = 20;        % number of grid cells in x-direction [-] 
 XMAX = 1;       % length of the domain [m]
 Patm = 101325; % athmosphesric pressure [Pa]
 u_in = 1;      % inflow velocity [m/s]
@@ -56,7 +56,7 @@ Y_k = [1 0];
  [0 0], [18 28.84]);
 
 % make a vector with initial values for all parameters
-[u, p, pc, T, mu, Cp, Gamma, d_u, b, SP, Su, relax_u, relax_pc, relax_T, relax_rho, relax_f Dt, u_old, T_old, pc_old]...
+[u, p, pc, T, mu, Cp, Gamma, d_u, b, SP, Su, relax_u, relax_pc, relax_T, relax_rho, relax_f, Dt, u_old, T_old, pc_old]...
  = param_init(NPI, u_in);
 
 %% grid generation
@@ -76,7 +76,7 @@ for time = 0:Dt:Total_time
     [u, T, Y_k, m_in, m_out, p] = bound(NPI,rho,x,x_u,A,u, u_in, T, Y_k, p);
 
     % pressure correction (modified form of continuity equation)
-    [aE_pc, aW_pc, aP_pc, b_pc, Istart_pc, pc] = pccoeff(NPI, rho, A, x, x_u, u, d_u, pc);
+    [aE_pc, aW_pc, aP_pc, b_pc, Istart_pc, pc] = pccoeff(NPI, rho, A, x, x_u, u, d_u, pc, rho_old, Dx, Dt);
     pc = solve_eq(NPI-1, aE_pc, aW_pc, aP_pc, b_pc, pc, 2);
 
     % correction for pressure and velocity
@@ -96,27 +96,31 @@ for time = 0:Dt:Total_time
     [u, T, Y_k, m_in, m_out, p] = bound(NPI,rho,x,x_u,A,u, u_in, T, Y_k, p);  
 
     end
-    [X_k, rho] = mole(NPI, n, Y_k, rho_k, MW, rho);
     
     % store results of this run as old results for next iteration
     [u_old, pc_old, T_old, rho_old, f_old] = storeresults(NPI, u, pc, T, rho, Y_k, u_old, pc_old, T_old, rho_old, f_old, n);
     
+    [X_k, rho] = mole(NPI, n, Y_k, rho_k, MW, rho);
+    
+% time
     % store data at different time steps
     if time < 10*Dt
         time_x = time*ones(1,length(u));
         test = fopen(path,'a');
-        fprintf(test,'%-12.2f %-12.2f %-12.2f %-12.2f %-12.2f %-12.2f %-12.2f %-12.2f\n',[time_x; x; rho; u; T; p; Y_k(1,:); Y_k(2,:)]);    
+        fprintf(test,'%-12.4f %-12.4f %-12.4f %-12.4f %-12.4f %-12.4f %-12.4f %-12.4f\n',[time_x; x; rho; u; T; p; Y_k(1,:); Y_k(2,:)]);    
         fprintf(test,'\n');        
         fclose(test);
         
     elseif mod(Total_time,time) == 0 
         time_x = time*ones(1,length(u));
         test = fopen(path,'a');
-        fprintf(test,'%-12.2f %-12.2f %-12.2f %-12.2f %-12.2f %-12.2f %-12.2f %-12.2f\n',[time_x; x; rho; u; T; p; Y_k(1,:); Y_k(2,:)]);    
+        fprintf(test,'%-12.4f %-12.4f %-12.4f %-12.4f %-12.4f %-12.4f %-12.4f %-12.4f\n',[time_x; x; rho; u; T; p; Y_k(1,:); Y_k(2,:)]);    
         fprintf(test,'\n');        
         fclose(test);
     end
+    
 end
+
 elapsedTime = toc(timerVal)
 
 figure(1)

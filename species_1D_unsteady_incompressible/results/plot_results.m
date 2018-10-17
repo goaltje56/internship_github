@@ -5,7 +5,7 @@ clear all;
 close all;
 clc;
 
-A = importdata('output.txt');
+A = importdata('NPI_10000.txt');
 y = A.data;
 
 % Assign some pointers

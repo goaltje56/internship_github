@@ -12,7 +12,7 @@ close all;
 clc;
 timerVal = tic;
 %% initializing
-NPI = 10;        % number of grid cells in x-direction [-] 
+NPI = 100;        % number of grid cells in x-direction [-] 
 XMAX = 1;       % length of the domain [m]
 P_atm = 101000; % athmosphesric pressure [Pa]
 u_in = 2;      % inflow velocity [m/s]
@@ -28,23 +28,23 @@ m_out = 1;      % mass flow out
 
 
 %% The main calculation part
-for z =1:20
-[u T m_in m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T);
+for z =1:500
+[u T m_in m_out, p] = bound(NPI,rho,x,x_u,A,u, u_in, T, p);
     
 % momentum
 [aP_u aE_u aW_u b_u d_u Istart_u u T] = ucoeff(NPI, rho, x, x_u, u, p, A, relax_u, d_u, mu, u_in, T);
-[u r_u] = GS_solve2(NPI+1, u, aW_u, aE_u, aP_u, b_u, 10^(-6));
-[u T m_in m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T);
+u = solve_eq(NPI, aE_u, aW_u, aP_u, b_u, u, 3);
+[u T m_in m_out, p] = bound(NPI,rho,x,x_u,A,u, u_in, T, p);
 % pressure correction (modified form of continuity equation)
-[aE_pc aW_pc aP_pc b_pc Istart_pc pc] = pccoeff(NPI, rho, A, x, x_u, u, d_u, pc);
-[pc r_pc] = GS_solve(NPI+1,pc, aW_pc, aE_pc, aP_pc, b_pc, 10^(-6));
+[aE_pc aW_pc aP_pc b_pc Istart_pc pc] = pccoeff(NPI-1, rho, A, x, x_u, u, d_u, pc);
+pc = solve_eq(NPI-1,aE_pc, aW_pc, aP_pc, b_pc, pc, 2);
 
 % correction for pressure and velocity
 [p u pc] = velcorr(NPI, pc, p, u, relax_pc, d_u);
 
 % Temperature
 [aE_T aW_T aP_T b_T Istart_T] = Tcoeff(NPI, rho, A, x, x_u, u, T, Gamma, relax_T);
-[T r_T] = GS_solve(NPI+1,T, aW_T, aE_T, aP_T, b_T, 10^(-1));
+T  = solve_eq(NPI, aE_T, aW_T, aP_T, b_T, T, 2);
 
 end
 elapsedTime = toc(timerVal)
@@ -57,15 +57,15 @@ hold on
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 grid on
 xlabel('Geometric position [m] ','LineWidth', 2)
-axis([0 XMAX+Dx 0 400]);
-% plot(x(2:NPI+1),p(2:NPI+1),'b','LineWidth',2)
-plot(x(1:NPI+1),T(1:NPI+1),'b','LineWidth',2)
-% plot(x_u(2:NPI+2),u(2:NPI+2),'sr','LineWidth',2);
+axis([0 XMAX+Dx 0 10]);
+plot(x(2:NPI+1),p(2:NPI+1),'b','LineWidth',2)
+% plot(x(1:NPI+1),T(1:NPI+1),'b','LineWidth',2)
+plot(x_u(2:NPI+2),u(2:NPI+2),'sr','LineWidth',2);
 % plot(x(1:NPI+2),pc(1:NPI+2),'sb','LineWidth',2)
 % plot(x(2:NPI+1),rho(2:NPI+1),':c','LineWidth',2)
 % plot(x(2:NPI+1),d_u(2:NPI+1),':k','LineWidth',2)
 % legend('P','u','P_c','\rho','d_u','Location','SouthWest')
-legend('T','Location','NorthEast')
+% legend('T','Location','NorthEast')
 
 % for i = 2:NPI+1
 % mdot(i) = rho(i)*u(i)*A;

@@ -17,12 +17,22 @@ function [aE aW aP b Istart_T] = Tcoeff(NPI, rho, A, x, x_u, u, T, Gamma, relax_
         SP(I) = 0;
         Su(I) = 0;
         
-        % the coefficients (with hybrid differencing scheme)
-        aW(I) = max([Fw,  Dw+Fw/2, 0]);
-        aE(I) = max([-Fe, De-Fe/2, 0]);
         aPold = rho(I)*Dx/Dt;
         
-        aP(I) = aW(I) + aE(I) + Fe - Fw - SP(I) +aPold;
+        if I == 2
+            aW(i) = 0;
+            aE(i) = max([-Fe De-Fe/2 0]);
+            Su(i)  = Fw*T(i-1); 
+            aP(i) = Fe + aPold;
+
+        else        
+        % the coefficients (with hybrid differencing scheme)
+            aW(I) = max([Fw,  Dw+Fw/2, 0]);
+            aE(I) = max([-Fe, De-Fe/2, 0]);
+        
+            aP(I) = aW(I) + aE(I) + Fe - Fw - SP(I) +aPold;
+        
+        end
         b(I) = Su(I) + aPold*T_old(I);
 
         aP(I) = aP(I)/relax_T;
