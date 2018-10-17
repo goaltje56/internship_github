@@ -10,6 +10,7 @@ function [u u_guess T m_in m_out p] = bound(NPI,rho,x,x_u,A,u, u_in, T, u_guess,
     u(NPI+2) = u(NPI+1)*m_in/m_out; % velocity at outlet
     u_guess(NPI+2) = u_guess(NPI+1)*m_in/m_out; % velocity at outlet
 
-%     p(NPI+1) = p(NPI);
+%     pc(NPI+1) = 0;
+%     p(NPI+1)  = 100;
     T(NPI+1) = T(NPI);
 end

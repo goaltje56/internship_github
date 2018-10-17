@@ -44,16 +44,16 @@ for time = 0:Dt:Total_time
     [u, u_guess, T, m_in, m_out, p] = bound(NPI,rho,x,x_u,A,u, u_in, T, u_guess, p);
     
     % momentum
-    [aP_u, aE_u, aW_u, b_u, d_u, Istart_u, u, T, u_guess] = ucoeff(NPI, rho, x, x_u, u, p, A, relax_u, d_u, mu, u_in, T, Dt, u_old, Dx, u_guess);
+    [u_guess, d_u] = upseudo(NPI, rho, x, x_u, u, A, relax_u, d_u,mu, Dt, Dx, u_guess);
 
-    % pressure correction (modified form of continuity equation)
-    [aE_p, aW_p, aP_p, b_p, Istart_p, p] = pccoeff(NPI, rho, A, x, x_u, u_guess, d_u, p);
+    % pressure (modified form of continuity equation)
+    [aE_p, aW_p, aP_p, b_p, Istart_p, p] = pcoeff(NPI, rho, A, x, x_u, u_guess, d_u, p, p_old, Dx, Dt);
     p = solve_eq(NPI-1, aE_p, aW_p, aP_p, b_p, p, 2);
 
     [u, u_guess, T, m_in, m_out, p] = bound(NPI,rho,x,x_u,A,u, u_in, T, u_guess, p);
     
     % momentum
-    [aP_u, aE_u, aW_u, b_u, d_u, Istart_u, u, T, u_guess] = ucoeff(NPI, rho, x, x_u, u, p, A, relax_u, d_u, mu, u_in, T, Dt, u_old, Dx, u_guess);
+    [aP_u, aE_u, aW_u, b_u, d_u, Istart_u, u] = ucoeff(NPI, rho, x, x_u, u, p, A, relax_u, d_u, mu, u_in, T, Dt, u_old, Dx);
     u = solve_eq(NPI, aE_u, aW_u, aP_u, b_u, u, 3);
 
     [u, u_guess, T, m_in, m_out, p] = bound(NPI,rho,x,x_u,A,u, u_in, T, u_guess, p);
@@ -77,7 +77,7 @@ for time = 0:Dt:Total_time
     end
     
     % store results of this run as old restults for next iteration
-    [u_old, pc_old, T_old, rho_old p_old] = storeresults(NPI, u, pc,p, T, rho, u_old, pc_old, T_old, rho_old, p_old);
+    [u_old, pc_old, T_old, rho_old, p_old] = storeresults(NPI, u, pc,p, T, rho, u_old, pc_old, T_old, rho_old, p_old);
     
     % store data it different time steps
     if time < 10*Dt
@@ -105,8 +105,8 @@ hold on
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 grid on
 xlabel('Geometric position [m] ','LineWidth', 2)
-axis([0 XMAX+Dx 0 2000]);
-plot(x(2:NPI+1),p(2:NPI+1),'b','LineWidth',2)
+axis([0 XMAX+Dx 0 600]);
+plot(x(2:NPI),p(2:NPI),'b','LineWidth',2)
 plot(x(1:NPI+1),T(1:NPI+1),'k','LineWidth',2)
 % plot(x_u(2:NPI+2),u(2:NPI+2),'sr','LineWidth',2);
 % plot(x(1:NPI+1),T2(1:NPI+1),'r','LineWidth',2)

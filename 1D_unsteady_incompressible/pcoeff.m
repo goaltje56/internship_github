@@ -1,4 +1,4 @@
-function [aE aW aP b Istart_pc pc] = pccoeff(NPI, rho, A, x, x_u, u, d_u, pc)
+function [aE aW aP b Istart_pc pc] = pcoeff(NPI, rho, A, x, x_u, u, d_u, pc, p_old, Dx, Dt)
     Istart_pc = 2;
 
     F_u = conv(NPI, rho, x, x_u, u);
@@ -19,11 +19,12 @@ function [aE aW aP b Istart_pc pc] = pccoeff(NPI, rho, A, x, x_u, u, d_u, pc)
         aW(I) = (rho(I)+rho(I-1))*d_u(i)*A/2;
         
         aP(I) = aE(I) + aW(I) - SP(I);
-        
-        b(I) = F_u(i)*A-F_u(i+1)*A;
+        aPold = rho(I)*Dx/Dt;
+
+        b(I) = F_u(i)*A-F_u(i+1)*A ;
 %         end
         
-        pc(I) = 0;
+%         pc(I) = 0;
         
     end
     
