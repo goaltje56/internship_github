@@ -1,4 +1,4 @@
-function [aE aW aP b Istart_T] = Tcoeff(NPI, rho, A, x, x_u, u, T, Gamma, relax_T, Dt, T_old, Dx);
+function [aE aW aP b Istart_T aPold_T] = Tcoeff(NPI, rho, A, x, x_u, u, T, Gamma, relax_T, Dt, T_old, Dx, aPold);
     Istart_T = 2;
     F_u = conv(NPI, rho, x, x_u, u);
     
@@ -17,14 +17,12 @@ function [aE aW aP b Istart_T] = Tcoeff(NPI, rho, A, x, x_u, u, T, Gamma, relax_
         SP(I) = 0;
         Su(I) = 0;
         
-        aPold = rho(I)*Dx/Dt;
-        
         if I == 2
             aW(i) = 0;
             aE(i) = max([-Fe De-Fe/2 0]);
             Su(i)  = Su(i) + max([Fw Dw+Fw/2 0])*T(i-1); 
             aP(I) = max([Fw Dw+Fw/2 0]) + aE(I) + Fe - Fw - SP(I) + aPold;
-
+        
         elseif I == NPI+1        
         % the coefficients (with hybrid differencing scheme)
             aW(I) = max([Fw,  Dw+Fw/2, 0]);
@@ -37,10 +35,12 @@ function [aE aW aP b Istart_T] = Tcoeff(NPI, rho, A, x, x_u, u, T, Gamma, relax_
             aE(i) = max([-Fe De-Fe/2 0]);
             aP(I) = aW(I) + aE(I) + Fe - Fw - SP(I) + aPold;            
         end
+        
         b(I) = Su(I)+ aPold*T_old(I);
 
         aP(I) = aP(I)/relax_T;
-   
+
+        aPold_T = rho(I)*Dx/Dt;        
        
         b(I) = b(I) + (1-relax_T)*aP(I)*T(I);
     end

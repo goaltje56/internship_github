@@ -40,7 +40,7 @@ Total_time = 2;
 
 %% The main calculation part
 for time = 0:Dt:Total_time
-    for z =1:10
+    for z =1:100
     [u, u_guess, T, m_in, m_out, p] = bound(NPI,rho,x,x_u,A,u, u_in, T, u_guess, p);
     
     % momentum
