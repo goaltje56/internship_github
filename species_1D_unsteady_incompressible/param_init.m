@@ -23,10 +23,10 @@ function [u, p, pc, T, mu, Cp, Gamma, d_u, b, SP, Su, relax_u, relax_pc, relax_T
 
     end
     u(NPI+1)   = 0.5*u_in;         % Velocity in x-direction
-    relax_u  = 0.2;             % relaxation for velocity
+    relax_u  = 0.5;             % relaxation for velocity
     relax_pc = 1.1 - relax_u;   % relaxation for pressure
     relax_T = 1;              % relaxation for temperature
-    relax_rho = 0.2;
+    relax_rho = 0.5;
     relax_f = 1;              % relaxation for temperature
 
 end

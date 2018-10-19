@@ -29,8 +29,8 @@ function [aP aE aW b d_u Istart_u u] = ucoeff(NPI, rho, x, x_u, u, p, A, relax_u
         if I == 3
             aW(i) = 0;
             aE(i) = max([-Fe De-Fe/2 0]);
-            b(i)  = Fw*u(i-1)+((Mw + Me) /2); 
-            aP(i) = Fe + aPold;
+            b(i)  = max([Fw Dw+Fw/2 0])*u(i-1)+((Mw + Me) /2); 
+            aP(i) = aE(I) + max([Fw Dw+Fw/2 0]) + aE(I) + Fe - Fw +aPold;
 
         else
         % coefficients (hybrid differencing scheme)

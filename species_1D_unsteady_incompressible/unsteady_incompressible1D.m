@@ -42,11 +42,11 @@ fprintf(test,'%-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s\n', 'Time','Positi
 fclose(test);
 
 %% initializing
-NPI = 100;        % number of grid cells in x-direction [-] 
+NPI = 10;        % number of grid cells in x-direction [-] 
 XMAX = 1;       % length of the domain [m]
 Patm = 101325; % athmosphesric pressure [Pa]
-u_in = 4;      % inflow velocity [m/s]
-A    = 0.01;       % area of one cell
+u_in = 1;      % inflow velocity [m/s]
+A    = 1;       % area of one cell
 Total_time = 4;
 n = 2;          % number of species 
 MW = [18 28.84];
