@@ -13,7 +13,7 @@ function [u T Y_k m_in m_out p] = bound(NPI,rho,x,x_u,A,u, u_in, T, Y_k, p)
 %     p(NPI+1) = p(NPI);
 
     T(NPI+2) = 273;
-    Y_k(1, NPI+2) = Y_k(1, NPI);
-    Y_k(2, NPI+2) = Y_k(2, NPI);
+    Y_k(1, NPI+2) = Y_k(1, NPI+1);
+    Y_k(2, NPI+2) = Y_k(2, NPI+1);
 
 end

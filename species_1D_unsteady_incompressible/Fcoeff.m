@@ -33,7 +33,7 @@ function [aE aW aP b Istart_F] = Fcoeff(NPI, rho, A, x, x_u, u, Y_k, D, relax_f,
             aW(I) = max([Fw,  Dw+Fw/2, 0]);
             aE(I) = 0;
             Su(i)  = Su(i) + max([-Fe De-Fe/2 0])*Y_k(i+1); 
-            aP(I) = aW(I) + max([Fe De+Fe/2 0]) + aE(I) + Fe - Fw - SP(I) +aPold;
+            aP(I) = aW(I) + max([-Fe De-Fe/2 0]) + aE(I) + Fe - Fw - SP(I) +aPold;
         else 
         % the coefficients (with hybrid differencing scheme)
         aW(I) = max([Fw,  Dw+Fw/2, 0]);

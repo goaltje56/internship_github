@@ -30,7 +30,7 @@ function [aE aW aP b Istart_T] = Tcoeff(NPI, rho, A, x, x_u, u, T, Gamma, relax_
             aW(I) = max([Fw,  Dw+Fw/2, 0]);
             aE(I) = 0;
             Su(i)  = Su(i) + max([-Fe De-Fe/2 0])*T(i+1); 
-            aP(I) = aW(I) + max([Fe De+Fe/2 0]) + aE(I) + Fe - Fw - SP(I) +aPold;
+            aP(I) = aW(I) + max([-Fe De-Fe/2 0]) + aE(I) + Fe - Fw - SP(I) +aPold;
         
         else 
             aW(I) = max([Fw,  Dw+Fw/2, 0]);
