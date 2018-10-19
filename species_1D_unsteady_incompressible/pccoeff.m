@@ -2,7 +2,7 @@ function [aE aW aP b Istart_pc pc] = pccoeff(NPI, rho, A, x, x_u, u, d_u, pc, rh
     Istart_pc = 2;
 
     F_u = conv(NPI, rho, x, x_u, u);
-    for I = Istart_pc:NPI
+    for I = Istart_pc:NPI+1
         i = I;
         
         % see eq. 6.32 

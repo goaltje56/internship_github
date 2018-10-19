@@ -46,14 +46,15 @@ NPI = 20;        % number of grid cells in x-direction [-]
 XMAX = 1;       % length of the domain [m]
 Patm = 101325; % athmosphesric pressure [Pa]
 u_in = 1;      % inflow velocity [m/s]
-A    = 1;       % area of one cell
-Total_time = 4;
+A    = 0.01;       % area of one cell
+Total_time = 10;
 n = 2;          % number of species 
 MW = [18 28.84];
 Y_k = [1 0];
+
 % store specie data                                        n      Y_k            rho                     p         D              
 [rho_k, D_k, Y_k, p_k, M, rho, rho_old, f_old] = species(NPI, 2, Y_k, [1 1.225], [Patm Patm],...
- [0 0], [18 28.84]);
+ [0.0001 0.0001], [18 28.84]);
 
 % make a vector with initial values for all parameters
 [u, p, pc, T, mu, Cp, Gamma, d_u, b, SP, Su, relax_u, relax_pc, relax_T, relax_rho, relax_f, Dt, u_old, T_old, pc_old]...
@@ -70,13 +71,13 @@ for time = 0:Dt:Total_time
     
     % momentum
     [aP_u, aE_u, aW_u, b_u, d_u, Istart_u, u] = ...
-    ucoeff(NPI, rho, x, x_u, u, p, A, relax_u, d_u, mu, u_in, Dt, u_old, Dx);
+    ucoeff(NPI, rho, x, x_u, u, p, A, relax_u, d_u, mu, u_in, Dt, u_old, Dx, rho_old);
     u = solve_eq(NPI, aE_u, aW_u, aP_u, b_u, u, 3);
 
     [u, T, Y_k, m_in, m_out, p] = bound(NPI,rho,x,x_u,A,u, u_in, T, Y_k, p);
 
     % pressure correction (modified form of continuity equation)
-    [aE_pc, aW_pc, aP_pc, b_pc, Istart_pc, pc] = pccoeff(NPI, rho, A, x, x_u, u, d_u, pc, rho_old, Dx, Dt);
+    [aE_pc, aW_pc, aP_pc, b_pc, Istart_pc, pc] = pccoeff(NPI-1, rho, A, x, x_u, u, d_u, pc, rho_old, Dx, Dt);
     pc = solve_eq(NPI-1, aE_pc, aW_pc, aP_pc, b_pc, pc, 2);
 
     % correction for pressure and velocity
@@ -89,7 +90,7 @@ for time = 0:Dt:Total_time
     
 %    Species 
     for i = 1:n
-        [aE_f(i,:), aW_f(i,:), aP_f(i,:), b_f(i,:), Istart_f] = Fcoeff(NPI, rho, A, x, x_u, u, Y_k(i,:), D_k(i,:), relax_f, Dt, f_old(i,:), Dx);
+        [aE_f(i,:), aW_f(i,:), aP_f(i,:), b_f(i,:), Istart_f] = Fcoeff(NPI, rho, A, x, x_u, u, Y_k(i,:), D_k(i,:), relax_f, Dt, f_old(i,:), Dx, rho_old);
         Y_k(i,:) = solve_eq(NPI,aE_f(i,:), aW_f(i,:), aP_f(i,:), b_f(i,:), Y_k(i,:), 2);
     end
     Y_k = species_bound(NPI, n, Y_k);
@@ -131,7 +132,7 @@ hold on
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 grid on
 xlabel('Geometric position [m] ','LineWidth', 2)
-axis([0 XMAX+Dx 0 400]);
+axis([0 XMAX+Dx 0 600]);
 plot(x(2:NPI+1),p(2:NPI+1),'b','LineWidth',2)
 plot(x(1:NPI+1),T(1:NPI+1),'k','LineWidth',2)
 % plot(x_u(2:NPI+2),u(2:NPI+2),'sr','LineWidth',2);

@@ -9,7 +9,7 @@ function fi = solve_eq(NPI, aE, aW, aP, b, fi, Istart)
 
     Ari(Istart-1) = 0;
     Cmri(Istart-1) = fi(Istart-1);
-    
+
     % forward substitution
     for I = Istart:NPI+1
         Ari(I) = aE(I)/(aP(I)-aW(I)*Ari(I-1));

@@ -5,7 +5,7 @@ clear all;
 close all;
 clc;
 
-A = importdata('NPI_10000.txt');
+A = importdata('output.txt');
 y = A.data;
 
 % Assign some pointers
@@ -59,8 +59,8 @@ set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 
 figure(4)
 hold on
-plot(x_new(2:row-1,:),f1_new(2:row-1,:),'-b','LineWidth',2)
-plot(x_new(2:row-1,:),f2_new(2:row-1,:),'-r','LineWidth',2)
+plot(x_new(1:row-1,:),f1_new(1:row-1,:),'-b','LineWidth',2)
+plot(x_new(1:row-1,:),f2_new(1:row-1,:),'-r','LineWidth',2)
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
  
 figure(5)
