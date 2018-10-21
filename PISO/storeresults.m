@@ -1,0 +1,19 @@
+function [u_old pc_old T_old rho_old f_old p] = storeresults(NPI, u, pc, T, rho, Y_k, u_old, pc_old, T_old, rho_old, f_old, p2,n)
+    for I = 3:NPI+1
+        i = I;
+        u_old(i) = u(i);
+    end
+    
+    for I = 2:NPI+1
+        pc_old(I) = pc(I);
+        T_old(I)  = T(I);
+        rho_old(I) = rho(I);
+        p(I) = p2(I);
+    end
+
+    for j = 1:n
+        for I = 2:NPI+1
+            f_old(j,I) = Y_k(j,I);
+        end
+    end
+end
