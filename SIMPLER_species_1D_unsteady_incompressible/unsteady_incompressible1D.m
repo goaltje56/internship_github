@@ -1,0 +1,179 @@
+% This program solves steady convection-diffustion problems
+% using the simple algorithm described in ch. 6.4 in 
+% "Computational Fluid Dynamics" by H.K. Versteeg and W. Malalasekera. 
+% Symbols and equations cited are from this reference unless
+% mentioned otherwise
+
+% Reference: Computational Fluid Dynamics, H.K. Versteeg and W. 
+%            Malalasekera, Longman Group Ltd, 1995
+
+clear all;
+close all;
+clc;
+
+% %% Read species data
+% % Make these variable global
+global Runiv El Sp;
+% 
+% MechanismFile = 'fuels.trot';
+% 
+% % Read the reaction mechanism
+% [El, Sp] = ReadTrotDat(MechanismFile);
+% % Number of species
+% Nsp = length(Sp);
+% % Universal gas constant
+Runiv = 8.314462175;
+% 
+% % Define some species
+% iO2  = find(strcmp({Sp.Name},'O2'));
+% iCO2 = find(strcmp({Sp.Name},'CO2'));
+% iCO  = find(strcmp({Sp.Name},'CO'));
+% iH2O = find(strcmp({Sp.Name},'H2O'));
+% iH2  = find(strcmp({Sp.Name},'H2'));
+
+%% set timer to indicate the computation time
+timerVal = tic;
+
+% set path to place where values must be stored, clean the old file
+% add name taggs to created file and close file again.
+path = 'C:\Users\s137280\Documents\Master_tue\Internship\internship_github\SIMPLER_species_1D_unsteady_incompressible\results\output.txt';
+test = fopen(path,'w');
+fprintf(test,'%-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s\n', 'Time','Position','density','velocity','Temperature', 'Pressure', 'species1', 'species2');
+fclose(test);
+
+%% initializing
+NPI = 20;        % number of grid cells in x-direction [-] 
+XMAX = 1;       % length of the domain [m]
+Patm = 101325; % athmosphesric pressure [Pa]
+u_in = 10;      % inflow velocity [m/s]
+A    = 1;       % area of one cell
+Total_time = 2;
+n = 2;          % number of species 
+MW = [18 28.84];
+Y_k = [1 0];
+aPold_T = 0;
+
+% store specie data                                        n      Y_k            rho                     p         D              
+[rho_k, D_k, Y_k, p_k, M, rho, rho_old, f_old] = species(NPI, 2, Y_k, [1 1.25], [Patm Patm],...
+ [0 0], [18 28.84]);
+
+% make a vector with initial values for all parameters
+[u,  u_pseudo, p, pc, T, mu, Cp, Gamma, d_u, b, SP, Su, relax_u, relax_pc, relax_T, relax_rho, relax_f, Dt, u_old, T_old, pc_old]...
+ = param_init(NPI, u_in);
+
+%% grid generation
+[Dx, x, x_u] = grid_gen(NPI,XMAX);   % create staggered grid
+
+
+%% The main calculation part
+for time = 0:Dt:Total_time
+    for z =1:100
+    [u, T, Y_k, m_in, m_out, p] = bound(NPI,rho,x,x_u,A,u, u_in, T, Y_k, p);
+    
+    % momentum
+    [aP_u, aE_u, aW_u, b_u, d_u, Istart_u, u, b_pseudo] = ...
+    ucoeff(NPI, rho, x, x_u, u, p, A, relax_u, d_u, mu, u_in, Dt, u_old, Dx, rho_old);
+    u_pseudo = pseudo(NPI, u, aW_u, aE_u, aP_u, b_pseudo, u_pseudo);
+
+    % pressure equation (modified form of continuity equation)
+    [aE_p, aW_p, aP_p, b_p, Istart_p, p] = pccoeff(NPI-1, rho, A, x, x_u, u_pseudo, d_u, p, rho_old, Dx, Dt);
+    p = solve_eq(NPI-1, aE_p, aW_p, aP_p, b_p, p, 2);
+    
+    % solve discretized momentum equation
+     [aP_u, aE_u, aW_u, b_u, d_u, Istart_u, u, b_pseudo] = ...
+    ucoeff(NPI, rho, x, x_u, u, p, A, relax_u, d_u, mu, u_in, Dt, u_old, Dx, rho_old);
+    u = solve_eq(NPI, aE_u, aW_u, aP_u, b_u, u, 3);
+
+    [u, T, Y_k, m_in, m_out, p] = bound(NPI,rho,x,x_u,A,u, u_in, T, Y_k, p);
+
+    % pressure correction (modified form of continuity equation)
+    [aE_pc, aW_pc, aP_pc, b_pc, Istart_pc, pc] = pccoeff(NPI-1, rho, A, x, x_u, u, d_u, pc, rho_old, Dx, Dt);
+    pc = solve_eq(NPI-1, aE_pc, aW_pc, aP_pc, b_pc, pc, 2);
+ 
+    % correction for pressure and velocity
+    u  = velcorr(NPI, pc, u, d_u);
+
+    % Temperature
+    [aE_T, aW_T, aP_T, b_T, Istart_T, aPold_T] = Tcoeff(NPI, rho, A, x, x_u, u, T, Gamma, relax_T, Dt, T_old, Dx, aPold_T);
+%     [TR, r_T] = GS_solve(NPI+1,T, aW_T, aE_T, aP_T, b_T, 10^(-6));
+ 	T = solve_eq(NPI,aE_T, aW_T, aP_T, b_T, T, 2);
+    
+%    Species 
+    for i = 1:n
+        [aE_f(i,:), aW_f(i,:), aP_f(i,:), b_f(i,:), Istart_f] = Fcoeff(NPI, rho, A, x, x_u, u, Y_k(i,:), D_k(i,:), relax_f, Dt, f_old(i,:), Dx, rho_old);
+        Y_k(i,:) = solve_eq(NPI,aE_f(i,:), aW_f(i,:), aP_f(i,:), b_f(i,:), Y_k(i,:), 2);
+    end
+    Y_k = species_bound(NPI, n, Y_k);
+    [u, T, Y_k, m_in, m_out, p] = bound(NPI,rho,x,x_u,A,u, u_in, T, Y_k, p);
+
+    end
+    
+    % store results of this run as old results for next iteration
+    [u_old, pc_old, T_old, rho_old, f_old] = storeresults(NPI, u, pc, T, rho, Y_k, u_old, pc_old, T_old, rho_old, f_old, n);
+    
+    [X_k, rho] = mole(NPI, n, Y_k, rho_k, MW, rho);
+    
+% time
+    % store data at different time steps
+    if time < 10*Dt
+        time_x = time*ones(1,length(u));
+        test = fopen(path,'a');
+        fprintf(test,'%-12.4f %-12.4f %-12.4f %-12.4f %-12.4f %-12.4f %-12.4f %-12.4f\n',[time_x; x; rho; u; T; p; Y_k(1,:); Y_k(2,:)]);    
+        fprintf(test,'\n');        
+        fclose(test);
+        
+    elseif mod(Total_time,time) == 0 
+        time_x = time*ones(1,length(u));
+        test = fopen(path,'a');
+        fprintf(test,'%-12.4f %-12.4f %-12.4f %-12.4f %-12.4f %-12.4f %-12.4f %-12.4f\n',[time_x; x; rho; u; T; p; Y_k(1,:); Y_k(2,:)]);    
+        fprintf(test,'\n');        
+        fclose(test);
+    end
+%     time
+end
+
+elapsedTime = toc(timerVal)
+
+figure(1)
+hold on
+% plot(x,ones(1,length(x)),'bo','LineWidth',2)
+% plot(x_u,1.2*ones(1,length(x_u)),'ro','LineWidth',2)
+% legend('cell center','cell face','Location','NorthWest')
+set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
+grid on
+xlabel('Geometric position [m] ','LineWidth', 2)
+axis([0 XMAX+Dx 0 600]);
+plot(x(2:NPI),p(2:NPI),'b','LineWidth',2)
+plot(x(1:NPI+1),T(1:NPI+1),'k','LineWidth',2)
+% plot(x_u(2:NPI+2),u(2:NPI+2),'sr','LineWidth',2);
+% plot(x(1:NPI+1),T2(1:NPI+1),'r','LineWidth',2)
+
+% plot(x(1:NPI+2),pc(1:NPI+2),'sb','LineWidth',2)
+% plot(x(2:NPI+1),rho(2:NPI+1),':c','LineWidth',2)
+% plot(x(2:NPI+1),d_u(2:NPI+1),':k','LineWidth',2)
+% legend('P','u','P_c','\rho','d_u','Location','SouthWest')
+legend('P','Location','NorthEast')
+
+for i = 2:NPI+1
+mdot(i) = rho(i)*u(i)*A;
+end
+
+figure(2)
+hold on
+grid on
+xlabel('Geometric position [m] ','LineWidth', 2)
+axis([0 XMAX+Dx 0 4]);
+plot(x_u(2:NPI+2),u(2:NPI+2),'r','LineWidth',2);
+legend('Velocity','Location','NorthEast')
+set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
+
+figure(3)
+hold on
+grid on
+xlabel('Geometric position [m] ','LineWidth', 2)
+ylabel('Mass fraction [-] ','LineWidth', 2)
+axis([0 XMAX+Dx 0 2]);
+plot(x(1:NPI+1),Y_k(1,1:NPI+1),'r','LineWidth',2);
+plot(x(1:NPI+1),Y_k(2,1:NPI+1),'b','LineWidth',2);
+legend('Species A','Species B','Location','NorthEast')
+set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)

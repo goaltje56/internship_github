@@ -45,7 +45,7 @@ fclose(test);
 NPI = 50;        % number of grid cells in x-direction [-] 
 XMAX = 1;       % length of the domain [m]
 Patm = 101325; % athmosphesric pressure [Pa]
-u_in = 1;      % inflow velocity [m/s]
+u_in = 10;      % inflow velocity [m/s]
 A    = 1;       % area of one cell
 Total_time = 2;
 n = 2;          % number of species 
