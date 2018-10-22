@@ -3,7 +3,7 @@ function [aP aE aW b d_u Istart_u u] = ucoeff(NPI, rho, x, x_u, u, p, A, relax_u
 %     [u T m_in m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T);
     F_u = conv(NPI, rho, x, x_u, u);
     u_fric = fric_u(NPI, mu, x, x_u, u);
-    Dh = 0.00001;
+    Dh = 0.0004;
     for I = 3:NPI+1
         i = I;
            
@@ -21,8 +21,8 @@ function [aP aE aW b d_u Istart_u u] = ucoeff(NPI, rho, x, x_u, u, p, A, relax_u
         Pe = Fw/Dw;
         
         % Friction
-        Mw = ((u_fric(i)+u_fric(i-1))/2)/Dh;
-        Me = ((u_fric(i)+u_fric(i+1))/2)/Dh;
+        Mw = ((u_fric(i)+u_fric(i-1))/2)*(x_u(i)-x_u(i-1))/(Dh^2);
+        Me = ((u_fric(i)+u_fric(i+1))/2)*(x_u(i+1)-x_u(i))/(Dh^2);
         
         aPold = 0.5*(rho_old(I-1)+rho_old(I))*Dx/Dt;
 

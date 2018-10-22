@@ -1,4 +1,4 @@
-function [rho_k D_k Y_k p_k M rho_mix rho_old f_old Gamma_mix] = species(NPI, n, Y, rho, p, D, MW, Gamma)
+function [rho_k D_k Y_k p_k M rho_mix rho_old f_old Gamma_k] = species(NPI, n, Y, rho, p, D, MW, Gamma)
 global Runiv
 M = 0;
 N = 0;
@@ -13,7 +13,6 @@ N = 0;
             MW_k(j,I)   = MW(j);        % molar weight of species k
             rho_k(j,I)  = rho(j);       % density of species k
             rho_mix(1,I)= 0;            % average density of mixture
-            Gamma_mix(1,I) =0;
             Gamma_k(j, I) = Gamma(j);
         end
         
@@ -25,7 +24,7 @@ N = 0;
         for I = 1:NPI+2 
             X_k(j,I) = N_k(j,I)/N;
             rho_mix(1,I) = rho_mix(1,I)+rho_k(j,I)*X_k(j,I);
-            Gamma_k(1,I) = Gamma_mix(1,I) + Gamma_k(j,I)*X_k(j,I);
+            Gamma_k
         end
         
     end

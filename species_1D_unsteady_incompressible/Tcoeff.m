@@ -17,6 +17,8 @@ function [aE aW aP b Istart_T aPold_T] = Tcoeff(NPI, rho, A, x, x_u, u, T, Gamma
         SP(I) = 0;
         Su(I) = 0;
         
+        aPold_T = rho(I)*Dx/Dt; 
+        
         if I == 2
             aW(i) = 0;
             aE(i) = max([-Fe De-Fe/2 0]);
@@ -40,8 +42,7 @@ function [aE aW aP b Istart_T aPold_T] = Tcoeff(NPI, rho, A, x, x_u, u, T, Gamma
 
         aP(I) = aP(I)/relax_T;
 
-        aPold_T = rho(I)*Dx/Dt;        
-       
+            
         b(I) = b(I) + (1-relax_T)*aP(I)*T(I);
     end
     

@@ -49,22 +49,18 @@ u_in = 1;      % inflow velocity [m/s]
 A    = 1;       % area of one cell
 Total_time = 1;
 n = 2;          % number of species 
-
-%% species properties these have to be set manually!!
 MW = [18 28.84];
 Y_k = [1 0];
 rho_k = [1 1];
 D_k = [0 0];
-Gamma_k = [0.01 0.05];
-%%
 aPold_T = 0;
 
 % store specie data                                        n      Y_k            rho                     p         D              
-[rho_k, D_k, Y_k, p_k, M, rho, rho_old, f_old, Gamma] = species(NPI, n, Y_k, rho_k, [Patm Patm],...
-D_k, MW, Gamma_k);
+[rho_k, D_k, Y_k, p_k, M, rho, rho_old, f_old] = species(NPI, n, Y_k, rho_k, [Patm Patm],...
+ [0 0], [18 28.84]);
 
 % make a vector with initial values for all parameters
-[u, p, pc, T, mu, Cp, d_u, b, SP, Su, relax_u, relax_pc, relax_T, relax_rho, relax_f, Dt, u_old, T_old, pc_old]...
+[u, p, pc, T, mu, Cp, Gamma, d_u, b, SP, Su, relax_u, relax_pc, relax_T, relax_rho, relax_f, Dt, u_old, T_old, pc_old]...
  = param_init(NPI, u_in);
 
 %% grid generation
@@ -108,7 +104,7 @@ for time = 0:Dt:Total_time
     % store results of this run as old results for next iteration
     [u_old, pc_old, T_old, rho_old, f_old] = storeresults(NPI, u, pc, T, rho, Y_k, u_old, pc_old, T_old, rho_old, f_old, n);
     
-    [X_k, rho, Gamma] = mole(NPI, n, Y_k, rho_k, MW, rho, Gamma, Gamma_k);
+    [X_k, rho] = mole(NPI, n, Y_k, rho_k, MW, rho);
     
 % time
     % store data at different time steps
