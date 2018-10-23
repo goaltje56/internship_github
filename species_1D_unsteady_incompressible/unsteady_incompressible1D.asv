@@ -42,25 +42,29 @@ fprintf(test,'%-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s\n', 'Time','Positi
 fclose(test);
 
 %% initializing
-NPI = 100;        % number of grid cells in x-direction [-] 
+NPI = 5;        % number of grid cells in x-direction [-] 
 XMAX = 1;       % length of the domain [m]
 Patm = 101325; % athmosphesric pressure [Pa]
 u_in = 1;      % inflow velocity [m/s]
-A    = 1;       % area of one cell
+A    = 0.01;       % area of one cell
 Total_time = 1;
 n = 2;          % number of species 
+
+%% species properties these have to be set manually!!
 MW = [18 28.84];
 Y_k = [1 0];
 rho_k = [1 1];
 D_k = [0 0];
+Gamma_k = [5 5];
+%%
 aPold_T = 0;
 
 % store specie data                                        n      Y_k            rho                     p         D              
-[rho_k, D_k, Y_k, p_k, M, rho, rho_old, f_old] = species(NPI, n, Y_k, rho_k, [Patm Patm],...
- [0 0], [18 28.84]);
+[rho_k, D_k, Y_k, p_k, M, rho, rho_old, f_old, Gamma] = species(NPI, n, Y_k, rho_k, [Patm Patm],...
+D_k, MW, Gamma_k);
 
 % make a vector with initial values for all parameters
-[u, p, pc, T, mu, Cp, Gamma, d_u, b, SP, Su, relax_u, relax_pc, relax_T, relax_rho, relax_f, Dt, u_old, T_old, pc_old]...
+[u, p, pc, T, mu, Cp, d_u, b, SP, Su, relax_u, relax_pc, relax_T, relax_rho, relax_f, Dt, u_old, T_old, pc_old]...
  = param_init(NPI, u_in);
 
 %% grid generation
@@ -69,7 +73,7 @@ aPold_T = 0;
 
 %% The main calculation part
 for time = 0:Dt:Total_time
-    for z =1:100
+    for z =1:1000
     [u, T, Y_k, m_in, m_out, p] = bound(NPI,rho,x,x_u,A,u, u_in, T, Y_k, p);
     
     % momentum
@@ -104,7 +108,7 @@ for time = 0:Dt:Total_time
     % store results of this run as old results for next iteration
     [u_old, pc_old, T_old, rho_old, f_old] = storeresults(NPI, u, pc, T, rho, Y_k, u_old, pc_old, T_old, rho_old, f_old, n);
     
-    [X_k, rho] = mole(NPI, n, Y_k, rho_k, MW, rho);
+    [X_k, rho, Gamma] = mole(NPI, n, Y_k, rho_k, MW, rho, Gamma, Gamma_k);
     
 % time
     % store data at different time steps
