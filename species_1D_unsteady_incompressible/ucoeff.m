@@ -3,7 +3,7 @@ function [aP aE aW b d_u Istart_u u] = ucoeff(NPI, rho, x, x_u, u, p, A, relax_u
 %     [u T m_in m_out] = bound(NPI,rho,x,x_u,A,u, u_in, T);
     F_u = conv(NPI, rho, x, x_u, u);
     u_fric = fric_u(NPI, mu, x, x_u, u);
-    Dh = 0.0004;
+    Dh = 0.002;
     for I = 3:NPI+1
         i = I;
            

@@ -42,11 +42,11 @@ fprintf(test,'%-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s\n', 'Time','Positi
 fclose(test);
 
 %% initializing
-NPI = 100;        % number of grid cells in x-direction [-] 
+NPI = 20;        % number of grid cells in x-direction [-] 
 XMAX = 1;       % length of the domain [m]
 Patm = 101325; % athmosphesric pressure [Pa]
 u_in = 1;      % inflow velocity [m/s]
-A    = 1;       % area of one cell
+A    = 0.01;       % area of one cell
 Total_time = 1;
 n = 2;          % number of species 
 
@@ -55,7 +55,7 @@ MW = [18 28.84];
 Y_k = [1 0];
 rho_k = [1 1];
 D_k = [0 0];
-Gamma_k = [0.01 0.05];
+Gamma_k = [5 5];
 %%
 aPold_T = 0;
 
@@ -73,7 +73,7 @@ D_k, MW, Gamma_k);
 
 %% The main calculation part
 for time = 0:Dt:Total_time
-    for z =1:100
+    for z =1:1000
     [u, T, Y_k, m_in, m_out, p] = bound(NPI,rho,x,x_u,A,u, u_in, T, Y_k, p);
     
     % momentum

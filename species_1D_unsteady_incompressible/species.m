@@ -25,7 +25,7 @@ N = 0;
         for I = 1:NPI+2 
             X_k(j,I) = N_k(j,I)/N;
             rho_mix(1,I) = rho_mix(1,I)+rho_k(j,I)*X_k(j,I);
-            Gamma_k(1,I) = Gamma_mix(1,I) + Gamma_k(j,I)*X_k(j,I);
+            Gamma_mix(1,I) = Gamma_mix(1,I) + Gamma_k(j,I)*X_k(j,I);
         end
         
     end
