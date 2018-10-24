@@ -53,7 +53,7 @@ XMAX = 1;       % length of the domain [m]
 Patm = 101325; % athmosphesric pressure [Pa]
 u_in = 0.0015;      % inflow velocity [m/s]
 A    = 1;       % area of one cell
-Total_time = 1000;
+Total_time = 1600;
 n = 4;          % number of species 
 
 %% species properties these have to be set manually!!
