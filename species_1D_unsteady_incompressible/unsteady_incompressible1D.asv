@@ -56,7 +56,7 @@ XMAX        = 1;                % length of the domain [m]
 Patm        = 101325;           % athmosphesric pressure [Pa]
 u_in        = 0.0015;           % inflow velocity [m/s]
 A           = 1;                % area of one cell [m^2]
-Total_time  = 1600;             % total simulation time [s]
+Total_time  = 160;             % total simulation time [s]
 n           = 4;                % number of species [-]
 Rr          = 186.5*10^(-6);    % radius of retanate [m]
 Rp          = 72.5*10^(-6);     % radius of permeate [m]
@@ -71,7 +71,6 @@ rho_k   = [1 1 1 1];                            % 'Density' of species [kg/m^3]
 % D_k = [0 0];
 D       = species_diff(NPI, 300, iAll, iAll, 'Diffusivity', n); % Diffusivity of species [m^2/s]
 Gamma_k = [10 10 10 10];                        % Thermal conductivity 
-P_k     = [7.155 3.16 1.255 0]*10^(-9);         % Permeability of species
 %%
 
 % store specie data                                        n      Y_k            rho               p         D              
