@@ -8,7 +8,7 @@ clc;
 A = importdata('output.txt');
 B = importdata('diff.txt');
 
-yy = B.data;
+yy = B.data
 y = A.data;
 
 % Assign some pointers
@@ -42,10 +42,10 @@ f3 = y(:,if3);
 f4 = y(:,if4);
 rho = y(:,irho);
 
-D1 = yy(:,iD1);
-D2 = yy(:,iD2);
-D3 = yy(:,iD3);
-D4 = yy(:,iD4);
+D1 = y(:,iD1);
+D2 = y(:,iD2);
+D3 = y(:,iD3);
+D4 = y(:,iD4);
 
 % reshape the array such that they can be plotted within
 % the computational domain. 
@@ -147,10 +147,10 @@ grid on
 subplot(2,2,1)
 p1 = plot(x_new(1:row-1,:),D1_new(1:row-1,:),'-b','LineWidth',2)
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
-% axis([0 1 0 0.5])
-legend(p1,'D_{O_2}', 'Location','NorthEast')
+axis([0 1 0 0.5])
+legend(p1,'O_2', 'Location','NorthEast')
 xlabel('Geometric position [m] ','LineWidth', 2)
-ylabel('Diffusivity ','LineWidth', 2)
+ylabel('Mass fraction [-] ','LineWidth', 2)
 
 subplot(2,2,2)
 p2 = plot(x_new(1:row-1,:),D2_new(1:row-1,:),'-r','LineWidth',2)
@@ -158,15 +158,13 @@ set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 % axis([0 1 0 0.001])
 legend(p2,'D_{CO_2}', 'Location','NorthEast')
 xlabel('Geometric position [m] ','LineWidth', 2)
-ylabel('Diffusivity','LineWidth', 2)
+ylabel('Diffusivitytion [-] ','LineWidth', 2)
 
 subplot(2,2,3)
 p3 = plot(x_new(1:row-1,:),D3_new(1:row-1,:),'-k','LineWidth',2)
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 % axis([0 1 0 1])
 legend(p3,'D_{N_2}', 'Location','NorthEast')
-xlabel('Geometric position [m] ','LineWidth', 2)
-ylabel('Diffusivity','LineWidth', 2)
 
 subplot(2,2,4)
 p4 = plot(x_new(1:row-1,:),D4_new(1:row-1,:),'-c','LineWidth',2)
@@ -174,4 +172,4 @@ set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 % axis([0 1 0 1])
 legend(p4,'D_{AR}', 'Location','NorthEast')
 xlabel('Geometric position [m] ','LineWidth', 2)
-ylabel('Diffusivity ','LineWidth', 2)
+ylabel('Mass fraction [-] ','LineWidth', 2)

@@ -5,7 +5,7 @@
 %        Sp.Ts   : 'Switching' temperature [K], size: [1]
 %        Sp.Mass : Molar Mass [kg/mole], size: [1]
 %-------------------------------------------------------
-function [output] = DiffProp(T,Sp, iSp,Prop,Dim)
+function [output] = DiffProp(T,Sp, iSp,Prop)
 global Runiv
 output = zeros(1,length(T));
 switch Prop    
