@@ -1,4 +1,4 @@
-function [aE aW aP b Istart_F] = Fcoeff(NPI, rho, A, x, x_u, u, Y_k, D, relax_f, Dt, f_old, Dx, rho_old);
+function [aE aW aP b Istart_F] = Fcoeff(NPI, rho, A, x, x_u, u, Y_k, D, relax_f, Dt, f_old, Dx, rho_old,n);
     Istart_F = 2;
     F_u = conv(NPI, rho, x, x_u, u);
     
@@ -19,9 +19,14 @@ function [aE aW aP b Istart_F] = Fcoeff(NPI, rho, A, x, x_u, u, Y_k, D, relax_f,
         
         Pe = Fw/Dw;
         % source terms
+        if n == 1
+            SP(I) = 0;
+            Su(I) = -0.01*Y_k(I)*A*Dx;
+        else 
         SP(I) = 0;
         Su(I) = 0;
-
+        end
+        
         aPold = rho_old(I)*Dx/Dt;
         
         if I == 2

@@ -51,13 +51,13 @@ fprintf(test,'%-12s %-12s %-12s %-12s\n','Dspecies1', 'Dspecies2', 'Dspecies3','
 fclose(test);
 
 %% initializing
-NPI         = 100;              % number of grid cells in x-direction [-] 
+NPI         = 200;              % number of grid cells in x-direction [-] 
 XMAX        = 1;                % length of the domain [m]
 Patm        = 101325;           % athmosphesric pressure [Pa]
 u_in        = 0.0015;           % inflow velocity [m/s]
 A           = 1;                % area of one cell [m^2]
-Total_time  = 1600;             % total simulation time [s]
-n           = 4;                % number of species [-]
+Total_time  = 500;             % total simulation time [s]
+n           = length(iAll);                % number of species [-]
 Rr          = 186.5*10^(-6);    % radius of retanate [m]
 Rp          = 72.5*10^(-6);     % radius of permeate [m]
 Ro          = 268.3*10^(-6);    % outer radius [m]
@@ -65,8 +65,8 @@ beta1       = Rr/(Ro^2-Rr^2);   % geometric factor of retenate
 beta2       = Rr/(Ro^2);        % geometric factor of permeate
 
 %% species properties these have to be set manually!!
-MW      = [31.9988 44.01 28.0134 39.9480];      % Molar weight of species [gr/mol]
-Y_k     = [0.201947 0.000350 0.78084 0.00934];  % Initial mass fractions [-]
+MW      = [Sp(iAll).Mass];%[31.9988 44.01 28.0134 39.9480];      % Molar weight of species [gr/mol]
+Y_k     = [0.25 0.25 0.25 0.25];  % Initial mass fractions [-]
 rho_k   = [1 1 1 1];                            % 'Density' of species [kg/m^3]
 % D_k = [0 0];
 D       = species_diff(NPI, 300, iAll, iAll, 'Diffusivity', n); % Diffusivity of species [m^2/s]
@@ -85,7 +85,7 @@ P_k     = [7.155 3.16 1.255 0]*10^(-9);         % Permeability of species
 %% grid generation
 [Dx, x, x_u] = grid_gen(NPI,XMAX);   % create staggered grid
 
-store_times = 0:40:Total_time;
+store_times = 0:20:Total_time;
 ii          = 1;
 %% The main calculation part
 for time = 0:Dt:Total_time
@@ -112,7 +112,7 @@ for time = 0:Dt:Total_time
 %     
     %% Species 
     for i = 1:n
-        [aE_f(i,:), aW_f(i,:), aP_f(i,:), b_f(i,:), Istart_f] = Fcoeff(NPI, rho, A, x, x_u, u, Y_k(i,:), D_k(i,:), relax_f, Dt, f_old(i,:), Dx, rho_old);
+        [aE_f(i,:), aW_f(i,:), aP_f(i,:), b_f(i,:), Istart_f] = Fcoeff(NPI, rho, A, x, x_u, u, Y_k(i,:), D_k(i,:), relax_f, Dt, f_old(i,:), Dx, rho_old, i);
         Y_k(i,:) = solve_eq(NPI,aE_f(i,:), aW_f(i,:), aP_f(i,:), b_f(i,:), Y_k(i,:), 2);
     end
     Y_k = species_bound(NPI, n, Y_k);
@@ -200,5 +200,5 @@ p3 = plot(x(1:NPI+1),Y_k(1,1:NPI+1),'r','LineWidth',2);
 p4 = plot(x(1:NPI+1),Y_k(2,1:NPI+1),'b','LineWidth',2);
 p5 = plot(x(1:NPI+1),Y_k(3,1:NPI+1),'k','LineWidth',2);
 p6 = plot(x(1:NPI+1),Y_k(4,1:NPI+1),'c','LineWidth',2);
-legend([p1, p2, p3, p4],'O_2','CO_2','N_2','Ar','NorthEast')
+legend([p3, p4, p5, p6],'O_2','CO_2','N_2','Ar','NorthEast')
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)

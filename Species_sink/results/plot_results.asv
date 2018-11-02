@@ -181,10 +181,10 @@ fields = fieldnames(Fall);
 
 for i = 1:numel(fields)
     fields(i);
-    path_Results = strcat('C:\Users\s137280\Documents\Master_tue\Internship\internship_github\Species_sink\results\species',num2str(i),'.avi');
-    filename = VideoWriter(path_Results)
+    path_Results(i) = strcat('C:\Users\s137280\Documents\Master_tue\Internship\internship_github\Species_sink\results\species',num2str(i),'.avi');
+    filename = fopen(path_Results(i),'w');
 %     filename = sprintf('species%1.0f.avi',i);
-    
+    open(filename);
     h = figure;
     axis tight manual % this ensures that getframe() returns a consistent size
 %     filename = '.gif';
@@ -197,7 +197,7 @@ for i = 1:numel(fields)
     legend(fields{i}, 'Location','NorthEast')
     xlabel('Geometric position [m] ','LineWidth', 2)
     ylabel('Mass fraction [-] ','LineWidth', 2)
-    title(strcat('Time:',num2str(time(row*i))));
+    title(strcat('Time:',num2str(unique(time(n)))));
 
       % Capture the plot as an image 
       frame = getframe(h); 
@@ -205,8 +205,7 @@ for i = 1:numel(fields)
 %       [imind,cm] = rgb2ind(im,256); 
       % Write to the GIF File 
 %       if n == 1 
-          open(filename);
-          writeVideo(filename,frame); 
+          writeVideo(filename,fram); 
 %       else 
           close(filename);
 %       end 
