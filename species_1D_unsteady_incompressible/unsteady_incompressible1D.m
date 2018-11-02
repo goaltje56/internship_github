@@ -85,7 +85,7 @@ P_k     = [7.155 3.16 1.255 0]*10^(-9);         % Permeability of species
 %% grid generation
 [Dx, x, x_u] = grid_gen(NPI,XMAX);   % create staggered grid
 
-store_times = [0:40:Total_time];
+store_times = 0:40:Total_time;
 ii          = 1;
 %% The main calculation part
 for time = 0:Dt:Total_time
@@ -166,7 +166,7 @@ set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 grid on
 xlabel('Geometric position [m] ','LineWidth', 2)
 axis([0 XMAX+Dx 0 1]);
-plot(x(2:NPI+1),p(2:NPI+1),'b','LineWidth',2)
+p1 = plot(x(2:NPI+1),p(2:NPI+1),'b','LineWidth',2)
 % plot(x(1:NPI+1),T(1:NPI+1),'k','LineWidth',2)
 % plot(x_u(2:NPI+2),u(2:NPI+2),'sr','LineWidth',2);
 % plot(x(1:NPI+1),T2(1:NPI+1),'r','LineWidth',2)
@@ -175,7 +175,7 @@ plot(x(2:NPI+1),p(2:NPI+1),'b','LineWidth',2)
 % plot(x(2:NPI+1),rho(2:NPI+1),':c','LineWidth',2)
 % plot(x(2:NPI+1),d_u(2:NPI+1),':k','LineWidth',2)
 % legend('P','u','P_c','\rho','d_u','Location','SouthWest')
-legend('P','Location','NorthEast')
+legend(p1,'P','Location','NorthEast')
 
 for i = 2:NPI+1
 mdot(i) = rho(i)*u(i)*A;
@@ -186,8 +186,8 @@ hold on
 grid on
 xlabel('Geometric position [m] ','LineWidth', 2)
 axis([0 XMAX+Dx 0 0.002]);
-plot(x_u(2:NPI+2),u(2:NPI+2),'r','LineWidth',2);
-legend('Velocity','Location','NorthEast')
+p2 = plot(x_u(2:NPI+2),u(2:NPI+2),'r','LineWidth',2);
+legend(p2,'Velocity','Location','NorthEast')
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 
 figure(3)
@@ -196,9 +196,9 @@ grid on
 xlabel('Geometric position [m] ','LineWidth', 2)
 ylabel('Mass fraction [-] ','LineWidth', 2)
 axis([0 XMAX+Dx 0 2]);
-plot(x(1:NPI+1),Y_k(1,1:NPI+1),'r','LineWidth',2);
-plot(x(1:NPI+1),Y_k(2,1:NPI+1),'b','LineWidth',2);
-plot(x(1:NPI+1),Y_k(3,1:NPI+1),'k','LineWidth',2);
-plot(x(1:NPI+1),Y_k(4,1:NPI+1),'c','LineWidth',2);
-legend('O_2','CO_2','N_2','Ar','NorthEast')
+p3 = plot(x(1:NPI+1),Y_k(1,1:NPI+1),'r','LineWidth',2);
+p4 = plot(x(1:NPI+1),Y_k(2,1:NPI+1),'b','LineWidth',2);
+p5 = plot(x(1:NPI+1),Y_k(3,1:NPI+1),'k','LineWidth',2);
+p6 = plot(x(1:NPI+1),Y_k(4,1:NPI+1),'c','LineWidth',2);
+legend([p1, p2, p3, p4],'O_2','CO_2','N_2','Ar','NorthEast')
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)

@@ -5,8 +5,8 @@ clear all;
 close all;
 clc;
 
-A = importdata('output.txt');
-B = importdata('diff.txt');
+A = importdata('output.txt');%_NPI100_time1600.txt');
+B = importdata('diff.txt');%_NPI100_time1600.txt');
 
 yy = B.data;
 y = A.data;

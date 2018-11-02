@@ -5,8 +5,8 @@ clear all;
 close all;
 clc;
 
-A = importdata('output.txt');
-B = importdata('diff.txt');
+A = importdata('output_NPI100_time1600.txt');
+B = importdata('diff');%_NPI100_time1600.txt');
 
 yy = B.data;
 y = A.data;
@@ -101,7 +101,7 @@ figure(4)
 hold on
 grid on
 subplot(2,2,1)
-p1 = plot(x_new(1:row-1,:),f1_new(1:row-1,:),'-b','LineWidth',2)
+p1 = plot(x_new(1:row-1,:),f1_new(1:row-1,:),'-b','LineWidth',2);
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 axis([0 1 0 0.5])
 legend(p1,'O_2', 'Location','NorthEast')
@@ -109,7 +109,7 @@ xlabel('Geometric position [m] ','LineWidth', 2)
 ylabel('Mass fraction [-] ','LineWidth', 2)
 
 subplot(2,2,2)
-p2 = plot(x_new(1:row-1,:),f2_new(1:row-1,:),'-r','LineWidth',2)
+p2 = plot(x_new(1:row-1,:),f2_new(1:row-1,:),'-r','LineWidth',2);
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 axis([0 1 0 0.001])
 legend(p2,'CO_2', 'Location','NorthEast')
@@ -117,7 +117,7 @@ xlabel('Geometric position [m] ','LineWidth', 2)
 ylabel('Mass fraction [-] ','LineWidth', 2)
 
 subplot(2,2,3)
-p3 = plot(x_new(1:row-1,:),f3_new(1:row-1,:),'-k','LineWidth',2)
+p3 = plot(x_new(1:row-1,:),f3_new(1:row-1,:),'-k','LineWidth',2);
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 axis([0 1 0 1])
 legend(p3,'N_2', 'Location','NorthEast')
@@ -145,7 +145,7 @@ figure(6)
 hold on
 grid on
 subplot(2,2,1)
-p1 = plot(x_new(1:row-1,:),D1_new(1:row-1,:),'-b','LineWidth',2)
+p1 = plot(x_new(1:row-1,:),D1_new(1:row-1,:),'-b','LineWidth',2);
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 % axis([0 1 0 0.5])
 legend(p1,'D_{O_2}', 'Location','NorthEast')
@@ -153,7 +153,7 @@ xlabel('Geometric position [m] ','LineWidth', 2)
 ylabel('Diffusivity ','LineWidth', 2)
 
 subplot(2,2,2)
-p2 = plot(x_new(1:row-1,:),D2_new(1:row-1,:),'-r','LineWidth',2)
+p2 = plot(x_new(1:row-1,:),D2_new(1:row-1,:),'-r','LineWidth',2);
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 % axis([0 1 0 0.001])
 legend(p2,'D_{CO_2}', 'Location','NorthEast')
@@ -161,7 +161,7 @@ xlabel('Geometric position [m] ','LineWidth', 2)
 ylabel('Diffusivity','LineWidth', 2)
 
 subplot(2,2,3)
-p3 = plot(x_new(1:row-1,:),D3_new(1:row-1,:),'-k','LineWidth',2)
+p3 = plot(x_new(1:row-1,:),D3_new(1:row-1,:),'-k','LineWidth',2);
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 % axis([0 1 0 1])
 legend(p3,'D_{N_2}', 'Location','NorthEast')
@@ -169,7 +169,7 @@ xlabel('Geometric position [m] ','LineWidth', 2)
 ylabel('Diffusivity','LineWidth', 2)
 
 subplot(2,2,4)
-p4 = plot(x_new(1:row-1,:),D4_new(1:row-1,:),'-c','LineWidth',2)
+p4 = plot(x_new(1:row-1,:),D4_new(1:row-1,:),'-c','LineWidth',2);
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 % axis([0 1 0 1])
 legend(p4,'D_{AR}', 'Location','NorthEast')
