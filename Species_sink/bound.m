@@ -1,4 +1,4 @@
-function [u Y_k m_in m_out p] = bound(NPI,rho,x,x_u,A,u, u_in,Y_k, p)
+function [u Y_k p] = bound(NPI,rho,x,x_u,A,u, u_in,Y_k, p)
 %     T(1) = T(2);                     % temperature at inlet
     u(2) = u_in;                    % velocity at inlet
     

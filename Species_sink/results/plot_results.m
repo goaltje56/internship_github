@@ -28,6 +28,10 @@ iD1  = find(strcmpi('Dspecies1',B.colheaders));
 iD2  = find(strcmpi('Dspecies2',B.colheaders));
 iD3  = find(strcmpi('Dspecies3',B.colheaders));
 iD4  = find(strcmpi('Dspecies4',B.colheaders));
+iX1  = find(strcmpi('X1',B.colheaders));
+iX2  = find(strcmpi('X2',B.colheaders));
+iX3  = find(strcmpi('X3',B.colheaders));
+iX4  = find(strcmpi('X4',B.colheaders));
 
 % store the values in the appropriate array
 time = y(:,it);
@@ -46,7 +50,10 @@ D1 = yy(:,iD1);
 D2 = yy(:,iD2);
 D3 = yy(:,iD3);
 D4 = yy(:,iD4);
-
+X1 = yy(:,iX1);
+X2 = yy(:,iX2);
+X3 = yy(:,iX3);
+X4 = yy(:,iX4);
 % reshape the array such that they can be plotted within
 % the computational domain. 
 col = length(unique(time));
@@ -67,7 +74,10 @@ D1_new = reshape(D1,[row, col]);
 D2_new = reshape(D2,[row, col]);
 D3_new = reshape(D3,[row, col]);
 D4_new = reshape(D4,[row, col]);
-
+X1_new = reshape(X1,[row, col]);
+X2_new = reshape(X2,[row, col]);
+X3_new = reshape(X3,[row, col]);
+X4_new = reshape(X4,[row, col]);
 % plot the results
 % figure(1)
 % hold on
@@ -176,39 +186,105 @@ legend(p4,'D_{AR}', 'Location','SouthEast')
 xlabel('Geometric position [m] ','LineWidth', 2)
 ylabel('Diffusivity ','LineWidth', 2)
 
+%%
+figure(7)
+hold on
+grid on
+subplot(2,2,1)
+p1 = plot(x_new(1:row-1,:),X1_new(1:row-1,:),'-b','LineWidth',2);
+set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
+axis([0 1 0 1])
+legend(p1,'X_{O_2}', 'Location','SouthEast')
+xlabel('Geometric position [m] ','LineWidth', 2)
+ylabel('Mole fraction [-]','LineWidth', 2)
+
+subplot(2,2,2)
+p2 = plot(x_new(1:row-1,:),X2_new(1:row-1,:),'-r','LineWidth',2);
+set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
+axis([0 1 0 1])
+legend(p2,'X_{CO_2}', 'Location','NorthEast')
+xlabel('Geometric position [m] ','LineWidth', 2)
+ylabel('Mole fraction','LineWidth', 2)
+
+subplot(2,2,3)
+p3 = plot(x_new(1:row-1,:),X3_new(1:row-1,:),'-k','LineWidth',2);
+set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
+axis([0 1 0 1])
+legend(p3,'X_{N_2}', 'Location','SouthEast')
+xlabel('Geometric position [m] ','LineWidth', 2)
+ylabel('Mole fraction','LineWidth', 2)
+
+subplot(2,2,4)
+p4 = plot(x_new(1:row-1,:),X4_new(1:row-1,:),'-c','LineWidth',2);
+set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
+axis([0 1 0 1])
+legend(p4,'X_{AR}', 'Location','SouthEast')
+xlabel('Geometric position [m] ','LineWidth', 2)
+ylabel('Mole fraction ','LineWidth', 2)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%             here starts the video generation                        %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Fall = struct('O2',f1_new,'CO2',f2_new,'N2',f3_new,'AR',f4_new);
+Xall = struct('O2',X1_new,'CO2',X2_new,'N2',X3_new,'AR',X4_new);
+
 fields = fieldnames(Fall);
 
 for i = 1:numel(fields)
     fields(i);
-    path_Results = strcat('C:\Users\s137280\Documents\Master_tue\Internship\internship_github\Species_sink\results\species',num2str(i),'.avi');
+    path_Results = strcat('C:\Users\s137280\Documents\Master_tue\Internship\internship_github\Species_sink\results\Y',num2str(i),'.avi');
     filename = VideoWriter(path_Results)
-%     filename = sprintf('species%1.0f.avi',i);
+    filename.FrameRate = 5;
     
-    h = figure;
+    path_Results2 = strcat('C:\Users\s137280\Documents\Master_tue\Internship\internship_github\Species_sink\results\X',num2str(i),'.avi');
+    filename2 = VideoWriter(path_Results2)
+    filename2.FrameRate = 5;
+    
+    h1 = figure(1);
+    h2 = figure(2);
     axis tight manual % this ensures that getframe() returns a consistent size
-%     filename = '.gif';
     for n = 1:1:col
-
-    plot(x_new(1:row-1,n),Fall.(fields{i})(1:row-1,n),'-b','LineWidth',2);
+        
+    %% mass fraction
+    h1 = figure(10);
+    plot(x_new(1:row-1,n),Xall.(fields{i})(1:row-1,n),'-b','LineWidth',2);
     set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 
     axis([0 1 0 1]);
     legend(fields{i}, 'Location','NorthEast')
     xlabel('Geometric position [m] ','LineWidth', 2)
     ylabel('Mass fraction [-] ','LineWidth', 2)
-    title(strcat('Time:',num2str(time(row*i))));
+    title(strcat('Time:',num2str(time(row*n))));
+    frame1 = getframe(h1);
+    open(filename);
+    writeVideo(filename,frame1); 
+    
+    %% mole fraction 
+    h2 = figure(20)
+    plot(x_new(1:row-1,n),Xall.(fields{i})(1:row-1,n),'-r','LineWidth',2);
+    set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 
+    axis([0 1 0 1]);
+    legend(fields{i}, 'Location','NorthEast')
+    xlabel('Geometric position [m] ','LineWidth', 2)
+    ylabel('Mole fraction [-] ','LineWidth', 2)
+    title(strcat('Time:',num2str(time(row*n))));
       % Capture the plot as an image 
-      frame = getframe(h); 
-%       im = frame2im(frame); 
-%       [imind,cm] = rgb2ind(im,256); 
-      % Write to the GIF File 
-%       if n == 1 
-          open(filename);
-          writeVideo(filename,frame); 
+        
+    frame2 = getframe(h2);
+    open(filename2);
+    writeVideo(filename2,frame2); 
+      % Write to the avi File 
+          
 %       else 
-          close(filename);
-%       end 
+     %      end 
     end
+    close(filename);
+    close(filename2);
+
 end
+
+% play1 = implay('species1.avi')
+% play2 = implay('species2.avi')
+% play3 = implay('species3.avi')
+% play4 = implay('species4.avi')
