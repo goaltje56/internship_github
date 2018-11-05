@@ -51,12 +51,12 @@ fprintf(test,'%-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s\n','Dspecies1', 'D
 fclose(test);
 
 %% initializing
-NPI         = 200;              % number of grid cells in x-direction [-] 
+NPI         = 100;              % number of grid cells in x-direction [-] 
 XMAX        = 1;                % length of the domain [m]
 Patm        = 101325;           % athmosphesric pressure [Pa]
 u_in        = 0.0015;           % inflow velocity [m/s]
 A           = 1;                % area of one cell [m^2]
-Total_time  = 300;             % total simulation time [s]
+Total_time  = 400;             % total simulation time [s]
 n           = length(iAll);                % number of species [-]
 Rr          = 186.5*10^(-6);    % radius of retanate [m]
 Rp          = 72.5*10^(-6);     % radius of permeate [m]
@@ -66,7 +66,7 @@ beta2       = Rr/(Ro^2);        % geometric factor of permeate
 
 %% species properties these have to be set manually!!
 MW      = [Sp(iAll).Mass];%[31.9988 44.01 28.0134 39.9480];      % Molar weight of species [gr/mol]
-Y_k     = [0.25 0.25 0.25 0.25];  % Initial mass fractions [-]
+Y_k     = [0.8 0.1 0.05 0.05];  % Initial mass fractions [-]
 rho_k   = [1 1 1 1];                            % 'Density' of species [kg/m^3]
 rho_s   = [1.429 1.98 1.2504 1.784];
 % D_k = [0 0];
@@ -88,6 +88,7 @@ P_k     = [7.155 3.16 1.255 0]*10^(-9);         % Permeability of species
 
 store_times = 0:20:Total_time;
 ii          = 1;
+iii         = 1;
 %% The main calculation part
 for time = 0:Dt:Total_time
     for z =1:100
@@ -121,13 +122,15 @@ for time = 0:Dt:Total_time
 
     end
     
+    [m_in(iii,:) m_out(iii,:) m_sink(iii,:)] = rho_real(NPI, n, Y_k, rho_s, MW,  f_old);
+    
     % store results of this run as old results for next iteration
     [u_old, pc_old, rho_old, f_old] = storeresults(NPI, u, pc, rho, Y_k, u_old, pc_old, rho_old, f_old, n);
     
     % determine new value for D_k 
-    [X_k, m_in, m_out, D_k, Gamma]          = mole(NPI, n, Y_k, rho_s, MW, Gamma, Gamma_k, D);
+    [X_k, D_k, Gamma]          = mole(NPI, n, Y_k, rho_s, MW, Gamma, Gamma_k, D);
     
-    
+    iii =iii+1;
 % time
     % store data at different time steps
     if time == store_times(ii)
@@ -203,4 +206,16 @@ p4 = plot(x(1:NPI+1),Y_k(2,1:NPI+1),'b','LineWidth',2);
 p5 = plot(x(1:NPI+1),Y_k(3,1:NPI+1),'k','LineWidth',2);
 p6 = plot(x(1:NPI+1),Y_k(4,1:NPI+1),'c','LineWidth',2);
 legend([p3, p4, p5, p6],'O_2','CO_2','N_2','Ar','NorthEast')
+set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
+
+figure(6)
+hold on
+grid on
+xlabel('Geometric position [m] ','LineWidth', 2)
+ylabel('Mass flow[-] ','LineWidth', 2)
+% axis([0 XMAX+Dx 0 2]);
+p3 = plot(x(1:NPI+1),m_in(100,1:NPI+1),'r','LineWidth',2);
+p4 = plot(x(1:NPI+1),-m_out(100,1:NPI+1),'b','LineWidth',2);
+p5 = plot(x(1:NPI+1),m_sink(100,1:NPI+1),'k','LineWidth',2);
+legend([p3, p4, p5],'m_in','m_out','m_sink','Ar','NorthEast')
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)

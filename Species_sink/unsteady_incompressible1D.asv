@@ -56,7 +56,7 @@ XMAX        = 1;                % length of the domain [m]
 Patm        = 101325;           % athmosphesric pressure [Pa]
 u_in        = 0.0015;           % inflow velocity [m/s]
 A           = 1;                % area of one cell [m^2]
-Total_time  = 500;             % total simulation time [s]
+Total_time  = 300;             % total simulation time [s]
 n           = length(iAll);                % number of species [-]
 Rr          = 186.5*10^(-6);    % radius of retanate [m]
 Rp          = 72.5*10^(-6);     % radius of permeate [m]
@@ -68,6 +68,7 @@ beta2       = Rr/(Ro^2);        % geometric factor of permeate
 MW      = [Sp(iAll).Mass];%[31.9988 44.01 28.0134 39.9480];      % Molar weight of species [gr/mol]
 Y_k     = [0.25 0.25 0.25 0.25];  % Initial mass fractions [-]
 rho_k   = [1 1 1 1];                            % 'Density' of species [kg/m^3]
+rho_s   = [1.429 1.98 1.2504 1.784];
 % D_k = [0 0];
 D       = species_diff(NPI, 300, iAll, iAll, 'Diffusivity', n); % Diffusivity of species [m^2/s]
 Gamma_k = [10 10 10 10];                        % Thermal conductivity 
@@ -87,6 +88,7 @@ P_k     = [7.155 3.16 1.255 0]*10^(-9);         % Permeability of species
 
 store_times = 0:20:Total_time;
 ii          = 1;
+iii         
 %% The main calculation part
 for time = 0:Dt:Total_time
     for z =1:100
@@ -124,9 +126,9 @@ for time = 0:Dt:Total_time
     [u_old, pc_old, rho_old, f_old] = storeresults(NPI, u, pc, rho, Y_k, u_old, pc_old, rho_old, f_old, n);
     
     % determine new value for D_k 
-    [X_k, m_in, m_ou, D_k, Gamma]          = mole(NPI, n, Y_k, rho_k, MW, rho, Gamma, Gamma_k, D);
+    [X_k, D_k, Gamma]          = mole(NPI, n, Y_k, rho_s, MW, Gamma, Gamma_k, D);
     
-    
+    [m_in() m_out() m_sink()] = rho_real(NPI, n, Y_k, rho_s, MW,  f_old);
 % time
     % store data at different time steps
     if time == store_times(ii)

@@ -47,7 +47,7 @@ fclose(test);
 
 % add name taggs to created file and close file again.
 test = fopen(path_Results2,'w');
-fprintf(test,'%-12s %-12s %-12s %-12s\n','Dspecies1', 'Dspecies2', 'Dspecies3','Dspecies4');
+fprintf(test,'%-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s\n','Dspecies1', 'Dspecies2', 'Dspecies3','Dspecies4','X1', 'X2', 'X3','X4');
 fclose(test);
 
 %% initializing
@@ -57,7 +57,7 @@ Patm        = 101325;           % athmosphesric pressure [Pa]
 u_in        = 0.0015;           % inflow velocity [m/s]
 A           = 1;                % area of one cell [m^2]
 Total_time  = 1600;             % total simulation time [s]
-n           = 4;                % number of species [-]
+n           = length(iAll);                % number of species [-]
 Rr          = 186.5*10^(-6);    % radius of retanate [m]
 Rp          = 72.5*10^(-6);     % radius of permeate [m]
 Ro          = 268.3*10^(-6);    % outer radius [m]
@@ -65,7 +65,7 @@ beta1       = Rr/(Ro^2-Rr^2);   % geometric factor of retenate
 beta2       = Rr/(Ro^2);        % geometric factor of permeate
 
 %% species properties these have to be set manually!!
-MW      = [31.9988 44.01 28.0134 39.9480];      % Molar weight of species [gr/mol]
+MW      = [Sp(iAll).Mass];      % Molar weight of species [gr/mol]
 Y_k     = [0.201947 0.000350 0.78084 0.00934];  % Initial mass fractions [-]
 rho_k   = [1 1 1 1];                            % 'Density' of species [kg/m^3]
 % D_k = [0 0];
@@ -136,7 +136,7 @@ for time = 0:Dt:Total_time
         fclose(test);
 
         file2 = fopen(path_Results2,'a');
-        fprintf(file2,'%-12.12f %-12.12f %-12.12f %-12.12f\n',[D_k(1,:); D_k(2,:); D_k(3,:); D_k(4,:)]);    
+        fprintf(file2,'%-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f\n',[D_k(1,:); D_k(2,:); D_k(3,:); D_k(4,:); X_k(1,:); X_k(2,:); X_k(3,:); X_k(4,:)]);    
         fprintf(file2,'\n');        
         fclose(file2);
     ii = ii +1;
