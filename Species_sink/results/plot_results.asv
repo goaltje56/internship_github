@@ -271,7 +271,7 @@ for i = 1:numel(fields)
     set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15);
 
     axis([0 1 0 9000]);
-    legend([p1 p2], strcat(fields{i}, ' M_r'), strcat(fields{i}, ' M_p'), 'Location','NorthEast');
+    legend([p1 p2], 'M_r' fields{i}, 'M_p' fields{i} , 'Location','NorthEast');
     xlabel('Geometric position [m] ','LineWidth', 2);
     ylabel('Mass fraction [-] ','LineWidth', 2);
     title(strcat('Time:',num2str(time(row*n))));

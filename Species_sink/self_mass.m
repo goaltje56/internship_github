@@ -9,7 +9,7 @@ function [x] = self_mass(M, x, sink, Xr, X, n)
 %% these equations depend on the boundary conditions!!
 Mr_new =0;
 
-while abs(x(1) - Mr_new) > 0.001
+while abs(x(1) - Mr_new) > 0.0001
     A = ((Xr-x(3:n)) ~= 0);
     Mr_new = x(1);
     
@@ -22,12 +22,7 @@ while abs(x(1) - Mr_new) > 0.001
     
     x(3:n+2) = (M*X- x(1)*Xr)/(M-x(1));
     x(3:n+2) = x(3:n+2).*sink;
-    
-%     if abs(1 - sum(x(3:n+2))) > 0.001
-%         Mr_new = x(1) - 100;
-%         x(3:n+2) = x(3:n+2)/sum(x(3:n+2));
-%     end
-        
+    x(3:n+2) = x(3:n+2)/sum(x(3:n+2));
     
 end
 

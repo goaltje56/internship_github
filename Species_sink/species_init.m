@@ -5,7 +5,7 @@ global Sp
 
 %% input moles
 moles = [100; 50; 50; 50];
-sink  = [1 0 0 0];
+sink  = [1 0 1 0];
 
 % Define some species
 iO2  = find(strcmp({Sp.Name},'O2'));

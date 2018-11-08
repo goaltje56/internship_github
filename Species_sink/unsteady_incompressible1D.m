@@ -7,6 +7,7 @@
 % Reference: Computational Fluid Dynamics, H.K. Versteeg and W. 
 %            Malalasekera, Longman Group Ltd, 1995
 % -------------------------------------------------------------------------
+
 clear all;
 close all;
 clc;
@@ -52,7 +53,7 @@ Patm        = 101325;           % athmosphesric pressure [Pa]
 u_in        = 0.0015;           % inflow velocity [m/s]
 X_in        = [100; 50; 50; 50]; % mole flow 
 A           = 1;                % area of one cell [m^2]
-Total_time  = 200;             % total simulation time [s]
+Total_time  = 500;             % total simulation time [s]
 
 
 %% species properties these have to be set manually!!
@@ -76,7 +77,7 @@ P_k     = [7.155 3.16 1.255 0]*10^(-9);         % Permeability of species
 %% grid generation
 [Dx, x, x_u] = grid_gen(NPI,XMAX);   % create staggered grid
 
-store_times = 0:20:Total_time;      % define sample points to save data
+store_times = 0:10:Total_time;      % define sample points to save data
 ii          = 1;
 iii         = 1;
 %% The main calculation part
@@ -214,5 +215,5 @@ ylabel('Mass flow[-] ','LineWidth', 2)
 p3 = plot(x(2:NPI+1),x_dummy(2:NPI+1,1),'r','LineWidth',2);
 % p4 = plot(x(1:NPI+1),-m_out(100,2:NPI+1),'b','LineWidth',2);
 p5 = plot(x(2:NPI+1), x_dummy(2:NPI+1,2),'k','LineWidth',2);
-% legend([p3, p4, p5],'m_in','m_out','m_sink','Ar','NorthEast')
+legend([p3, p5],'m_{retenate}','m_{permeate}','NorthEast')
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
