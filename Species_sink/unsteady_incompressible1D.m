@@ -10,6 +10,9 @@
 clear all;
 close all;
 clc;
+x0 = [4000 4000 1 0 0 0];
+options = optimoptions('fsolve','Display','off','MaxIterations',1000);
+% options = optimset('Display','off');
 
 %% Read species data
 % Make these variable global
@@ -28,14 +31,6 @@ Nsp = length(Sp);
 % Universal gas constant
 Runiv = 8.314462175;
 
-% Define some species
-iO2  = find(strcmp({Sp.Name},'O2'));
-iCO2 = find(strcmp({Sp.Name},'CO2'));
-iN2  = find(strcmp({Sp.Name},'N2'));
-iAr  = find(strcmp({Sp.Name},'AR'));
-
-iAll = [iO2 iCO2 iN2 iAr];
-
 %% set timer to indicate the computation time
 timerVal = tic;
 
@@ -47,7 +42,7 @@ fclose(test);
 
 % add name taggs to created file and close file again.
 test = fopen(path_Results2,'w');
-fprintf(test,'%-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s\n','Dspecies1', 'Dspecies2', 'Dspecies3','Dspecies4','X1', 'X2', 'X3','X4');
+fprintf(test,'%-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s\n','Dspecies1', 'Dspecies2', 'Dspecies3','Dspecies4','X1', 'X2', 'X3','X4', 'Mr', 'Mp', 'Yr1', 'Yr2', 'Yr3', 'Yr4');
 fclose(test);
 
 %% initializing
@@ -55,27 +50,22 @@ NPI         = 100;              % number of grid cells in x-direction [-]
 XMAX        = 1;                % length of the domain [m]
 Patm        = 101325;           % athmosphesric pressure [Pa]
 u_in        = 0.0015;           % inflow velocity [m/s]
+X_in        = [100; 50; 50; 50]; % mole flow 
 A           = 1;                % area of one cell [m^2]
-Total_time  = 400;             % total simulation time [s]
-n           = length(iAll);                % number of species [-]
-Rr          = 186.5*10^(-6);    % radius of retanate [m]
-Rp          = 72.5*10^(-6);     % radius of permeate [m]
-Ro          = 268.3*10^(-6);    % outer radius [m]
-beta1       = Rr/(Ro^2-Rr^2);   % geometric factor of retenate
-beta2       = Rr/(Ro^2);        % geometric factor of permeate
+Total_time  = 200;             % total simulation time [s]
+
 
 %% species properties these have to be set manually!!
-MW      = [Sp(iAll).Mass];%[31.9988 44.01 28.0134 39.9480];      % Molar weight of species [gr/mol]
-Y_k     = [0.8 0.1 0.05 0.05];  % Initial mass fractions [-]
-rho_k   = [1 1 1 1];                            % 'Density' of species [kg/m^3]
-rho_s   = [1.429 1.98 1.2504 1.784];
-% D_k = [0 0];
-D       = species_diff(NPI, 300, iAll, iAll, 'Diffusivity', n); % Diffusivity of species [m^2/s]
+[mass, moles, Y_k, X_k, iAll, MW, D, sink, n] = species_init(NPI);
+
+rho_k   = [1 1 1 1];                            % 'Fake' density of species [kg/m^3]
+rho_s   = [1.429 1.98 1.2504 1.784];            % 'Real' density of species [kg/m^3]
+
 Gamma_k = [10 10 10 10];                        % Thermal conductivity 
 P_k     = [7.155 3.16 1.255 0]*10^(-9);         % Permeability of species
 %%
 
-% store specie data                                        n      Y_k            rho               p         D              
+% Vector of initial values for all species data             
 [rho_k, D_k, Y_k, p_k, M, rho, rho_old, f_old, Gamma] = species(NPI, n, Y_k, rho_k, [Patm Patm Patm Patm],...
                                                         D, MW, Gamma_k);
 
@@ -86,19 +76,19 @@ P_k     = [7.155 3.16 1.255 0]*10^(-9);         % Permeability of species
 %% grid generation
 [Dx, x, x_u] = grid_gen(NPI,XMAX);   % create staggered grid
 
-store_times = 0:20:Total_time;
+store_times = 0:20:Total_time;      % define sample points to save data
 ii          = 1;
 iii         = 1;
 %% The main calculation part
 for time = 0:Dt:Total_time
     for z =1:100
-    [u, Y_k, p] = bound(NPI,rho,x,x_u,A,u, u_in, Y_k, p);                          % Apply boundary condtions
+    [u, Y_k, p] = bound(NPI,rho,x,x_u,A,u, u_in, X_in, Y_k, p);                          % Apply boundary condtions
     
     % momentum
     [aP_u, aE_u, aW_u, b_u, d_u, Istart_u, u]   = ...
     ucoeff(NPI, rho, x, x_u, u, p, A, relax_u, d_u, mu, u_in, Dt, u_old, Dx, rho_old);          % Determine coefficients
     u                                           = solve_eq(NPI, aE_u, aW_u, aP_u, b_u, u, 3);   % Solve equation
-    [u, Y_k, p]                    = bound(NPI,rho,x,x_u,A,u, u_in, Y_k, p);       % Apply boundary condtions
+    [u, Y_k, p]                    = bound(NPI,rho,x,x_u,A,u, u_in, X_in, Y_k, p);       % Apply boundary condtions
 
     % pressure correction (modified form of continuity equation)
     [aE_pc, aW_pc, aP_pc, b_pc, Istart_pc, pc]  = pccoeff(NPI, rho, A, x, x_u, u, d_u, pc, rho_old, Dx, Dt);    % Determine coefficients
@@ -114,15 +104,22 @@ for time = 0:Dt:Total_time
 %     
     %% Species 
     for i = 1:n
-        [aE_f(i,:), aW_f(i,:), aP_f(i,:), b_f(i,:), Istart_f] = Fcoeff(NPI, rho, A, x, x_u, u, Y_k(i,:), D_k(i,:), relax_f, Dt, f_old(i,:), Dx, rho_old, i);
+        [aE_f(i,:), aW_f(i,:), aP_f(i,:), b_f(i,:), Istart_f, Y_sink(i,:)] = Fcoeff(NPI, rho, rho_s(i), A, x, x_u, u, Y_k(i,:), D_k(i,:), relax_f, Dt, f_old(i,:), Dx, rho_old, sink(i), i);
         Y_k(i,:) = solve_eq(NPI,aE_f(i,:), aW_f(i,:), aP_f(i,:), b_f(i,:), Y_k(i,:), 2);
     end
     Y_k = species_bound(NPI, n, Y_k);
-    [u, Y_k, p] = bound(NPI,rho,x,x_u,A,u, u_in, Y_k, p);  
+    
+    [u, Y_k, p] = bound(NPI,rho,x,x_u,A,u, u_in, X_in, Y_k, p);  
 
     end
     
-    [m_in(iii,:) m_out(iii,:) m_sink(iii,:)] = rho_real(NPI, n, Y_k, rho_s, MW,  f_old);
+    for i = 2:NPI+2
+%         f = @(x0)solve_mass(x0, sum(mass), Y_k(1,1), Y_k(2,1), Y_k(3,1), Y_k(4,1), Y_k(1,i), Y_k(2,i), Y_k(3,i), Y_k(4,i), sink);
+%         x_dummy(i,1:6) = fsolve(f,x0, options); 
+%         x0          = x_dummy(i,1:6);
+        x_dummy(i,:) = self_mass(sum(mass), x0, sink, Y_k(:,i), Y_k(:,1), n);
+    end
+%     [m_in(iii,:) m_out(iii,:) m_sink(iii,:)] = rho_real(NPI, n, Y_k, rho_s, MW,  f_old);
     
     % store results of this run as old results for next iteration
     [u_old, pc_old, rho_old, f_old] = storeresults(NPI, u, pc, rho, Y_k, u_old, pc_old, rho_old, f_old, n);
@@ -141,7 +138,7 @@ for time = 0:Dt:Total_time
         fclose(test);
 
         file2 = fopen(path_Results2,'a');
-        fprintf(file2,'%-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f\n',[D_k(1,:); D_k(2,:); D_k(3,:); D_k(4,:); X_k(1,:); X_k(2,:); X_k(3,:); X_k(4,:)]);    
+        fprintf(file2,'%-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f\n',[D_k(1,:); D_k(2,:); D_k(3,:); D_k(4,:); X_k(1,:); X_k(2,:); X_k(3,:); X_k(4,:); x_dummy(:,1)'; x_dummy(:,2)'; x_dummy(:,3)'; x_dummy(:,4)'; x_dummy(:,5)'; x_dummy(:,6)']);    
         fprintf(file2,'\n');        
         fclose(file2);
     ii = ii +1;
@@ -214,8 +211,8 @@ grid on
 xlabel('Geometric position [m] ','LineWidth', 2)
 ylabel('Mass flow[-] ','LineWidth', 2)
 % axis([0 XMAX+Dx 0 2]);
-p3 = plot(x(1:NPI+1),m_in(100,1:NPI+1),'r','LineWidth',2);
-p4 = plot(x(1:NPI+1),-m_out(100,1:NPI+1),'b','LineWidth',2);
-p5 = plot(x(1:NPI+1),m_sink(100,1:NPI+1),'k','LineWidth',2);
-legend([p3, p4, p5],'m_in','m_out','m_sink','Ar','NorthEast')
+p3 = plot(x(2:NPI+1),x_dummy(2:NPI+1,1),'r','LineWidth',2);
+% p4 = plot(x(1:NPI+1),-m_out(100,2:NPI+1),'b','LineWidth',2);
+p5 = plot(x(2:NPI+1), x_dummy(2:NPI+1,2),'k','LineWidth',2);
+% legend([p3, p4, p5],'m_in','m_out','m_sink','Ar','NorthEast')
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)

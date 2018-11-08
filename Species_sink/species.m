@@ -33,7 +33,7 @@ N = 0;
 
     for j = 1:n
         for i = 1:NPI+2
-            D_k(j,i) = D(j,:)*X_k(:,i);
+            D_k(j,i) = D(j,:)*Y_k(:,i);         % Diffusion is in terms of mass so use massfraction.
         end
     end
 

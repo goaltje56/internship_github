@@ -1,7 +1,7 @@
-function [aE aW aP b Istart_F] = Fcoeff(NPI, rho, A, x, x_u, u, Y_k, D, relax_f, Dt, f_old, Dx, rho_old,n);
+function [aE aW aP b Istart_F Y_sink] = Fcoeff(NPI, rho,rho_s, A, x, x_u, u, Y_k, D, relax_f, Dt, f_old, Dx, rho_old, sink, n);
     Istart_F = 2;
     F_u = conv(NPI, rho, x, x_u, u);
-    
+    Y_sink(1:NPI+1) = 0;
     for I=Istart_F:NPI+1
         i = I;
         
@@ -19,9 +19,10 @@ function [aE aW aP b Istart_F] = Fcoeff(NPI, rho, A, x, x_u, u, Y_k, D, relax_f,
         
         Pe = Fw/Dw;
         % source terms
-        if n == 1
+        if sink == 1
             SP(I) = 0;
-            Su(I) = -0.01*Y_k(I)*A*Dx;
+            Su(I) = -0.01*rho_s*Y_k(I)*A*Dx;      % sink term depends on mass fraction
+            Y_sink(I) = Su(I);
         else 
         SP(I) = 0;
         Su(I) = 0;
