@@ -11,31 +11,12 @@
 clear all;
 close all;
 clc;
-x0 = [4000 4000 1 0 0 0];
-options = optimoptions('fsolve','Display','off','MaxIterations',1000);
-% options = optimset('Display','off');
 
-%% Read species data
-% Make these variable global
-global Runiv El Sp;
-
+% -------------------------------------------------------------------------
+%% set path to folder where values must be stored, clean the old file
 path_Results1 = 'C:\Users\s137280\Documents\Master_tue\Internship\internship_github\Species_sink\results\output.txt';
 path_Results2 = 'C:\Users\s137280\Documents\Master_tue\Internship\internship_github\Species_sink\results\diff.txt';
 
-MechanismFile = 'fuels.trot';
-
-% Read the reaction mechanism
-[El, Sp] = ReadTrotDat(MechanismFile);
-% Number of species
-Nsp = length(Sp);
-
-% Universal gas constant
-Runiv = 8.314462175;
-
-%% set timer to indicate the computation time
-timerVal = tic;
-
-% set path to folder where values must be stored, clean the old file
 % add name taggs to created file and close file again.
 test = fopen(path_Results1,'w');
 fprintf(test,'%-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s\n', 'Time','Position', 'u_Position','density','velocity','Temperature', 'Pressure', 'species1', 'species2', 'species3','species4');
@@ -46,32 +27,27 @@ test = fopen(path_Results2,'w');
 fprintf(test,'%-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s\n','Dspecies1', 'Dspecies2', 'Dspecies3','Dspecies4','X1', 'X2', 'X3','X4', 'Mr', 'Mp', 'Yr1', 'Yr2', 'Yr3', 'Yr4');
 fclose(test);
 
+% -------------------------------------------------------------------------
+%% set timer to indicate the computation time
+timerVal = tic;
+
 %% initializing
+global Patm       
+Patm        = 101325;           % athmosphesric pressure [Pa]
+
 NPI         = 100;              % number of grid cells in x-direction [-] 
 XMAX        = 1;                % length of the domain [m]
-Patm        = 101325;           % athmosphesric pressure [Pa]
 u_in        = 0.0015;           % inflow velocity [m/s]
-X_in        = [100; 50; 50; 50]; % mole flow 
 A           = 1;                % area of one cell [m^2]
-Total_time  = 500;             % total simulation time [s]
+Total_time  = 100;              % total simulation time [s]
+x0 = [4000 4000 0 0 0 0];       % initial guess for Mr, Mp and Y_{1:n}
+massflow    = 0;                % if 1 massflow else moleflow
 
+% species properties some values have to be set manually!!
+[mass, moles, rho_s, Y_k, X_k, iAll, MW, D, D_k, P_k, f_old, sink, n] = species_init(NPI, massflow);
 
-%% species properties these have to be set manually!!
-[mass, moles, Y_k, X_k, iAll, MW, D, sink, n] = species_init(NPI);
-
-rho_k   = [1 1 1 1];                            % 'Fake' density of species [kg/m^3]
-rho_s   = [1.429 1.98 1.2504 1.784];            % 'Real' density of species [kg/m^3]
-
-Gamma_k = [10 10 10 10];                        % Thermal conductivity 
-P_k     = [7.155 3.16 1.255 0]*10^(-9);         % Permeability of species
-%%
-
-% Vector of initial values for all species data             
-[rho_k, D_k, Y_k, p_k, M, rho, rho_old, f_old, Gamma] = species(NPI, n, Y_k, rho_k, [Patm Patm Patm Patm],...
-                                                        D, MW, Gamma_k);
-
-% make a vector with initial values for all parameters
-[u, p, pc, T, mu, Cp, d_u, b, SP, Su, relax_u, relax_pc, relax_T, relax_rho, relax_f, Dt, u_old, T_old, pc_old]...
+% make a vector with initial values for all non-specie dependent parameters 
+[u, rho, p, pc, T, mu, Cp, d_u, b, SP, Su, relax_u, relax_pc, relax_T, relax_rho, relax_f, Dt, u_old, rho_old, T_old, pc_old]...
  = param_init(NPI, u_in);
 
 %% grid generation
@@ -79,17 +55,18 @@ P_k     = [7.155 3.16 1.255 0]*10^(-9);         % Permeability of species
 
 store_times = 0:10:Total_time;      % define sample points to save data
 ii          = 1;
-iii         = 1;
+
+%--------------------------------------------------------------------------
 %% The main calculation part
 for time = 0:Dt:Total_time
     for z =1:100
-    [u, Y_k, p] = bound(NPI,rho,x,x_u,A,u, u_in, X_in, Y_k, p);                          % Apply boundary condtions
+    [u, Y_k, p] = bound(NPI,rho,x,x_u,A,u, u_in, moles, Y_k, p);                          % Apply boundary condtions
     
     % momentum
     [aP_u, aE_u, aW_u, b_u, d_u, Istart_u, u]   = ...
     ucoeff(NPI, rho, x, x_u, u, p, A, relax_u, d_u, mu, u_in, Dt, u_old, Dx, rho_old);          % Determine coefficients
     u                                           = solve_eq(NPI, aE_u, aW_u, aP_u, b_u, u, 3);   % Solve equation
-    [u, Y_k, p]                    = bound(NPI,rho,x,x_u,A,u, u_in, X_in, Y_k, p);       % Apply boundary condtions
+    [u, Y_k, p]                    = bound(NPI,rho,x,x_u,A,u, u_in, moles, Y_k, p);       % Apply boundary condtions
 
     % pressure correction (modified form of continuity equation)
     [aE_pc, aW_pc, aP_pc, b_pc, Istart_pc, pc]  = pccoeff(NPI, rho, A, x, x_u, u, d_u, pc, rho_old, Dx, Dt);    % Determine coefficients
@@ -100,8 +77,8 @@ for time = 0:Dt:Total_time
 
 %     %% Temperature
 %     [aE_T, aW_T, aP_T, b_T, Istart_T, aPold_T] = Tcoeff(NPI, rho, A, x, x_u, u, T, Gamma, relax_T, Dt, T_old, Dx);
-% %     [TR, r_T] = GS_solve(NPI+1,T, aW_T, aE_T, aP_T, b_T, 10^(-6));
-%  	T = solve_eq(NPI,aE_T, aW_T, aP_T, b_T, T, 2);
+%     [TR, r_T] = GS_solve(NPI+1,T, aW_T, aE_T, aP_T, b_T, 10^(-6));
+%  	  T = solve_eq(NPI,aE_T, aW_T, aP_T, b_T, T, 2);
 %     
     %% Species 
     for i = 1:n
@@ -110,26 +87,20 @@ for time = 0:Dt:Total_time
     end
     Y_k = species_bound(NPI, n, Y_k);
     
-    [u, Y_k, p] = bound(NPI,rho,x,x_u,A,u, u_in, X_in, Y_k, p);  
+    [u, Y_k, p] = bound(NPI,rho,x,x_u,A,u, u_in, moles, Y_k, p);  
 
     end
     
     for i = 2:NPI+2
-%         f = @(x0)solve_mass(x0, sum(mass), Y_k(1,1), Y_k(2,1), Y_k(3,1), Y_k(4,1), Y_k(1,i), Y_k(2,i), Y_k(3,i), Y_k(4,i), sink);
-%         x_dummy(i,1:6) = fsolve(f,x0, options); 
-%         x0          = x_dummy(i,1:6);
         x_dummy(i,:) = self_mass(sum(mass), x0, sink, Y_k(:,i), Y_k(:,1), n);
     end
-%     [m_in(iii,:) m_out(iii,:) m_sink(iii,:)] = rho_real(NPI, n, Y_k, rho_s, MW,  f_old);
     
     % store results of this run as old results for next iteration
     [u_old, pc_old, rho_old, f_old] = storeresults(NPI, u, pc, rho, Y_k, u_old, pc_old, rho_old, f_old, n);
     
-    % determine new value for D_k 
-    [X_k, D_k, Gamma]          = mole(NPI, n, Y_k, rho_s, MW, Gamma, Gamma_k, D);
+    % determine new value for X-k and D_k 
+    [X_k, D_k]          = mole(NPI, n, Y_k, MW, D);
     
-    iii =iii+1;
-% time
     % store data at different time steps
     if time == store_times(ii)
         time_x = time*ones(1,length(u));

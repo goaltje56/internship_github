@@ -12,10 +12,9 @@ iAll = [iO2 iCO2 iN2 iAr];
 n           = length(iAll);                % number of species [-]
 
 
-MW   = [Sp(iAll).Mass];%[31.9988 44.01 28.0134 39.9480];      % Molar weight of species [gr/mol]
+MW   = [Sp(iAll).Mass];      % Molar weight of species [gr/mol]
 
 X_k = X_in/(sum(X_in));
-mass = MW*X_in;
 
     for i = 1:n
         Y_k(i,1) = X_k(i)*MW(i)/(MW*X_k);

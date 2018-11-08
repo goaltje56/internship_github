@@ -6,7 +6,7 @@ function [u Y_k p] = bound(NPI,rho,x,x_u,A,u, u_in, X_in, Y_k, p)
 %     Y_k(2,1) = 0.1;
 %     Y_k(3,1) = 0.05;
 %     Y_k(4,1) = 0.05;
-
+    
     Y_k = MoleToMass(X_in, Y_k);
 
     F_u = conv(NPI, rho, x, x_u, u);
