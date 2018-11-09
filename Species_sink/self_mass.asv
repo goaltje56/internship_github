@@ -10,7 +10,7 @@ function [x] = self_mass(M, x, sink, Xr, X, n)
 Mr_new =0;
 
 while abs(x(1) - Mr_new) > 0.0001
-    A = ((Xr-x(3:n+2)') ~= 0);
+    A = ((Xr-x(3:n)) ~= 0);
     Mr_new = x(1);
     i = 1;
     if A(i) == true
@@ -18,13 +18,11 @@ while abs(x(1) - Mr_new) > 0.0001
     else
             i = i+1;
     end
-    while x(1) > M
-        x(1) = x(1)/2;
-    end
+
     counter = 0;
     for j = 1:n
         if j ~= i
-            x(j+2) = ((M*X(j)- x(1)*Xr(j))/(M-x(1)))*sink(j);
+            x(j+2) = (M*X(j)- x(1)*Xr(j))/(M-x(1));
             counter = counter + x(j+2);
         end
     end
