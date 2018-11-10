@@ -1,4 +1,4 @@
-function [mass, moles, rho_s, Y_k, X_k, iAll, MW, D, D_k, P_k, f_old, sink, n] = species_init(NPI)
+function [mass, moles, rho_s, Y_k, X_k, iAll, MW, D, D_k, P_k, f_old, sink, n] = species_init(NPI, massflow)
 
 %% Read species data
 % Make these variable global
@@ -15,20 +15,26 @@ iCO2 = find(strcmp({Sp.Name},'CO2'));
 iN2  = find(strcmp({Sp.Name},'N2'));
 iAr  = find(strcmp({Sp.Name},'AR'));
 
-%% mole flow rate in system and sink term
 iAll  = [iO2    iCO2  iN2    iAr];
-if massflow rate == 1
-    mass = [100;   50;   50;    50 ];
-else
-    moles = [100;   50;   50;    50 ];
-end
-
-sink  = [1      0     1      0  ];
-P_n   = [7.155; 3.16; 1.255; 0  ]*10^(-9);  % Permeability of species
-rho_s = [1.429 1.98 1.2504 1.784];          % 'Real' density of species [kg/m^3]
-n = length(iAll);
 
 MW   = [Sp(iAll).Mass];                  % Molar weight of species [gr/mol]
+n = length(iAll);
+
+%% mole flow rate in system and sink term
+if massflow == 1
+    mass = [4000;   2000;   1000;    1000 ];
+    moles = (mass./MW');
+else
+%     moles = [100;   50;   50;    50 ];
+    moles = [20.78 79.22];
+end
+
+sink  = [1      1];
+P_n   = [7.155; 1.255]*10^(-9);;
+% P_n   = [7.155; 3.16; 1.255; 0  ]*10^(-9);  % Permeability of species
+% rho_s = [1.429 1.98 1.2504 1.784];          % 'Real' density of species [kg/m^3]
+rho_s = [1.429 1.98 1.2504 1.784];          % 'Real' density of species [kg/m^3]
+
 
 X_k = moles/(sum(moles));
 

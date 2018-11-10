@@ -24,7 +24,7 @@ fclose(test);
 
 % add name taggs to created file and close file again.
 test = fopen(path_Results2,'w');
-fprintf(test,'%-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s\n','Dspecies1', 'Dspecies2', 'Dspecies3','Dspecies4','X1', 'X2', 'X3','X4', 'Mr', 'Mp', 'Yr1', 'Yr2', 'Yr3', 'Yr4');
+fprintf(test,'%-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s\n','Dspecies1', 'Dspecies2', 'Dspecies3','Dspecies4','X1', 'X2', 'X3','X4', 'Mr', 'Mp', 'Yp1', 'Yp2', 'Yp3', 'Yp4', 'stagecut');
 fclose(test);
 
 % -------------------------------------------------------------------------
@@ -39,12 +39,12 @@ NPI         = 100;              % number of grid cells in x-direction [-]
 XMAX        = 1;                % length of the domain [m]
 u_in        = 0.0015;           % inflow velocity [m/s]
 A           = 1;                % area of one cell [m^2]
-Total_time  = 100;              % total simulation time [s]
+Total_time  = 200;              % total simulation time [s]
 x0 = [4000 4000 0 0 0 0];       % initial guess for Mr, Mp and Y_{1:n}
 massflow    = 0;                % if 1 massflow else moleflow
 
 % species properties some values have to be set manually!!
-[mass, moles, rho_s, Y_k, X_k, iAll, MW, D, D_k, P_k, f_old, sink, n] = species_init(NPI, massflow);
+[mass, moles, rho_s, Y_k, X_k, Y_in, X_in, iAll, MW, D, D_k, P_k, f_old, sink, n] = species_init(NPI, massflow);
 
 % make a vector with initial values for all non-specie dependent parameters 
 [u, rho, p, pc, T, mu, Cp, d_u, b, SP, Su, relax_u, relax_pc, relax_T, relax_rho, relax_f, Dt, u_old, rho_old, T_old, pc_old]...
@@ -60,13 +60,13 @@ ii          = 1;
 %% The main calculation part
 for time = 0:Dt:Total_time
     for z =1:100
-    [u, Y_k, p] = bound(NPI,rho,x,x_u,A,u, u_in, moles, Y_k, p);                          % Apply boundary condtions
+    [u, Y_k, p] = bound(NPI,rho,x,x_u,A,u, u_in, Y_in, Y_k, p);                          % Apply boundary condtions
     
     % momentum
     [aP_u, aE_u, aW_u, b_u, d_u, Istart_u, u]   = ...
     ucoeff(NPI, rho, x, x_u, u, p, A, relax_u, d_u, mu, u_in, Dt, u_old, Dx, rho_old);          % Determine coefficients
     u                                           = solve_eq(NPI, aE_u, aW_u, aP_u, b_u, u, 3);   % Solve equation
-    [u, Y_k, p]                    = bound(NPI,rho,x,x_u,A,u, u_in, moles, Y_k, p);       % Apply boundary condtions
+    [u, Y_k, p]                    = bound(NPI,rho,x,x_u,A,u, u_in, Y_in, Y_k, p);       % Apply boundary condtions
 
     % pressure correction (modified form of continuity equation)
     [aE_pc, aW_pc, aP_pc, b_pc, Istart_pc, pc]  = pccoeff(NPI, rho, A, x, x_u, u, d_u, pc, rho_old, Dx, Dt);    % Determine coefficients
@@ -82,12 +82,12 @@ for time = 0:Dt:Total_time
 %     
     %% Species 
     for i = 1:n
-        [aE_f(i,:), aW_f(i,:), aP_f(i,:), b_f(i,:), Istart_f, Y_sink(i,:)] = Fcoeff(NPI, rho, rho_s(i), A, x, x_u, u, Y_k(i,:), D_k(i,:), relax_f, Dt, f_old(i,:), Dx, rho_old, sink(i), i);
+        [aE_f(i,:), aW_f(i,:), aP_f(i,:), b_f(i,:), Istart_f] = Fcoeff(NPI, rho, rho_s(i), A, x, x_u, u, Y_k(i,:), D_k(i,:), relax_f, Dt, f_old(i,:), Dx, rho_old, sink(i), i);
         Y_k(i,:) = solve_eq(NPI,aE_f(i,:), aW_f(i,:), aP_f(i,:), b_f(i,:), Y_k(i,:), 2);
     end
     Y_k = species_bound(NPI, n, Y_k);
     
-    [u, Y_k, p] = bound(NPI,rho,x,x_u,A,u, u_in, moles, Y_k, p);  
+    [u, Y_k, p] = bound(NPI,rho,x,x_u,A,u, u_in, Y_in, Y_k, p);  
 
     end
     
@@ -110,7 +110,7 @@ for time = 0:Dt:Total_time
         fclose(test);
 
         file2 = fopen(path_Results2,'a');
-        fprintf(file2,'%-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f\n',[D_k(1,:); D_k(2,:); D_k(3,:); D_k(4,:); X_k(1,:); X_k(2,:); X_k(3,:); X_k(4,:); x_dummy(:,1)'; x_dummy(:,2)'; x_dummy(:,3)'; x_dummy(:,4)'; x_dummy(:,5)'; x_dummy(:,6)']);    
+        fprintf(file2,'%-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f\n',[D_k(1,:); D_k(2,:); D_k(3,:); D_k(4,:); X_k(1,:); X_k(2,:); X_k(3,:); X_k(4,:); x_dummy(:,1)'; x_dummy(:,2)'; x_dummy(:,3)'; x_dummy(:,4)'; x_dummy(:,5)'; x_dummy(:,6)'; x_dummy(:,2)'/sum(mass)]);    
         fprintf(file2,'\n');        
         fclose(file2);
     ii = ii +1;
@@ -174,7 +174,7 @@ p3 = plot(x(1:NPI+1),Y_k(1,1:NPI+1),'r','LineWidth',2);
 p4 = plot(x(1:NPI+1),Y_k(2,1:NPI+1),'b','LineWidth',2);
 p5 = plot(x(1:NPI+1),Y_k(3,1:NPI+1),'k','LineWidth',2);
 p6 = plot(x(1:NPI+1),Y_k(4,1:NPI+1),'c','LineWidth',2);
-legend([p3, p4, p5, p6],'O_2','CO_2','N_2','Ar','NorthEast')
+legend([p3, p4],'O_2','N_2','NorthEast')
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 
 figure(6)
@@ -186,5 +186,17 @@ ylabel('Mass flow[-] ','LineWidth', 2)
 p3 = plot(x(2:NPI+1),x_dummy(2:NPI+1,1),'r','LineWidth',2);
 % p4 = plot(x(1:NPI+1),-m_out(100,2:NPI+1),'b','LineWidth',2);
 p5 = plot(x(2:NPI+1), x_dummy(2:NPI+1,2),'k','LineWidth',2);
+legend([p3, p5],'m_{retenate}','m_{permeate}','NorthEast')
+set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
+
+figure(7)
+hold on
+grid on
+xlabel('Geometric position [m] ','LineWidth', 2)
+ylabel('Normalized Permeate[-] ','LineWidth', 2)
+% axis([0 XMAX+Dx 0 2]);
+% p3 = plot(x(2:NPI+1),x_dummy(2:NPI+1,1),'r','LineWidth',2);
+% p4 = plot(x(1:NPI+1),-m_out(100,2:NPI+1),'b','LineWidth',2);
+p5 = plot(x(2:NPI+1), x_dummy(2:NPI+1,2)/sum(mass),'k','LineWidth',2);
 legend([p3, p5],'m_{retenate}','m_{permeate}','NorthEast')
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)

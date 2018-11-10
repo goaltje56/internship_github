@@ -6,6 +6,10 @@ function [x] = self_mass(M, x, sink, Xr, X, n)
 % XCp   = x(5)
 % XDp   = x(6)
 
+% M X = Mr Xr + Mp Xp
+% Mr  = M (X - Xp)/ (Xr - Xp)
+% Xp = (M X - Mr Xr) / (M-Mr)
+
 %% these equations depend on the boundary conditions!!
 Mr_new =0;
 
@@ -19,7 +23,7 @@ while abs(x(1) - Mr_new) > 0.0001
             i = i+1;
     end
     while x(1) > M
-        x(1) = x(1)/2;
+        x(1) = x(1)/1.2;
     end
     counter = 0;
     for j = 1:n
