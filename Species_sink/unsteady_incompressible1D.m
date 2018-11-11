@@ -40,8 +40,10 @@ XMAX        = 1;                % length of the domain [m]
 u_in        = 0.0015;           % inflow velocity [m/s]
 A           = 1;                % area of one cell [m^2]
 Total_time  = 200;              % total simulation time [s]
-x0 = [4000 4000 0 0 0 0];       % initial guess for Mr, Mp and Y_{1:n}
+x0 = [10 10 0 0 0 0];       % initial guess for Mr, Mp and Y_{1:n}
 massflow    = 0;                % if 1 massflow else moleflow
+Pr          = 691*10^3;
+Pp          = 103*103;
 
 % species properties some values have to be set manually!!
 [mass, moles, rho_s, Y_k, X_k, Y_in, X_in, iAll, MW, D, D_k, P_k, f_old, sink, n] = species_init(NPI, massflow);
@@ -102,18 +104,18 @@ for time = 0:Dt:Total_time
     [X_k, D_k]          = mole(NPI, n, Y_k, MW, D);
     
     % store data at different time steps
-    if time == store_times(ii)
-        time_x = time*ones(1,length(u));
-        test = fopen(path_Results1,'a');
-        fprintf(test,'%-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f\n',[time_x; x; x_u; rho; u; T; p; Y_k(1,:); Y_k(2,:); Y_k(3,:); Y_k(4,:)]);    
-        fprintf(test,'\n');        
-        fclose(test);
+%     if time == store_times(ii)
+%         time_x = time*ones(1,length(u));
+%         test = fopen(path_Results1,'a');
+%         fprintf(test,'%-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f\n',[time_x; x; x_u; rho; u; T; p; Y_k(1,:); Y_k(2,:); Y_k(3,:); Y_k(4,:)]);    
+%         fprintf(test,'\n');        
+%         fclose(test);
 
-        file2 = fopen(path_Results2,'a');
-        fprintf(file2,'%-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f\n',[D_k(1,:); D_k(2,:); D_k(3,:); D_k(4,:); X_k(1,:); X_k(2,:); X_k(3,:); X_k(4,:); x_dummy(:,1)'; x_dummy(:,2)'; x_dummy(:,3)'; x_dummy(:,4)'; x_dummy(:,5)'; x_dummy(:,6)'; x_dummy(:,2)'/sum(mass)]);    
-        fprintf(file2,'\n');        
-        fclose(file2);
-    ii = ii +1;
+%         file2 = fopen(path_Results2,'a');
+%         fprintf(file2,'%-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f\n',[D_k(1,:); D_k(2,:); D_k(3,:); D_k(4,:); X_k(1,:); X_k(2,:); X_k(3,:); X_k(4,:); x_dummy(:,1)'; x_dummy(:,2)'; x_dummy(:,3)'; x_dummy(:,4)'; x_dummy(:,5)'; x_dummy(:,6)'; x_dummy(:,2)'/sum(mass)]);    
+%         fprintf(file2,'\n');        
+%         fclose(file2);
+%     ii = ii +1;
 %     elseif mod(Total_time,time) == 0 
 %         time_x = time*ones(1,length(u));
 %         test = fopen(path_Results1,'a');
@@ -125,7 +127,7 @@ for time = 0:Dt:Total_time
 %         fprintf(file2,'%-12.12f %-12.12f %-12.12f %-12.12f\n',[D_k(1,:); D_k(2,:); D_k(3,:); D_k(4,:)]);    
 %         fprintf(file2,'\n');        
 %         fclose(file2);
-    end
+%     end
 %     time
 end
 
@@ -172,8 +174,8 @@ ylabel('Mass fraction [-] ','LineWidth', 2)
 axis([0 XMAX+Dx 0 2]);
 p3 = plot(x(1:NPI+1),Y_k(1,1:NPI+1),'r','LineWidth',2);
 p4 = plot(x(1:NPI+1),Y_k(2,1:NPI+1),'b','LineWidth',2);
-p5 = plot(x(1:NPI+1),Y_k(3,1:NPI+1),'k','LineWidth',2);
-p6 = plot(x(1:NPI+1),Y_k(4,1:NPI+1),'c','LineWidth',2);
+% p5 = plot(x(1:NPI+1),Y_k(3,1:NPI+1),'k','LineWidth',2);
+% p6 = plot(x(1:NPI+1),Y_k(4,1:NPI+1),'c','LineWidth',2);
 legend([p3, p4],'O_2','N_2','NorthEast')
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 

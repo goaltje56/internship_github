@@ -32,7 +32,7 @@ end
     X_in  = moles/sum(moles);
  
     
-sink  = [1   0   1  0];
+sink  = [1  0  1  0];
 % P_n   = [7.155; 1.255]*10^(-9);
 P_n   = [7.155; 3.16; 1.255; 0  ]*10^(-9);  % Permeability of species
 rho_s = [1.429 1.98 1.2504 1.784];          % 'Real' density of species [kg/m^3]
