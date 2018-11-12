@@ -14,8 +14,9 @@ clc;
 
 % -------------------------------------------------------------------------
 %% set path to folder where values must be stored, clean the old file
-path_Results1 = 'C:\Users\s137280\Documents\Master_tue\Internship\internship_github\Species_sink\results\output.txt';
-path_Results2 = 'C:\Users\s137280\Documents\Master_tue\Internship\internship_github\Species_sink\results\diff.txt';
+path_Results1 = 'C:\Users\s137280\Documents\Master_tue\Internship\internship_github\species_12_11_2018\results\output.txt';
+path_Results2 = 'C:\Users\s137280\Documents\Master_tue\Internship\internship_github\species_12_11_2018\results\diff.txt';
+path_Results3 = 'C:\Users\s137280\Documents\Master_tue\Internship\internship_github\species_12_11_2018\results\x_dummy.txt';
 
 % add name taggs to created file and close file again.
 test = fopen(path_Results1,'w');
@@ -24,9 +25,13 @@ fclose(test);
 
 % add name taggs to created file and close file again.
 test = fopen(path_Results2,'w');
-fprintf(test,'%-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s\n','Dspecies1', 'Dspecies2', 'Dspecies3','Dspecies4','X1', 'X2', 'X3','X4', 'Mr', 'Mp', 'Yp1', 'Yp2', 'Yp3', 'Yp4', 'stagecut');
+fprintf(test,'%-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s\n','Dspecies1', 'Dspecies2', 'Dspecies3','Dspecies4','X1', 'X2', 'X3','X4');
 fclose(test);
 
+% add name taggs to created file and close file again.
+test = fopen(path_Results3,'w');
+fprintf(test,'%-12s %-12s %-12s %-12s %-12s %-12s %-12s\n','Mr', 'Mp', 'Yp1', 'Yp2', 'Yp3', 'Yp4', 'stagecut');
+fclose(test);
 % -------------------------------------------------------------------------
 %% set timer to indicate the computation time
 timerVal = tic;
@@ -94,28 +99,35 @@ for time = 0:Dt:Total_time
     end
     
     for i = 2:NPI+1
-        x_dummy(i,:) = self_mass((u(2)*rho(2)), x0, sink, Y_k(:,i), Y_k(:,1), Y_sink(:,i), n)
+        [x_dummy(i,:), Xr(i,:)] = self_mass((u(2)*rho(2)), x0, sink, Y_k(:,i), Y_k(:,1), Y_sink(:,1:i), n);
     end
-    
+    Xr_new = Xr';
+    Y_k(:,2:end) = Xr_new(:;
     % store results of this run as old results for next iteration
     [u_old, pc_old, rho_old, f_old] = storeresults(NPI, u, pc, rho, Y_k, u_old, pc_old, rho_old, f_old, n);
     
     % determine new value for X-k and D_k 
     [X_k, D_k]          = mole(NPI, n, Y_k, MW, D);
     
-    % store data at different time steps
-%     if time == store_times(ii)
-%         time_x = time*ones(1,length(u));
-%         test = fopen(path_Results1,'a');
-%         fprintf(test,'%-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f\n',[time_x; x; x_u; rho; u; T; p; Y_k(1,:); Y_k(2,:); Y_k(3,:); Y_k(4,:)]);    
-%         fprintf(test,'\n');        
-%         fclose(test);
+%     store data at different time steps
+    if time == store_times(ii)
+        time_x = time*ones(1,length(u));
+        test = fopen(path_Results1,'a');
+        fprintf(test,'%-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f\n',[time_x; x; x_u; rho; u; T; p; Y_k(1,:); Y_k(2,:); Y_k(3,:); Y_k(4,:)]);    
+        fprintf(test,'\n');        
+        fclose(test);
 
-%         file2 = fopen(path_Results2,'a');
-%         fprintf(file2,'%-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f\n',[D_k(1,:); D_k(2,:); D_k(3,:); D_k(4,:); X_k(1,:); X_k(2,:); X_k(3,:); X_k(4,:); x_dummy(:,1)'; x_dummy(:,2)'; x_dummy(:,3)'; x_dummy(:,4)'; x_dummy(:,5)'; x_dummy(:,6)'; x_dummy(:,2)'/sum(mass)]);    
-%         fprintf(file2,'\n');        
-%         fclose(file2);
-%     ii = ii +1;
+        file2 = fopen(path_Results2,'a');
+        fprintf(file2,'%-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f\n',[D_k(1,:); D_k(2,:); D_k(3,:); D_k(4,:); X_k(1,:); X_k(2,:); X_k(3,:); X_k(4,:)]);    
+        fprintf(file2,'\n');        
+        fclose(file2);
+        
+        file3 = fopen(path_Results3,'a');
+        fprintf(file3,'%-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f\n',[x_dummy(:,1)'; x_dummy(:,2)'; x_dummy(:,3)'; x_dummy(:,4)'; x_dummy(:,5)'; x_dummy(:,6)'; x_dummy(:,2)'/(rho(5)*u(5))]);    
+        fprintf(file3,'\n');        
+        fclose(file3);        
+        
+    ii = ii +1;
 %     elseif mod(Total_time,time) == 0 
 %         time_x = time*ones(1,length(u));
 %         test = fopen(path_Results1,'a');
@@ -127,7 +139,7 @@ for time = 0:Dt:Total_time
 %         fprintf(file2,'%-12.12f %-12.12f %-12.12f %-12.12f\n',[D_k(1,:); D_k(2,:); D_k(3,:); D_k(4,:)]);    
 %         fprintf(file2,'\n');        
 %         fclose(file2);
-%     end
+    end
 %     time
 end
 
@@ -174,9 +186,22 @@ ylabel('Mass fraction [-] ','LineWidth', 2)
 axis([0 XMAX+Dx 0 2]);
 p3 = plot(x(1:NPI+1),Y_k(1,1:NPI+1),'r','LineWidth',2);
 p4 = plot(x(1:NPI+1),Y_k(2,1:NPI+1),'b','LineWidth',2);
-% p5 = plot(x(1:NPI+1),Y_k(3,1:NPI+1),'k','LineWidth',2);
-% p6 = plot(x(1:NPI+1),Y_k(4,1:NPI+1),'c','LineWidth',2);
-legend([p3, p4],'O_2','N_2','NorthEast')
+p5 = plot(x(1:NPI+1),Y_k(3,1:NPI+1),'k','LineWidth',2);
+p6 = plot(x(1:NPI+1),Y_k(4,1:NPI+1),'c','LineWidth',2);
+legend([p3, p4, p5, p6],'O_2','CO2','N_2','AR','NorthEast')
+set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
+
+figure(4)
+hold on
+grid on
+xlabel('Geometric position [m] ','LineWidth', 2)
+ylabel('Mass fraction [-] ','LineWidth', 2)
+axis([0 XMAX+Dx 0 2]);
+p3 = plot(x(2:NPI+1),Xr(2:NPI+1,1),'r','LineWidth',2);
+p4 = plot(x(2:NPI+1),Xr(2:NPI+1,2),'b','LineWidth',2);
+p5 = plot(x(2:NPI+1),Xr(2:NPI+1,3),'k','LineWidth',2);
+p6 = plot(x(2:NPI+1),Xr(2:NPI+1,4),'c','LineWidth',2);
+legend([p3, p4, p5, p6],'O_2','CO2','N_2','AR','NorthEast')
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 
 figure(6)
@@ -199,6 +224,18 @@ ylabel('Normalized Permeate[-] ','LineWidth', 2)
 % axis([0 XMAX+Dx 0 2]);
 % p3 = plot(x(2:NPI+1),x_dummy(2:NPI+1,1),'r','LineWidth',2);
 % p4 = plot(x(1:NPI+1),-m_out(100,2:NPI+1),'b','LineWidth',2);
-p5 = plot(x(2:NPI+1), x_dummy(2:NPI+1,2)/sum(mass),'k','LineWidth',2);
+p5 = plot(x(2:NPI+1), x_dummy(2:NPI+1,2)/(rho(5)*u(5)),'k','LineWidth',2);
 legend([p3, p5],'m_{retenate}','m_{permeate}','NorthEast')
+set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
+
+figure(8)
+hold on
+grid on
+xlabel('Geometric position [m] ','LineWidth', 2)
+ylabel('Stage cut[-] ','LineWidth', 2)
+% axis([0 XMAX+Dx 0 2]);
+% p3 = plot(x(2:NPI+1),x_dummy(2:NPI+1,1),'r','LineWidth',2);
+% p4 = plot(x(1:NPI+1),-m_out(100,2:NPI+1),'b','LineWidth',2);
+p5 = plot(x_dummy(2:NPI+1,2)/(rho(5)*u(5)),x_dummy(2:NPI+1,5) ,'k','LineWidth',2);
+% legend([p3, p5],'m_{retenate}','m_{permeate}','NorthEast')
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)

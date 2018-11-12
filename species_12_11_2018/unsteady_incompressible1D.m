@@ -99,9 +99,12 @@ for time = 0:Dt:Total_time
     end
     
     for i = 2:NPI+1
-        x_dummy(i,:) = self_mass((u(2)*rho(2)), x0, sink, Y_k(:,i), Y_k(:,1), Y_sink(:,1:i), n);
+        [x_dummy(i,:), Xr(i,:)] = self_mass((u(2)*rho(2)), x0, sink, Y_k(:,i), Y_k(:,1), Y_sink(:,1:i), n);
     end
-    
+    Xr_new = Xr';
+    Y_k(:,2:end-1) = Xr_new(:,2:end);
+    [u, Y_k, p] = bound(NPI,rho,x,x_u,A,u, u_in, Y_in, Y_k, p);  
+
     % store results of this run as old results for next iteration
     [u_old, pc_old, rho_old, f_old] = storeresults(NPI, u, pc, rho, Y_k, u_old, pc_old, rho_old, f_old, n);
     
@@ -190,6 +193,19 @@ p6 = plot(x(1:NPI+1),Y_k(4,1:NPI+1),'c','LineWidth',2);
 legend([p3, p4, p5, p6],'O_2','CO2','N_2','AR','NorthEast')
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 
+figure(4)
+hold on
+grid on
+xlabel('Geometric position [m] ','LineWidth', 2)
+ylabel('Mass fraction [-] ','LineWidth', 2)
+axis([0 XMAX+Dx 0 2]);
+p3 = plot(x(2:NPI+1),Xr(2:NPI+1,1),'r','LineWidth',2);
+p4 = plot(x(2:NPI+1),Xr(2:NPI+1,2),'b','LineWidth',2);
+p5 = plot(x(2:NPI+1),Xr(2:NPI+1,3),'k','LineWidth',2);
+p6 = plot(x(2:NPI+1),Xr(2:NPI+1,4),'c','LineWidth',2);
+legend([p3, p4, p5, p6],'O_2','CO2','N_2','AR','NorthEast')
+set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
+
 figure(6)
 hold on
 grid on
@@ -222,6 +238,6 @@ ylabel('Stage cut[-] ','LineWidth', 2)
 % axis([0 XMAX+Dx 0 2]);
 % p3 = plot(x(2:NPI+1),x_dummy(2:NPI+1,1),'r','LineWidth',2);
 % p4 = plot(x(1:NPI+1),-m_out(100,2:NPI+1),'b','LineWidth',2);
-p5 = plot(x_dummy(2:NPI+1,2)/(rho(5)*u(5)),x_dummy(2:NPI+1,5) ,'r','LineWidth',2);
+p5 = plot(x_dummy(2:NPI+1,2)/(rho(5)*u(5)),x_dummy(2:NPI+1,5) ,'k','LineWidth',2);
 % legend([p3, p5],'m_{retenate}','m_{permeate}','NorthEast')
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)

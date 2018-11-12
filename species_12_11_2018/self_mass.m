@@ -1,4 +1,4 @@
-function [x] = self_mass(M, x, sink, Xr, X, Y_sink, n)
+function [x Xr] = self_mass(M, x, sink, Xr, X, Y_sink, n)
 % Mr    = x(1)
 % Mp    = x(2)
 % XAp   = x(3)
@@ -25,4 +25,10 @@ for j = 1:n
     end
 end
 
+for i = 1:n
+    Xr(i) = (M*X(i) -x(2)*x(i+2))/x(1);
+end
+a= M*X(1);
+b= x(2)*x(3);
+c = 0;
 end

@@ -1,4 +1,4 @@
-function [x] = self_mass(M, x, sink, Xr, X, Y_sink, n)
+function [x Xr] = self_mass(M, x, sink, Xr, X, Y_sink, n)
 % Mr    = x(1)
 % Mp    = x(2)
 % XAp   = x(3)
@@ -13,8 +13,17 @@ function [x] = self_mass(M, x, sink, Xr, X, Y_sink, n)
 %% these equations depend on the boundary conditions!!
 Mr_new =0;
 
-x(2) = sum(Y_sink);
+x(2) = -sum(sum(Y_sink(1:end)));
 x(1) = M - x(2);
+
+for j = 1:n
+    x(j+2) = 1;
+    for i = 1:n
+        if i ~= j
+            x(j+2) = x(j+2) + sum(Y_sink(i,1:end))/x(2);
+        end
+    end
+end
 
 
 end
