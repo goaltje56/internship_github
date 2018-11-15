@@ -20,7 +20,7 @@ path_Results3 = 'C:\Users\s137280\Documents\Master_tue\Internship\internship_git
 
 % add name taggs to created file and close file again.
 test = fopen(path_Results1,'w');
-fprintf(test,'%-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s\n', 'Time','Position', 'u_Position', 'species1', 'species2', 'species3','species4');
+fprintf(test,'%-12s %-12s %-12s %-12s %-12s %-12s %-12s \n', 'Time','Position', 'u_Position', 'species1', 'species2', 'species3','species4');
 fclose(test);
 
 % add name taggs to created file and close file again.
@@ -46,7 +46,7 @@ XMAX        = 1;                % length of the domain [m]
 u_in        = 1.5;              % inflow velocity [m/s]
 T           = 298;              % temperature
 A           = 1;                % area of one cell [m^2]
-Total_time  = 600;              % total simulation time [s]
+Total_time  = 2000;              % total simulation time [s]
 x0 = [0 0 0 0 0 0];       % initial guess for Mr, Mp and Y_{1:n}
 Pr          = 691*10^3;
 Pp          = 103*103;
