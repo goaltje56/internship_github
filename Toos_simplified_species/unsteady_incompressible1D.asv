@@ -43,10 +43,10 @@ Runi        = 8.314;
 
 NPI         = 100;              % number of grid cells in x-direction [-] 
 XMAX        = 1;                % length of the domain [m]
-u_in        = 0.0025;           % inflow velocity [m/s]
-T           = 278;              % temperature
+u_in        = 1.5;              % inflow velocity [m/s]
+T           = 298;              % temperature
 A           = 1;                % area of one cell [m^2]
-Total_time  = 200;              % total simulation time [s]
+Total_time  = 100;              % total simulation time [s]
 x0 = [0 0 0 0 0 0];       % initial guess for Mr, Mp and Y_{1:n}
 Pr          = 691*10^3;
 Pp          = 103*103;
@@ -67,7 +67,7 @@ ii          = 1;
 %% The main calculation part
 for time = 0:Dt:Total_time
     for z =1:100
-    Y_k = bound(NPI, Y_in, Y_k);                          % Apply boundary condtions
+    [Y_k Y2_k] = bound(NPI, Y_in, Y2_in, Y_k, Y2_k);                          % Apply boundary condtions
     
     %% Species 
     for i = 1:n
@@ -76,28 +76,31 @@ for time = 0:Dt:Total_time
     end
     Y_k = species_bound(NPI, n, Y_k);
     
-    Y_k = bound(NPI, Y_in, Y_k);  
+    [Y_k, Y2_k] = bound(NPI, Y_in, Y2_in, Y_k, Y2_k);  
+    
+    % determine new value for X_k rho_real and D_k 
+    [X_k, D_k, rho_real, rho2_real]          = mole(NPI, n, Y_k, Y2_k, MW, D, rho_s);
     
     for i = 2:NPI+1
-        [x_dummy(i,:), Xr(i,:)] = self_mass((rho_real(1)*u_in), x0, sink, Y_k(:,i), Y_k(:,1), Y_sink(:,1:i), n);
+        [x_dummy(i,:), Xr(i,:)] = self_mass2((rho_real(1)*u_in),(rho2_real(2)*u_in), x0, sink, Y_k(:,i), Y_k(:,1), Y_sink(:,1:i), n);
     end
 
-    for i = 2:NPI+1
-        [Yp(i,:) Mp(i,:)] = mass_permeate(M, Y_k(:,1), Y_k(:,i), rho_real, u_in)
-    end
+%     for i = 2:NPI+1
+%         [Yp(i,:) Mp(i,:)] = mass_permeate(Y_k(:,1), Y_k(:,i), rho_real(1)*u_in, rho_real(i), u_in)
+%     end
    
-%     % correct the mass fractions at retenate side
-%     Xr_new = Xr';
+    % correct the mass fractions at retenate side
+    Xr_new = Xr';
 %     Y_k(:,2:end-1) = Xr_new(:,2:end);
-%     [u, Y_k, p] = bound(NPI,rho,x,x_u,A,u, u_in, Y_in, Y_k, p);  
+%     [Y_k, Y2_k] = bound(NPI,Y_in, Y2_in, Y_k, Y2_k);  
 %     Y_k = species_bound(NPI, n, Y_k);
 
-    %% Permeate Species 
-    for i = 1:n
-        [aE_f(i,:), aW_f(i,:), aP_f(i,:), b_f(i,:), Istart_f, Y_source(i,:)] = F2coeff(NPI, rho2_real, rho_s(i), A, x, x_u, u, Y_k(i,:), Y2_k(i,:),T, rho_real, rho2_real, P_k(i,:), D_k(i,:), relax_f, Dt, f2_old(i,:), Dx, rho2_old, sink(i), Y_sink(i,:), i);
-        Y2_k(i,:) = solve_eq(NPI,aE_f(i,:), aW_f(i,:), aP_f(i,:), b_f(i,:), Y2_k(i,:), 2);
-    end
-    Y2_k = species_bound(NPI, n, Y2_k);
+%     %% Permeate Species 
+%     for i = 1:n
+%         [aE_f(i,:), aW_f(i,:), aP_f(i,:), b_f(i,:), Istart_f, Y_source(i,:)] = F2coeff(NPI, rho2_real, rho_s(i), A, x, x_u, u, Y_k(i,:), Y2_k(i,:),T, rho_real, rho2_real, P_k(i,:), D_k(i,:), relax_f, Dt, f2_old(i,:), Dx, rho2_old, sink(i), Y_sink(i,:), i);
+%         Y2_k(i,:) = solve_eq(NPI,aE_f(i,:), aW_f(i,:), aP_f(i,:), b_f(i,:), Y2_k(i,:), 2);
+%     end
+%     Y2_k = species_bound(NPI, n, Y2_k);
     end
     % store results of this run as old results for next iteration
     [rho_old, rho2_old, f_old, f2_old] = storeresults(NPI, rho_real, rho2_real, Y_k, Y2_k, rho_old, rho2_old, f_old, f2_old, n);
@@ -221,6 +224,6 @@ ylabel('Stage cut[-] ','LineWidth', 2)
 % axis([0 XMAX+Dx 0 2]);
 % p3 = plot(x(2:NPI+1),x_dummy(2:NPI+1,1),'r','LineWidth',2);
 % p4 = plot(x(1:NPI+1),-m_out(100,2:NPI+1),'b','LineWidth',2);
-p5 = plot(x_dummy(2:NPI+1,2)/(rho_real(1)*u_in),x_dummy(2:NPI+1,5) ,'k','LineWidth',2);
+p5 = plot(x_dummy(2:NPI+1,2)/(rho_real(1)*u_in),x_dummy(2:NPI+1,6) ,'k','LineWidth',2);
 % legend([p3, p5],'m_{retenate}','m_{permeate}','NorthEast')
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)

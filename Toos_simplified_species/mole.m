@@ -21,11 +21,10 @@ global Runiv
     end
 
     for j = 1:n
-        for i = 1:NPI+2
+        for i = 1:NPI+1
             D_k(j,i) = D(j,:)*X_k(:,i);
             rho_real(1,i) = rho_s*Y_k(:,i);
             rho2_real(1,i) = rho_s*Y2_k(:,i);            
         end
     end
-
 end

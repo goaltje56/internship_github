@@ -21,14 +21,14 @@ MW   = [Sp(iAll).Mass];                  % Molar weight of species [gr/mol]
 n = length(iAll);
 
 %% mole flow rate in system and sink term
-moles = [100;   50;   50;    50 ];
-moles2 =[0  ;   0 ;   0 ;    1  ];
+moles = [0.22;  0.05;  0.728;  0.002 ];
+moles2 =[0  ;   0 ; 0 ; 1  ];
 X_in  = moles/sum(moles);
-X_in2 = moles2/sum(moles2); 
+X_in2 = moles2/sum(moles); 
     
-sink  = [1  0  1  0];
+sink  = [0  1  0  1];
 % P_n   = [7.155; 1.255]*10^(-9);
-P_n   = [7.155; 3.16; 1.255; 0  ]*10^(-9);  % Permeability of species
+P_n   = [0; 350; 0; 21]*10^(-9);  % Permeability of species
 rho_s = [1.429 1.98 1.2504 1.784];          % 'Real' density of species [kg/m^3]
 % rho_s = [1.429 1.2504];          % 'Real' density of species [kg/m^3]
 
@@ -40,7 +40,7 @@ rho_s = [1.429 1.98 1.2504 1.784];          % 'Real' density of species [kg/m^3]
 
     end
 Y_in  = Y(:,1);
-Y_in2 = Y2(:,1);
+Y_in2 = [0;0;0;0];
 
 MW1 = MW*X_in;                           % molar weight of mixture    
 MW2 = MW*X_in2;                         % molar weight of mixture    

@@ -16,15 +16,15 @@ yyy = C.data;
 % Assign some pointers
 it   = find(strcmpi('Time',A.colheaders));
 ix   = find(strcmpi('Position',A.colheaders));
-ix_u   = find(strcmpi('u_Position',A.colheaders));
-iu   = find(strcmpi('Velocity',A.colheaders));
-iT   = find(strcmpi('Temperature',A.colheaders));
-iP   = find(strcmpi('Pressure',A.colheaders));
+% ix_u   = find(strcmpi('u_Position',A.colheaders));
+% iu   = find(strcmpi('Velocity',A.colheaders));
+% iT   = find(strcmpi('Temperature',A.colheaders));
+% iP   = find(strcmpi('Pressure',A.colheaders));
 if1  = find(strcmpi('species1',A.colheaders));
 if2  = find(strcmpi('species2',A.colheaders));
 if3  = find(strcmpi('species3',A.colheaders));
 if4  = find(strcmpi('species4',A.colheaders));
-irho  = find(strcmpi('density',A.colheaders));
+% irho  = find(strcmpi('density',A.colheaders));
 
 iD1  = find(strcmpi('Dspecies1',B.colheaders));
 iD2  = find(strcmpi('Dspecies2',B.colheaders));
@@ -46,14 +46,14 @@ iYr4 = find(strcmpi('Yp4',C.colheaders));
 time = y(:,it);
 x = y(:,ix);
 x_u = y(:,ix_u);
-u = y(:,iu);
-T = y(:,iT);
-P = y(:,iP);
+% u = y(:,iu);
+% T = y(:,iT);
+% P = y(:,iP);
 f1 = y(:,if1);
 f2 = y(:,if2);
 f3 = y(:,if3);
 f4 = y(:,if4);
-rho = y(:,irho);
+% rho = y(:,irho);
 
 D1 = yy(:,iD1);
 D2 = yy(:,iD2);
@@ -218,7 +218,7 @@ grid on
 subplot(2,2,1);
 p1 = plot(x_new(1:row-1,:),X1_new(1:row-1,:),'-b','LineWidth',2);
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
-axis([0 1 0 1])
+% axis([0 1 0 1])
 legend(p1,'X_{O_2}', 'Location','SouthEast')
 xlabel('Geometric position [m] ','LineWidth', 2)
 ylabel('Mole fraction [-]','LineWidth', 2)
@@ -226,7 +226,7 @@ ylabel('Mole fraction [-]','LineWidth', 2)
 subplot(2,2,2);
 p2 = plot(x_new(1:row-1,:),X2_new(1:row-1,:),'-r','LineWidth',2);
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
-axis([0 1 0 1])
+% axis([0 1 0 1])
 legend(p2,'X_{CO_2}', 'Location','NorthEast')
 xlabel('Geometric position [m] ','LineWidth', 2)
 ylabel('Mole fraction','LineWidth', 2)
@@ -234,7 +234,7 @@ ylabel('Mole fraction','LineWidth', 2)
 subplot(2,2,3);
 p3 = plot(x_new(1:row-1,:),X3_new(1:row-1,:),'-k','LineWidth',2);
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
-axis([0 1 0 1])
+% axis([0 1 0 1])
 legend(p3,'X_{N_2}', 'Location','SouthEast')
 xlabel('Geometric position [m] ','LineWidth', 2)
 ylabel('Mole fraction','LineWidth', 2)
@@ -242,51 +242,52 @@ ylabel('Mole fraction','LineWidth', 2)
 subplot(2,2,4);
 p4 = plot(x_new(1:row-1,:),X4_new(1:row-1,:),'-c','LineWidth',2);
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
-axis([0 1 0 1])
+% axis([0 1 0 1])
 legend(p4,'X_{AR}', 'Location','SouthEast')
 xlabel('Geometric position [m] ','LineWidth', 2)
 ylabel('Mole fraction ','LineWidth', 2)
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%             here starts the video generation                        %%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Fall = struct('O2',f1_new,'CO2',f2_new,'N2',f3_new,'AR',f4_new);
-Xall = struct('O2',X1_new,'CO2',X2_new,'N2',X3_new,'AR',X4_new);
-Yall = struct('O2',Yr1_new,'CO2',Yr2_new,'N2',Yr3_new,'AR',Yr4_new);
+% % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % %%%             here starts the video generation                        %%%
+% % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % Fall = struct('O2',f1_new,'CO2',f2_new,'N2',f3_new,'AR',f4_new);
+% % Xall = struct('O2',X1_new,'CO2',X2_new,'N2',X3_new,'AR',X4_new);
+% % Yall = struct('O2',Yr1_new,'CO2',Yr2_new,'N2',Yr3_new,'AR',Yr4_new);
+% % 
+% % fields = fieldnames(Yall);
+% % 
+% % for i = 1:numel(fields)
+% %     fields(i);
+% %     path_Results = strcat('C:\Users\s137280\Documents\Master_tue\Internship\internship_github\JAMES_species_13_11_2018\results\Ytotal',num2str(i),'.avi');
+% %     filename = VideoWriter(path_Results)
+% %     filename.FrameRate = 4;
+% % 
+% %     axis tight manual % this ensures that getframe() returns a consistent size
+% %     for n = 1:1:col
+% %         
+% %     %% mass fraction
+% %     h1 = figure(10);
+% %     hold on
+% %     p1 = plot(x_new(2:row-1,n),Mr_new(2:row-1,n).*Fall.(fields{i})(2:row-1,n),'-r','LineWidth',2);
+% %     p2 = plot(x_new(2:row-1,n),Mp_new(2:row-1,n).*Yall.(fields{i})(2:row-1,n),'-k','LineWidth',2);
+% % 
+% %     set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15);
+% % 
+% %     axis([0 1 0 0.0016]);
+% %     legend([p1 p2], strcat(fields{i}, ' M_r'), strcat(fields{i}, ' M_p'), 'Location','NorthEast');
+% %     xlabel('Geometric position [m] ','LineWidth', 2);
+% %     ylabel('Mass fraction [-] ','LineWidth', 2);
+% %     title(strcat('Time:',num2str(time(row*n))));
+% %     frame1 = getframe(h1);
+% %     open(filename);
+% %     writeVideo(filename,frame1); 
+% %     close(figure(10)); 
+% %     end
+% %     
+% %     close(filename);
+% %     
+% % end
 
-fields = fieldnames(Yall);
-
-for i = 1:numel(fields)
-    fields(i);
-    path_Results = strcat('C:\Users\s137280\Documents\Master_tue\Internship\internship_github\JAMES_species_13_11_2018\results\Ytotal',num2str(i),'.avi');
-    filename = VideoWriter(path_Results)
-    filename.FrameRate = 4;
-
-    axis tight manual % this ensures that getframe() returns a consistent size
-    for n = 1:1:col
-        
-    %% mass fraction
-    h1 = figure(10);
-    hold on
-    p1 = plot(x_new(2:row-1,n),Mr_new(2:row-1,n).*Fall.(fields{i})(2:row-1,n),'-r','LineWidth',2);
-    p2 = plot(x_new(2:row-1,n),Mp_new(2:row-1,n).*Yall.(fields{i})(2:row-1,n),'-k','LineWidth',2);
-
-    set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15);
-
-    axis([0 1 0 0.0016]);
-    legend([p1 p2], strcat(fields{i}, ' M_r'), strcat(fields{i}, ' M_p'), 'Location','NorthEast');
-    xlabel('Geometric position [m] ','LineWidth', 2);
-    ylabel('Mass fraction [-] ','LineWidth', 2);
-    title(strcat('Time:',num2str(time(row*n))));
-    frame1 = getframe(h1);
-    open(filename);
-    writeVideo(filename,frame1); 
-    close(figure(10)); 
-    end
-    
-    close(filename);
-    
-end
 % for i = 1:numel(fields)
 %     fields(i);
 %     path_Results = strcat('C:\Users\s137280\Documents\Master_tue\Internship\internship_github\Species_sink\results\Y',num2str(i),'.avi');
