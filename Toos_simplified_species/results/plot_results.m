@@ -30,22 +30,22 @@ iD1  = find(strcmpi('Dspecies1',B.colheaders));
 iD2  = find(strcmpi('Dspecies2',B.colheaders));
 iD3  = find(strcmpi('Dspecies3',B.colheaders));
 iD4  = find(strcmpi('Dspecies4',B.colheaders));
-iX1  = find(strcmpi('X1',B.colheaders));
-iX2  = find(strcmpi('X2',B.colheaders));
-iX3  = find(strcmpi('X3',B.colheaders));
-iX4  = find(strcmpi('X4',B.colheaders));
+iX1  = find(strcmpi('Yp1',B.colheaders));
+iX2  = find(strcmpi('Yp2',B.colheaders));
+iX3  = find(strcmpi('Yp3',B.colheaders));
+iX4  = find(strcmpi('Yp4',B.colheaders));
 
 iMr  = find(strcmpi('Mr',C.colheaders));
 iMp  = find(strcmpi('Mp',C.colheaders));
-iYr1 = find(strcmpi('Yp1',C.colheaders));
-iYr2 = find(strcmpi('Yp2',C.colheaders));
-iYr3 = find(strcmpi('Yp3',C.colheaders));
-iYr4 = find(strcmpi('Yp4',C.colheaders));
+iYr1 = find(strcmpi('permated1',C.colheaders));
+iYr2 = find(strcmpi('permated2',C.colheaders));
+iYr3 = find(strcmpi('permated3',C.colheaders));
+iYr4 = find(strcmpi('permated4',C.colheaders));
 
 % store the values in the appropriate array
 time = y(:,it);
 x = y(:,ix);
-x_u = y(:,ix_u);
+% x_u = y(:,ix_u);
 % u = y(:,iu);
 % T = y(:,iT);
 % P = y(:,iP);
@@ -74,19 +74,19 @@ Yr4 = yyy(:,iYr4);
 % reshape the array such that they can be plotted within
 % the computational domain. 
 col = length(unique(time));
-row = length(u)/col;
+row = length(f1)/col;
 row2 = length(Mr)/col;
 
 x_new = reshape(x,[row, col]);
-x_u_new = reshape(x_u,[row, col]);
-u_new = reshape(u,[row, col]);
-T_new = reshape(T,[row, col]);
-P_new = reshape(P,[row, col]);
+% x_u_new = reshape(x_u,[row, col]);
+% u_new = reshape(u,[row, col]);
+% T_new = reshape(T,[row, col]);
+% P_new = reshape(P,[row, col]);
 f1_new = reshape(f1,[row, col]);
 f2_new = reshape(f2,[row, col]);
 f3_new = reshape(f3,[row, col]);
 f4_new = reshape(f4,[row, col]);
-rho_new = reshape(rho,[row, col]);
+% rho_new = reshape(rho,[row, col]);
 
 D1_new = reshape(D1,[row, col]);
 D2_new = reshape(D2,[row, col]);
@@ -113,24 +113,24 @@ Yr4_new = reshape(Yr4,[row2, col]);
 % legend('T','NorthEast')
 % set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 
-figure(2);
-hold on
-grid on
-plot(x_u_new(2:row-1,:),u_new(2:row-1,:),'-r','LineWidth',2);
-xlabel('Geometric position [m] ','LineWidth', 2)
-ylabel('Velocity [m/s] ','LineWidth', 2)
-axis([0 1 0 0.002]);
-legend('u','Location','NorthEast')
-set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
+% figure(2);
+% hold on
+% grid on
+% plot(x_u_new(2:row-1,:),u_new(2:row-1,:),'-r','LineWidth',2);
+% xlabel('Geometric position [m] ','LineWidth', 2)
+% ylabel('Velocity [m/s] ','LineWidth', 2)
+% axis([0 1 0 0.002]);
+% legend('u','Location','NorthEast')
+% set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 
-figure(3);
-hold on
-plot(x_new(2:row-1,:),P_new(2:row-1,:),'-b','LineWidth',2);
-xlabel('Geometric position [m] ','LineWidth', 2)
-ylabel('Pressure [Pa] ','LineWidth', 2)
-axis([0 1 0 1]);
-legend('P','Location','NorthEast')
-set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
+% figure(3);
+% hold on
+% plot(x_new(2:row-1,:),P_new(2:row-1,:),'-b','LineWidth',2);
+% xlabel('Geometric position [m] ','LineWidth', 2)
+% ylabel('Pressure [Pa] ','LineWidth', 2)
+% axis([0 1 0 1]);
+% legend('P','Location','NorthEast')
+% set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 
 figure(4);
 hold on
@@ -166,14 +166,14 @@ xlabel('Geometric position [m] ','LineWidth', 2)
 ylabel('Mass fraction [-] ','LineWidth', 2)
 % legend('O_2','CO_2','N_2','Ar','location','NorthEast')
  
-figure(5);
-hold on
-plot(x_new(1:row-1,:),rho_new(1:row-1,:),'-k','LineWidth',2);
-xlabel('Geometric position [m] ','LineWidth', 2)
-ylabel('Density [kg/m^3] ','LineWidth', 2)
-axis([0 1 0 2]);
-legend('\rho','Location','NorthEast')
-set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
+% figure(5);
+% hold on
+% plot(x_new(1:row-1,:),rho_new(1:row-1,:),'-k','LineWidth',2);
+% xlabel('Geometric position [m] ','LineWidth', 2)
+% ylabel('Density [kg/m^3] ','LineWidth', 2)
+% axis([0 1 0 2]);
+% legend('\rho','Location','NorthEast')
+% set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 
 %%
 figure(6);
@@ -216,7 +216,7 @@ figure(7);
 hold on
 grid on
 subplot(2,2,1);
-p1 = plot(x_new(1:row-1,:),X1_new(1:row-1,:),'-b','LineWidth',2);
+p1 = plot(x_new(2:row-1,:),X1_new(2:row-1,:),'-b','LineWidth',2);
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 % axis([0 1 0 1])
 legend(p1,'X_{O_2}', 'Location','SouthEast')
@@ -224,7 +224,7 @@ xlabel('Geometric position [m] ','LineWidth', 2)
 ylabel('Mole fraction [-]','LineWidth', 2)
 
 subplot(2,2,2);
-p2 = plot(x_new(1:row-1,:),X2_new(1:row-1,:),'-r','LineWidth',2);
+p2 = plot(x_new(2:row-1,:),X2_new(2:row-1,:),'-r','LineWidth',2);
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 % axis([0 1 0 1])
 legend(p2,'X_{CO_2}', 'Location','NorthEast')
@@ -232,7 +232,7 @@ xlabel('Geometric position [m] ','LineWidth', 2)
 ylabel('Mole fraction','LineWidth', 2)
 
 subplot(2,2,3);
-p3 = plot(x_new(1:row-1,:),X3_new(1:row-1,:),'-k','LineWidth',2);
+p3 = plot(x_new(2:row-1,:),X3_new(2:row-1,:),'-k','LineWidth',2);
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 % axis([0 1 0 1])
 legend(p3,'X_{N_2}', 'Location','SouthEast')
@@ -240,7 +240,7 @@ xlabel('Geometric position [m] ','LineWidth', 2)
 ylabel('Mole fraction','LineWidth', 2)
 
 subplot(2,2,4);
-p4 = plot(x_new(1:row-1,:),X4_new(1:row-1,:),'-c','LineWidth',2);
+p4 = plot(x_new(2:row-1,:),X4_new(2:row-1,:),'-c','LineWidth',2);
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 % axis([0 1 0 1])
 legend(p4,'X_{AR}', 'Location','SouthEast')
@@ -248,45 +248,47 @@ xlabel('Geometric position [m] ','LineWidth', 2)
 ylabel('Mole fraction ','LineWidth', 2)
 
 % % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% % %%%             here starts the video generation                        %%%
-% % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% % Fall = struct('O2',f1_new,'CO2',f2_new,'N2',f3_new,'AR',f4_new);
-% % Xall = struct('O2',X1_new,'CO2',X2_new,'N2',X3_new,'AR',X4_new);
-% % Yall = struct('O2',Yr1_new,'CO2',Yr2_new,'N2',Yr3_new,'AR',Yr4_new);
-% % 
-% % fields = fieldnames(Yall);
-% % 
-% % for i = 1:numel(fields)
-% %     fields(i);
-% %     path_Results = strcat('C:\Users\s137280\Documents\Master_tue\Internship\internship_github\JAMES_species_13_11_2018\results\Ytotal',num2str(i),'.avi');
-% %     filename = VideoWriter(path_Results)
-% %     filename.FrameRate = 4;
-% % 
-% %     axis tight manual % this ensures that getframe() returns a consistent size
-% %     for n = 1:1:col
-% %         
-% %     %% mass fraction
-% %     h1 = figure(10);
-% %     hold on
-% %     p1 = plot(x_new(2:row-1,n),Mr_new(2:row-1,n).*Fall.(fields{i})(2:row-1,n),'-r','LineWidth',2);
-% %     p2 = plot(x_new(2:row-1,n),Mp_new(2:row-1,n).*Yall.(fields{i})(2:row-1,n),'-k','LineWidth',2);
-% % 
-% %     set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15);
-% % 
-% %     axis([0 1 0 0.0016]);
-% %     legend([p1 p2], strcat(fields{i}, ' M_r'), strcat(fields{i}, ' M_p'), 'Location','NorthEast');
-% %     xlabel('Geometric position [m] ','LineWidth', 2);
-% %     ylabel('Mass fraction [-] ','LineWidth', 2);
-% %     title(strcat('Time:',num2str(time(row*n))));
-% %     frame1 = getframe(h1);
-% %     open(filename);
-% %     writeVideo(filename,frame1); 
-% %     close(figure(10)); 
-% %     end
-% %     
-% %     close(filename);
-% %     
-% % end
+%%%             here starts the video generation                        %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Fall = struct('O2',f1_new,'CO2',f2_new,'N2',f3_new,'AR',f4_new);
+Xall = struct('O2',X1_new,'CO2',X2_new,'N2',X3_new,'AR',X4_new);
+Yall = struct('O2',Yr1_new,'CO2',Yr2_new,'N2',Yr3_new,'AR',Yr4_new);
+
+fields = fieldnames(Yall);
+
+for i = 1%:numel(fields)
+    fields(i);
+    path_Results = strcat('C:\Users\s137280\Documents\Master_tue\Internship\internship_github\Toos_simplified_species\results\Ypermeate',num2str(i),'.avi');
+    filename = VideoWriter(path_Results)
+    filename.FrameRate = 4;
+
+    axis tight manual % this ensures that getframe() returns a consistent size
+    for n = 1:1:col
+        
+    %% mass fraction
+    h1 = figure(10);
+    hold on
+    p1 = plot(x_new(2:row-1,n),X1_new(2:row-1,n),'-r','LineWidth',2);
+    p2 = plot(x_new(2:row-1,n),X2_new(2:row-1,n),'-b','LineWidth',2);
+    p3 = plot(x_new(2:row-1,n),X3_new(2:row-1,n),'-k','LineWidth',2);
+    p4 = plot(x_new(2:row-1,n),X4_new(2:row-1,n),'-c','LineWidth',2);
+
+    set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15);
+
+    axis([0 1 0 1]);
+%     legend([p1 p2], strcat(fields{i}, ' M_r'), strcat(fields{i}, ' M_p'), 'Location','NorthEast');
+    xlabel('Geometric position [m] ','LineWidth', 2);
+    ylabel('Mass fraction [-] ','LineWidth', 2);
+    title(strcat('Time:',num2str(time(row*n))));
+    frame1 = getframe(h1);
+    open(filename);
+    writeVideo(filename,frame1); 
+    close(figure(10)); 
+    end
+    
+    close(filename);
+    
+end
 
 % for i = 1:numel(fields)
 %     fields(i);
