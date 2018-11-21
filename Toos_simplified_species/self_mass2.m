@@ -1,4 +1,4 @@
-function [x Y2] = self_mass2(M, M2, x, sink, Y_sink, Y2_k, MW, n)
+function [x Y2] = self_mass2(M, M2, x, sink, Y_sink, Y2_k, MW, n, time)
 % Mr        = x(1)      TOTAL mass at retenate
 % Msink     = x(2)      TOTAL mass that permeates
 % Mp        = x(3)      TOTAL mass at permeate side
@@ -23,16 +23,23 @@ x(3) = M2 + x(2);
 x(1) = M - x(2);
 
 for j = 1:n
-    x(j+3) = 0;
-    x(j+3) = x(j+3) - sum(Y_sink(j,1:end)); % permeate mass
+    x(j+3) = - sum(Y_sink(j,1:end)); % permeate mass
 end
 
 for i = 1:n
-    Y2(i) = (M2*Y2_k(i) + x(i+3))/x(3);     % mass per species
+    Y2(i) = (M2*Y2_k(i) + x(i+3));     % mass per species
 end
 
 for j = 1:n
-    x(j+3+n) = x(j+3)/sum(x(4:(3+n)));      % permeate mass fraction
-end                                         % (only the source/sink species)
-
+%     if time > 0
+%         Y2(i) = Y2(i) - x(2)*Y2_k(i);   
+%     end
+    if sink(j) == true
+        if x(j+3) >0
+            x(j+n+3) = x(j+3);
+        else 
+            x(j+n+3) = 0;
+        end                                  
+    end
+end
 end

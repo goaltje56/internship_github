@@ -1,4 +1,4 @@
-function [aE aW aP b Istart_F Y_source] = F2coeff(NPI, rho,rho_s, A, x, x_u, u, Y_k, Y2_k,T, rho_real, rho2_real, P_k, D, relax_f, Dt, f_old, Dx, rho_old, sink, Y_sink, n);
+function [aE aW aP b Istart_F Y_source] = F2coeff(NPI, rho,rho_s, A, x, x_u, u, Y_k, Y2_k,T, rho_real, rho2_real, P_k, D, relax_f, Dt, f_old, Dx, rho_old, sink, Y_sink, Msink, n);
     Istart_F = 2;
     F_u = conv(NPI, rho, x, x_u, u);
     global Runi
@@ -26,8 +26,8 @@ function [aE aW aP b Istart_F Y_source] = F2coeff(NPI, rho,rho_s, A, x, x_u, u, 
             Y_source(I) = -Y_sink(I);
         else 
         SP(I) = 0;
-        Su(I) = 0;
-        Y_source(I) = 0;
+        Su(I) = Msink(I)*Y2_k(I);
+        Y_source(I) = Msink(I)*Y2_k(I);
         end
         
         aPold = rho_old(I)*Dx/Dt;
