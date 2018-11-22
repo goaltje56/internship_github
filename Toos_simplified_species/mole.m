@@ -1,4 +1,4 @@
-function [X_k,  D_k, rho_real, rho2_real, MW1, MW2] = mole(NPI, n, Y_k, Y2_k, MW,  D, rho_s)
+function [X_k, X2_k,  D_k, rho_real, rho2_real, MW1, MW2] = mole(NPI, n, Y_k, Y2_k, MW,  D, rho_s)
 global Runiv
     for j = 1:n
         for I = 1:NPI+2

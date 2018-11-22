@@ -42,15 +42,15 @@ Patm        = 101325;           % athmosphesric pressure [Pa]
 Runi        = 8.314;
 
 NPI         = 200;              % number of grid cells in x-direction [-] 
-XMAX        = 1;                % length of the domain [m]
+XMAX        = 0.86;                % length of the domain [m]
 u_in        = 1.5;              % inflow velocity [m/s]
 T           = 298;              % temperature
 A           = 1;                % area of one cell [m^2]
-Total_time  = 10;              % total simulation time [s]
+Total_time  = 1000;              % total simulation time [s]
 x0 = [0 0 0 0 0 0];       % initial guess for Mr, Mp and Y_{1:n}
-Pr          = 691*10^3;
-Pp          = 103*10^3;
-
+Pr          = 400*10^3;
+Pp          = 40*10^3;
+w           = 1;
 % species properties some values have to be set manually!!
 [rho_s, rho, MW1, MW2, Y_k, X_k, Y_in, X_in, Y2_k, X2_k, Y2_in, X2_in, iAll, MW, rho_real, rho2_real, rho_old, rho2_old, D, D_k, D2_k, P_k, f_old, f2_old, sink, n] = species_init(NPI);
 
@@ -71,7 +71,7 @@ for time = 0:Dt:Total_time
     
     %% Species retenate
     for i = 1:n
-        [aE_f(i,:), aW_f(i,:), aP_f(i,:), b_f(i,:), Istart_f, Y_sink(i,:)] = Fcoeff(NPI, rho, A, x, x_u, u, Y_k(i,:), Y2_k(i,:),T, rho_real, rho2_real, P_k(i,:), D_k(i,:), relax_f, Dt, f_old(i,:), Dx, rho_old, sink(i), Pp, Pr, MW1, MW2);
+        [aE_f(i,:), aW_f(i,:), aP_f(i,:), b_f(i,:), Istart_f, Y_sink(i,:)] = Fcoeff(NPI, rho_real, A, x, x_u, u, Y_k(i,:), Y2_k(i,:),T, rho_real, rho2_real, P_k(i,:), D_k(i,:), relax_f, Dt, f_old(i,:), Dx, rho_old, sink(i), Pp, Pr, MW1, MW2, w);
         Y_k(i,:) = solve_eq(NPI,aE_f(i,:), aW_f(i,:), aP_f(i,:), b_f(i,:), Y_k(i,:), 2);
     end
     for j = 1:n
@@ -87,7 +87,7 @@ for time = 0:Dt:Total_time
     [Y_k, Y2_k,rho_real, rho2_real ] = bound(NPI, Y_in, Y2_in, Y_k, Y2_k, rho_real, rho2_real);  
     
     % determine new value for X_k MW rho_real and D_k 
-    [X_k, D_k, rho_real, rho2_real, MW1, MW2]          = mole(NPI, n, Y_k, Y2_k, MW, D, rho_s);
+    [X_k, X2_k, D_k, rho_real, rho2_real, MW1, MW2]          = mole(NPI, n, Y_k, Y2_k, MW, D, rho_s);
     
 %     %% Species Permeate
 %     for i = 1:n
@@ -110,7 +110,7 @@ for time = 0:Dt:Total_time
     Y2_k = species_bound(NPI, n, Y2_k);
     [Y_k, Y2_k,rho_real, rho2_real ]        = bound(NPI, Y_in, Y2_in, Y_k, Y2_k, rho_real, rho2_real);  
 % 
-   [X_k, D_k, rho_real, rho2_real, MW1, MW2]          = mole(NPI, n, Y_k, Y2_k, MW, D, rho_s);
+   [X_k, X2_k, D_k, rho_real, rho2_real, MW1, MW2]          = mole(NPI, n, Y_k, Y2_k, MW, D, rho_s);
 
 
 %     end
@@ -118,7 +118,7 @@ for time = 0:Dt:Total_time
     [rho_old, rho2_old, f_old, f2_old] = storeresults(NPI, rho_real, rho2_real, Y_k, Y2_k, rho_old, rho2_old, f_old, f2_old, n);
     
     % determine new value for X_k rho_real and D_k 
-    [X_k, D_k, rho_real, rho2_real]          = mole(NPI, n, Y_k, Y2_k, MW, D, rho_s);
+    [X_k, X2_k, D_k, rho_real, rho2_real]          = mole(NPI, n, Y_k, Y2_k, MW, D, rho_s);
     [Y_k, Y2_k,rho_real, rho2_real ]        = bound(NPI, Y_in, Y2_in, Y_k, Y2_k, rho_real, rho2_real);  
 
 % %     store data at different time steps

@@ -1,4 +1,4 @@
-function [aE aW aP b Istart_F Y_sink] = Fcoeff(NPI, rho, A, x, x_u, u, Y_k, Y2_k,T, rho_real, rho2_real, P_k, D, relax_f, Dt, f_old, Dx, rho_old, sink, Pp, Pr, MW1, MW2);
+function [aE aW aP b Istart_F Y_sink] = Fcoeff(NPI, rho, A, x, x_u, u, Y_k, Y2_k,T, rho_real, rho2_real, P_k, D, relax_f, Dt, f_old, Dx, rho_old, sink, Pp, Pr, MW1, MW2, w);
     Istart_F = 2;
     F_u = conv(NPI, rho, x, x_u, u);
     global Runi
@@ -22,8 +22,8 @@ function [aE aW aP b Istart_F Y_sink] = Fcoeff(NPI, rho, A, x, x_u, u, Y_k, Y2_k
         % source terms
         if sink == 1
             SP(I) = 0;
-            Su(I) = -P_k(I)*(Pr*MW1(I)*Y_k(I)-Pp*MW2(I)*Y2_k(I))*Dx;      % sink term depends on mass fraction
-            Y_sink(I) = -P_k(I)*(Pr*MW1(I)*Y_k(I)-Pp*MW2(I)*Y2_k(I))*Dx;
+            Su(I) = -P_k(I)*(Pr*MW1(I)*Y_k(I)-Pp*MW2(I)*Y2_k(I))*Dx*w;      % sink term depends on mass fraction
+            Y_sink(I) = -P_k(I)*(Pr*MW1(I)*Y_k(I)-Pp*MW2(I)*Y2_k(I))*Dx*w;
         else 
         SP(I) = 0;
         Su(I) = 0;

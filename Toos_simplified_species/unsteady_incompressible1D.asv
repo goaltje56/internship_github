@@ -46,11 +46,11 @@ XMAX        = 1;                % length of the domain [m]
 u_in        = 1.5;              % inflow velocity [m/s]
 T           = 298;              % temperature
 A           = 1;                % area of one cell [m^2]
-Total_time  = 100;              % total simulation time [s]
+Total_time  = 5000;              % total simulation time [s]
 x0 = [0 0 0 0 0 0];       % initial guess for Mr, Mp and Y_{1:n}
-Pr          = 691*10^3;
-Pp          = 103*10^3;
-
+Pr          = 400*10^3;
+Pp          = 40*10^3;
+w           = 1;
 % species properties some values have to be set manually!!
 [rho_s, rho, MW1, MW2, Y_k, X_k, Y_in, X_in, Y2_k, X2_k, Y2_in, X2_in, iAll, MW, rho_real, rho2_real, rho_old, rho2_old, D, D_k, D2_k, P_k, f_old, f2_old, sink, n] = species_init(NPI);
 
@@ -71,7 +71,7 @@ for time = 0:Dt:Total_time
     
     %% Species retenate
     for i = 1:n
-        [aE_f(i,:), aW_f(i,:), aP_f(i,:), b_f(i,:), Istart_f, Y_sink(i,:)] = Fcoeff(NPI, rho, A, x, x_u, u, Y_k(i,:), Y2_k(i,:),T, rho_real, rho2_real, P_k(i,:), D_k(i,:), relax_f, Dt, f_old(i,:), Dx, rho_old, sink(i), Pp, Pr, MW1, MW2);
+        [aE_f(i,:), aW_f(i,:), aP_f(i,:), b_f(i,:), Istart_f, Y_sink(i,:)] = Fcoeff(NPI, rho_real, A, x, x_u, u, Y_k(i,:), Y2_k(i,:),T, rho_real, rho2_real, P_k(i,:), D_k(i,:), relax_f, Dt, f_old(i,:), Dx, rho_old, sink(i), Pp, Pr, MW1, MW2, w);
         Y_k(i,:) = solve_eq(NPI,aE_f(i,:), aW_f(i,:), aP_f(i,:), b_f(i,:), Y_k(i,:), 2);
     end
     for j = 1:n
@@ -87,23 +87,30 @@ for time = 0:Dt:Total_time
     [Y_k, Y2_k,rho_real, rho2_real ] = bound(NPI, Y_in, Y2_in, Y_k, Y2_k, rho_real, rho2_real);  
     
     % determine new value for X_k MW rho_real and D_k 
-    [X_k, D_k, rho_real, rho2_real, MW1, MW2]          = mole(NPI, n, Y_k, Y2_k, MW, D, rho_s);
+    [X_k, X2_k, D_k, rho_real, rho2_real, MW1, MW2]          = mole(NPI, n, Y_k, Y2_k, MW, D, rho_s);
     
-    %% Species Permeate
-    for i = 1:n
-        [aE_f2(i,:), aW_f2(i,:), aP_f2(i,:), b_f2(i,:), Istart_f, Y2_sink(i,:)] = F2coeff(NPI, rho,rho_s, A, x, x_u, u, Y_k(i,:), Y2_k(i,:),T, rho_real, rho2_real, P_k(i,:), D_k(i,:), relax_f, Dt, f2_old(i,:), Dx, rho2_old, sink(i), Y_sink(i,:), sum(Y_sink), n);
-        Y2_k(i,:) = solve_eq(NPI,aE_f2(i,:), aW_f2(i,:), aP_f2(i,:), b_f2(i,:), Y2_k(i,:), 2);
-    end    
-%     for i = 2:NPI+1
-%         [x_dummy(i,:), Xr(i,:)] = self_mass2((rho_real(1)*u_in),M2, x0, sink, Y_sink(:,1:i), Y2_k(:,i) , MW, n);
-%     end
-%     
-%     % mass fraction at permeate side
-%     Y2_k = Xr';
+%     %% Species Permeate
+%     for i = 1:n
+%         [aE_f2(i,:), aW_f2(i,:), aP_f2(i,:), b_f2(i,:), Istart_f, Y2_sink(i,:)] = F2coeff(NPI, rho,rho_s, A, x, x_u, u, Y_k(i,:), Y2_k(i,:),T, rho_real, rho2_real, P_k(i,:), D_k(i,:), relax_f, Dt, f2_old(i,:), Dx, rho2_old, sink(i), Y_sink(i,:), sum(Y_sink), n);
+%         Y2_k(i,:) = solve_eq(NPI,aE_f2(i,:), aW_f2(i,:), aP_f2(i,:), b_f2(i,:), Y2_k(i,:), 2);
+%     end    
+    for i = 2:NPI+1
+        [x_dummy(i,:), Xr(i,:)] = self_mass2((rho_real(1)*u_in),M2, x0, sink, Y_sink(:,1:i), Y2_k(:,i) , MW, n, time);
+    end
+
+    % mass fraction at permeate side
+    Y2_k = Xr';
+    for j = 1:n
+        for i = 1:NPI+1
+            if Y2_k(j,i) <0
+                Y2_k(j,i) = 0;
+            end
+        end
+    end
     Y2_k = species_bound(NPI, n, Y2_k);
     [Y_k, Y2_k,rho_real, rho2_real ]        = bound(NPI, Y_in, Y2_in, Y_k, Y2_k, rho_real, rho2_real);  
 % 
-   [X_k, D_k, rho_real, rho2_real, MW1, MW2]          = mole(NPI, n, Y_k, Y2_k, MW, D, rho_s);
+   [X_k, X2_k, D_k, rho_real, rho2_real, MW1, MW2]          = mole(NPI, n, Y_k, Y2_k, MW, D, rho_s);
 
 
 %     end
@@ -111,7 +118,7 @@ for time = 0:Dt:Total_time
     [rho_old, rho2_old, f_old, f2_old] = storeresults(NPI, rho_real, rho2_real, Y_k, Y2_k, rho_old, rho2_old, f_old, f2_old, n);
     
     % determine new value for X_k rho_real and D_k 
-    [X_k, D_k, rho_real, rho2_real]          = mole(NPI, n, Y_k, Y2_k, MW, D, rho_s);
+    [X_k, X2_k, D_k, rho_real, rho2_real]          = mole(NPI, n, Y_k, Y2_k, MW, D, rho_s);
     [Y_k, Y2_k,rho_real, rho2_real ]        = bound(NPI, Y_in, Y2_in, Y_k, Y2_k, rho_real, rho2_real);  
 
 % %     store data at different time steps
@@ -188,17 +195,17 @@ p5 = plot(x(2:NPI+1), x_dummy(2:NPI+1,3),'k','LineWidth',2);
 legend([p3, p5],'m_{retenate}','m_{permeate}','NorthEast')
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 
-figure(7)
-hold on
-grid on
-xlabel('Geometric position [m] ','LineWidth', 2)
-ylabel('Normalized Permeate[-] ','LineWidth', 2)
-% axis([0 XMAX+Dx 0 2]);
-p11 = plot(x(2:NPI+1), x_dummy(2:NPI+1,9)/(rho_real(1)*u_in),'r','LineWidth',2);
-p12 = plot(x(2:NPI+1), x_dummy(2:NPI+1,11)/(rho_real(1)*u_in),'b','LineWidth',2);
-p13 = plot(x(2:NPI+1), x_dummy(2:NPI+1,7)/(rho_real(1)*u_in),'k','LineWidth',2);
-% legend([p3, p5],'m_{retenate}','m_{permeate}','NorthEast')
-set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
+% figure(7)
+% hold on
+% grid on
+% xlabel('Geometric position [m] ','LineWidth', 2)
+% ylabel('Normalized Permeate[-] ','LineWidth', 2)
+% % axis([0 XMAX+Dx 0 2]);
+% p11 = plot(x(2:NPI+1), x_dummy(2:NPI+1,9)/(rho_real(1)*u_in),'r','LineWidth',2);
+% p12 = plot(x(2:NPI+1), x_dummy(2:NPI+1,11)/(rho_real(1)*u_in),'b','LineWidth',2);
+% p13 = plot(x(2:NPI+1), x_dummy(2:NPI+1,7)/(rho_real(1)*u_in),'k','LineWidth',2);
+% % legend([p3, p5],'m_{retenate}','m_{permeate}','NorthEast')
+% set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
 
 Mp = Y_sink(2,:)+Y_sink(4,:);
 
