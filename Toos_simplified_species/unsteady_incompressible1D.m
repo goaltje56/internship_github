@@ -55,7 +55,7 @@ w           = 1;
 [rho_s, rho, MW1, MW2, Y_k, X_k, Y_in, X_in, Y2_k, X2_k, Y2_in, X2_in, iAll, MW, rho_real, rho2_real, rho_old, rho2_old, D, D_k, D2_k, P_k, f_old, f2_old, sink, n] = species_init(NPI);
 
 % make a vector with initial values for all non-specie dependent parameters 
-[u, d_u, b, SP, Su, relax_rho, relax_f, Dt, u_old] = param_init(NPI, u_in);
+[u, u2, d_u, b, SP, Su, relax_rho, relax_f, Dt, u_old] = param_init(NPI, u_in);
 
 %% grid generation
 [Dx, x, x_u] = grid_gen(NPI,XMAX);   % create staggered grid
@@ -89,26 +89,33 @@ for time = 0:Dt:Total_time
     % determine new value for X_k MW rho_real and D_k 
     [X_k, X2_k, D_k, rho_real, rho2_real, MW1, MW2]          = mole(NPI, n, Y_k, Y2_k, MW, D, rho_s);
     
-%     %% Species Permeate
-%     for i = 1:n
-%         [aE_f2(i,:), aW_f2(i,:), aP_f2(i,:), b_f2(i,:), Istart_f, Y2_sink(i,:)] = F2coeff(NPI, rho,rho_s, A, x, x_u, u, Y_k(i,:), Y2_k(i,:),T, rho_real, rho2_real, P_k(i,:), D_k(i,:), relax_f, Dt, f2_old(i,:), Dx, rho2_old, sink(i), Y_sink(i,:), sum(Y_sink), n);
-%         Y2_k(i,:) = solve_eq(NPI,aE_f2(i,:), aW_f2(i,:), aP_f2(i,:), b_f2(i,:), Y2_k(i,:), 2);
-%     end    
+    u2 = sum(Y_sink)./rho_real(2:end);
+    u2(1)= 0;
+%     u2(2)= 0;
+    u2(end+1) = u2(end);
+    %% Species Permeate
+    for i = 1:n
+        [aE_f2(i,:), aW_f2(i,:), aP_f2(i,:), b_f2(i,:), Istart_f, Y2_sink(i,:)] = F2coeff(NPI, rho,rho_s, A, x, x_u, u2, Y_k(i,:), Y2_k(i,:),T, rho_real, rho2_real, P_k(i,:), D_k(i,:), relax_f, Dt, f2_old(i,:), Dx, rho2_old, sink(i), Y_sink(i,:), sum(Y_sink), n);
+        Y2_k(i,:) = solve_eq(NPI,aE_f2(i,:), aW_f2(i,:), aP_f2(i,:), b_f2(i,:), Y2_k(i,:), 2);
+    end    
+    
+    Y2_k = species_bound(NPI, n, Y2_k);
+    [Y_k, Y2_k,rho_real, rho2_real ]        = bound(NPI, Y_in, Y2_in, Y_k, Y2_k, rho_real, rho2_real);  
+    
     for i = 2:NPI+1
         [x_dummy(i,:), Xr(i,:)] = self_mass2((rho_real(1)*u_in),M2, x0, sink, Y_sink(:,1:i), Y2_k(:,i) , MW, n, time);
     end
 
-    % mass fraction at permeate side
-    Y2_k = Xr';
-    for j = 1:n
-        for i = 1:NPI+1
-            if Y2_k(j,i) <0
-                Y2_k(j,i) = 0;
-            end
-        end
-    end
-    Y2_k = species_bound(NPI, n, Y2_k);
-    [Y_k, Y2_k,rho_real, rho2_real ]        = bound(NPI, Y_in, Y2_in, Y_k, Y2_k, rho_real, rho2_real);  
+%     % mass fraction at permeate side
+%     Y2_k = Xr';
+%     for j = 1:n
+%         for i = 1:NPI+1
+%             if Y2_k(j,i) <0
+%                 Y2_k(j,i) = 0;
+%             end
+%         end
+%     end
+
 % 
    [X_k, X2_k, D_k, rho_real, rho2_real, MW1, MW2]          = mole(NPI, n, Y_k, Y2_k, MW, D, rho_s);
 

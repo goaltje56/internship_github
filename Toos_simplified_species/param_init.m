@@ -1,10 +1,11 @@
-function [u, d_u, b, SP, Su, relax_rho, relax_f, Dt, u_old] = param_init(NPI, u_in);
+function [u, u2, d_u, b, SP, Su, relax_rho, relax_f, Dt, u_old] = param_init(NPI, u_in);
 %     m_in    = 1;
 %     m_out   = 1;
     Dt = 0.5;
     for I=1:NPI+2
         i = I;
         u(i)    = u_in;         % Velocity in x-direction
+        u2(i)   = 0;
         rho(I)  = 1;            % Density
         d_u(i)  = 0;            % Variable d[i] to calculate pc
         b(I)    = 0;            % The general constant
