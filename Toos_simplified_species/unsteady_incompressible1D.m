@@ -89,7 +89,7 @@ for time = 0:Dt:Total_time
     % determine new value for X_k MW rho_real and D_k 
     [X_k, X2_k, D_k, rho_real, rho2_real, MW1, MW2]          = mole(NPI, n, Y_k, Y2_k, MW, D, rho_s);
     
-    u2 = sum(Y_sink)./rho_real(2:end);
+    u2 = -sum(Y_sink)./rho_real(2:end);
     u2(1)= 0;
 %     u2(2)= 0;
     u2(end+1) = u2(end);
