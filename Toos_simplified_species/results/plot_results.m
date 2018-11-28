@@ -268,10 +268,10 @@ for i = 1%:numel(fields)
     %% mass fraction
     h1 = figure(10);
     hold on
-    p1 = plot(x_new(2:row-1,n),X1_new(2:row-1,n),'-r','LineWidth',2);
-    p2 = plot(x_new(2:row-1,n),X2_new(2:row-1,n),'-b','LineWidth',2);
-    p3 = plot(x_new(2:row-1,n),X3_new(2:row-1,n),'-k','LineWidth',2);
-    p4 = plot(x_new(2:row-1,n),X4_new(2:row-1,n),'-c','LineWidth',2);
+    p1 = plot(stagecut(2:row-1,n),X1_new(2:row-1,n),'-r','LineWidth',2);
+    p2 = plot(stagecut(2:row-1,n),X2_new(2:row-1,n),'-b','LineWidth',2);
+    p3 = plot(stagecut(2:row-1,n),X3_new(2:row-1,n),'-k','LineWidth',2);
+    p4 = plot(stagecut(2:row-1,n),X4_new(2:row-1,n),'-c','LineWidth',2);
 
     set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15);
 
