@@ -60,16 +60,14 @@ z = 0;
 [u, u2, d_u, b, SP, Su, relax_rho, relax_f, Dt, u_old] = param_init(NPI, u_in);
 
 
-%% trying something
-b = [0 : ((Total_time-50)/Total_time) : Total_time];
-for i = 1:length(b)
-    abc(i) = 0.05 + (0.3-0.05)*(1-(1/(1+exp(-(1-b(i)))/0.001)));
-end
-z = 0;
+%% generating 
+abc = [31:-(31-5)/2000:5]/100;
+aa = 0.05*ones(1,2000);
+abc = [abc aa];
 %% grid generation
 [Dx, x, x_u] = grid_gen(NPI,XMAX);   % create staggered grid
 
-store_times = [0:0.5:30 40:20:Total_time];      % define sample points to save data
+store_times = [0:0.5:Total_time];      % define sample points to save data
 ii          = 1;
 M2 =    (rho2_real(2)*u_in) ;        % initial mass at permeate side
 %--------------------------------------------------------------------------
@@ -77,7 +75,8 @@ M2 =    (rho2_real(2)*u_in) ;        % initial mass at permeate side
 for time = 0:Dt:Total_time
 
     if time> 50
-        Y_in(2) =Y_in(2) + (0.05-Y_in(2))*exp;
+        z = z+1;
+        Y_in(2) = abc(z);
     end
      Y_in = species_bound(NPI, n, Y_in);
     [Y_k Y2_k rho_real rho2_real] = bound(NPI, Y_in, Y2_in, Y_k, Y2_k, rho_real, rho2_real);                          % Apply boundary condtions

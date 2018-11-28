@@ -51,7 +51,8 @@ x0 = [0 0 0 0 0 0];       % initial guess for Mr, Mp and Y_{1:n}
 Pr          = 400*10^3;
 Pp          = 40*10^3;
 w           = 1;
-
+dSTART      = 50;
+dEND        = 150;
 z = 0;
 % species properties some values have to be set manually!!
 [rho_s, rho, MW1, MW2, Y_k, X_k, Y_in, X_in, Y2_k, X2_k, Y2_in, X2_in, iAll, MW, rho_real, rho2_real, rho_old, rho2_old, D, D_k, D2_k, P_k, f_old, f2_old, sink, n] = species_init(NPI);
@@ -60,10 +61,9 @@ z = 0;
 [u, u2, d_u, b, SP, Su, relax_rho, relax_f, Dt, u_old] = param_init(NPI, u_in);
 
 
-%% trying something
-abc = [31:-(31-5)/2000:5]/100;
-aa = 0.05*ones(1,2000);
-abc = [abc aa];
+%% generating disturbance profile
+abc = disturbance(150, 40, Dt, Y_in(2), 0.05);
+
 %% grid generation
 [Dx, x, x_u] = grid_gen(NPI,XMAX);   % create staggered grid
 
@@ -74,7 +74,7 @@ M2 =    (rho2_real(2)*u_in) ;        % initial mass at permeate side
 %% The main calculation part
 for time = 0:Dt:Total_time
 
-    if time> 50
+    if time> dSTART && time < dEND
         z = z+1;
         Y_in(2) = abc(z);
     end
