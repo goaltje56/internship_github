@@ -21,7 +21,7 @@ MW   = [Sp(iAll).Mass];                  % Molar weight of species [gr/mol]
 n = length(iAll);
 
 %% mole flow rate in system and sink term
-moles = [1.541694; 30.329175; 0.973272;  67.155861];
+moles = [1.541694; 10.329175; 0.973272;  87.155861];
 % moles2 =[0.01  ;  0.35 ; 0.05 ; 0.59];
 moles2 =[0  ;  0 ; 0 ; 1];
 

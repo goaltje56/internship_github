@@ -74,10 +74,10 @@ M2 =    (rho2_real(2)*u_in) ;        % initial mass at permeate side
 %% The main calculation part
 for time = 0:Dt:Total_time
 
-    if time> dSTART && time < dEND
-        z = z+1;
-        Y_in(2) = abc(z);
-    end
+%     if time> dSTART && time < dEND
+%         z = z+1;
+%         Y_in(2) = abc(z);
+%     end
      Y_in = species_bound(NPI, n, Y_in);
     [Y_k Y2_k rho_real rho2_real] = bound(NPI, Y_in, Y2_in, Y_k, Y2_k, rho_real, rho2_real);                          % Apply boundary condtions
     
