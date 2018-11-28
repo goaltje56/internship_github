@@ -1,8 +1,8 @@
-function [rho_s, rho, MW_mix, MW2_mix, Y_k, X_k, Y_in, X_in, Y2_k, X2_k, Y_in2, X_in2, iAll, MW, rho_real, rho2_real, rho_old, rho2_old, D, D_k, D2_k, P_k, f_old, f2_old, sink, n] = species_init(NPI)
+function [rho_s, rho,Gamma, Gamma_k, MW_mix, MW2_mix, Y_k, X_k, Y_in, X_in, Y2_k, X2_k, Y_in2, X_in2, iAll, MW, rho_real, rho2_real, rho_old, rho2_old, D, D_k, D2_k, P_k, f_old, f2_old, sink, n] = species_init(NPI)
 
 %% Read species data
 % Make these variable global
-global El Sp Patm
+global El Sp Patm Runiv
 
 MechanismFile = 'fuels.trot';
 
@@ -31,6 +31,7 @@ X_in2 = moles2/sum(moles);
 sink  = [1  1  1  1];
 % P_n   = [7.155; 1.255]*10^(-9);
 P_n   = [28; 350; 1750; 21]*10^(-9);  % Permeability of species
+Gamma = [ThermProp(300,Sp(iO2),'Gamma','Mass') ThermProp(300,Sp(iCO2),'Gamma','Mass') ThermProp(350,Sp(iH2O),'Gamma','Mass') ThermProp(350,Sp(iAr),'Gamma','Mass')];
 rho_s = [1.429 1.98 1.2504 1.784];          % 'Real' density of species [kg/m^3]
 % rho_s = [1.429 1.2504];          % 'Real' density of species [kg/m^3]
 
@@ -71,6 +72,7 @@ D       = species_diff(NPI, 300, iAll, iAll, 'Diffusivity', n); % Diffusivity of
                                            % so use massfraction!!
             D2_k(j,i) = D(j,:)*Y2_k(:,i);  % Diffusion is in terms of mass
                                            % so use massfraction!! 
+            Gamma_k(1,i) = Gamma*Y_k(:,i);
             rho(1,i)    = 1;
             rho_real(1,i) = rho_s*Y_k(:,i);
             rho2_real(1,i) = rho_s*Y2_k(:,i);

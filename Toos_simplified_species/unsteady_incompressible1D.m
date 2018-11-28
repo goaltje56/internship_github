@@ -37,9 +37,9 @@ fclose(test);
 timerVal = tic;
 
 %% initializing
-global Patm Runi      
+global Patm Runiv      
 Patm        = 101325;           % athmosphesric pressure [Pa]
-Runi        = 8.314;
+Runiv        = 8.314;
 
 NPI         = 200;              % number of grid cells in x-direction [-] 
 XMAX        = 1;                % length of the domain [m]
@@ -55,7 +55,7 @@ dSTART      = 50;
 dEND        = 150;
 z = 0;
 % species properties some values have to be set manually!!
-[rho_s, rho, MW1, MW2, Y_k, X_k, Y_in, X_in, Y2_k, X2_k, Y2_in, X2_in, iAll, MW, rho_real, rho2_real, rho_old, rho2_old, D, D_k, D2_k, P_k, f_old, f2_old, sink, n] = species_init(NPI);
+[rho_s, rho,Gamma, Gamma_k, MW1, MW2, Y_k, X_k, Y_in, X_in, Y2_k, X2_k, Y2_in, X2_in, iAll, MW, rho_real, rho2_real, rho_old, rho2_old, D, D_k, D2_k, P_k, f_old, f2_old, sink, n] = species_init(NPI);
 
 % make a vector with initial values for all non-specie dependent parameters 
 [u, u2, d_u, b, SP, Su, relax_rho, relax_f, Dt, u_old] = param_init(NPI, u_in);
@@ -99,7 +99,7 @@ for time = 0:Dt:Total_time
     [Y_k, Y2_k,rho_real, rho2_real ] = bound(NPI, Y_in, Y2_in, Y_k, Y2_k, rho_real, rho2_real);  
     
     % determine new value for X_k MW rho_real and D_k 
-    [X_k, X2_k, D_k, rho_real, rho2_real, MW1, MW2]          = mole(NPI, n, Y_k, Y2_k, MW, D, rho_s);
+    [X_k, X2_k, Gamma_k, D_k, rho_real, rho2_real, MW1, MW2]          = mole(NPI, n,Gamma, Y_k, Y2_k, MW, D, rho_s);
     
     u2 = -sum(Y_sink)./rho_real(2:end);
     u2(1)= 0;
@@ -131,7 +131,7 @@ for time = 0:Dt:Total_time
 %     end
 
 % 
-   [X_k, X2_k, D_k, rho_real, rho2_real, MW1, MW2]          = mole(NPI, n, Y_k, Y2_k, MW, D, rho_s);
+   [X_k, X2_k, Gamma_k, D_k, rho_real, rho2_real, MW1, MW2]          = mole(NPI, n,Gamma, Y_k, Y2_k, MW, D, rho_s);
 
 
 %     end
@@ -139,7 +139,7 @@ for time = 0:Dt:Total_time
     [rho_old, rho2_old, f_old, f2_old] = storeresults(NPI, rho_real, rho2_real, Y_k, Y2_k, rho_old, rho2_old, f_old, f2_old, n);
     
     % determine new value for X_k rho_real and D_k 
-    [X_k, X2_k, D_k, rho_real, rho2_real]          = mole(NPI, n, Y_k, Y2_k, MW, D, rho_s);
+    [X_k, X2_k, Gamma_k, D_k, rho_real, rho2_real]          = mole(NPI, n, Gamma, Y_k, Y2_k, MW, D, rho_s);
     [Y_k, Y2_k,rho_real, rho2_real ]        = bound(NPI, Y_in, Y2_in, Y_k, Y2_k, rho_real, rho2_real);  
 
 %     store data at different time steps
