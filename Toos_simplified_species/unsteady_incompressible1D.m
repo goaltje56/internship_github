@@ -43,7 +43,7 @@ Runiv        = 8.314;
 
 NPI         = 200;              % number of grid cells in x-direction [-] 
 XMAX        = 1;                % length of the domain [m]
-u_in        = 1.5;              % inflow velocity [m/s]
+u_in        = 1;              % inflow velocity [m/s]
 T           = 298;              % temperature
 A           = 1;                % area of one cell [m^2]
 Total_time  = 200;              % total simulation time [s]
@@ -87,11 +87,11 @@ for time = 0:Dt:Total_time
         Y_k(i,:) = solve_eq(NPI,aE_f(i,:), aW_f(i,:), aP_f(i,:), b_f(i,:), Y_k(i,:), 2);
     end
     for j = 1:n
-        for i = 1:NPI+2
-            if Y_k(j,i) <0
+        for i = 1:NPI+1
+            if Y_k(j,i) <0 || sum(-Y_sink(j,1:i))>rho(1)*u_in
                 Y_k(j,i) = 0;
                 Y_sink(j,i) = 0;
-            end
+            end               
         end
     end
     Y_k = species_bound(NPI, n, Y_k);
@@ -220,7 +220,7 @@ figure(8)
 hold on
 grid on
 xlabel('Stage cut, \Theta [-] ','LineWidth', 2)
-ylabel('Mole fraction[-] ','LineWidth', 2)
+ylabel('X_{permeate} [-] ','LineWidth', 2)
 % axis([0 XMAX+Dx 0 2]);
 p11 = plot((x_dummy(1:NPI+1,2)')/(rho_real(1)*u_in), X2_k(1,2:NPI+2),'r','LineWidth',2);
 p12 = plot((x_dummy(1:NPI+1,2)')/(rho_real(1)*u_in), X2_k(2,2:NPI+2),'b','LineWidth',2);
@@ -232,7 +232,7 @@ figure(9)
 hold on
 grid on
 xlabel('Stage cut, \Theta [-] ','LineWidth', 2)
-ylabel('Mole fraction[-] ','LineWidth', 2)
+ylabel('X_{retentate} [-] ','LineWidth', 2)
 % axis([0 XMAX+Dx 0 2]);
 p11 = plot((x_dummy(1:NPI+1,2)')/(rho_real(1)*u_in), X_k(1,2:NPI+2),'r','LineWidth',2);
 p12 = plot((x_dummy(1:NPI+1,2)')/(rho_real(1)*u_in), X_k(2,2:NPI+2),'b','LineWidth',2);
