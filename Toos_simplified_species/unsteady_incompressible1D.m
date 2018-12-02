@@ -42,7 +42,7 @@ Patm        = 101325;           % athmosphesric pressure [Pa]
 Runiv        = 8.314;
 
 NPI         = 200;              % number of grid cells in x-direction [-] 
-XMAX        = 1;                % length of the domain [m]
+XMAX        = 2;                % length of the domain [m]
 u_in        = 1;              % inflow velocity [m/s]
 T           = 298;              % temperature
 A           = 1;                % area of one cell [m^2]
