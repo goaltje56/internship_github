@@ -22,8 +22,8 @@ function [aE aW aP b Istart_F Y_sink] = Fcoeff(NPI, rho, A, x, x_u, u, Y_k, Y2_k
         % source terms
         if sink == 1
             SP(I) = 0;
-            Su(I) = -P_k(I)*(Pr*MW1(I)*Y_k(I)-Pp*MW2(I)*Y2_k(I))*Dx*w*Dt;      % sink term depends on mass fraction
-            Y_sink(I) = -P_k(I)*(Pr*MW1(I)*Y_k(I)-Pp*MW2(I)*Y2_k(I))*Dx*w*Dt;
+            Su(I) = -P_k(I)*(Pr*MW1(I)*Y_k(I)-Pp*MW2(I)*Y2_k(I))*Dx*w;      % sink term depends on mass fraction
+            Y_sink(I) = -P_k(I)*(Pr*MW1(I)*Y_k(I)-Pp*MW2(I)*Y2_k(I))*Dx*w;
         else 
         SP(I) = 0;
         Su(I) = 0;
