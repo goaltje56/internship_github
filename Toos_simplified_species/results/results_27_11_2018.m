@@ -261,7 +261,7 @@ fields = fieldnames(Yall);
 
 for i = 5%:numel(fields)
 %     fields(i);
-    path_Results = strcat('C:\Users\s137280\Documents\Master_tue\Internship\internship_github\Toos_simplified_species\results\Miguel',num2str(i),'.avi');
+    path_Results = strcat('C:\Users\s137280\Documents\Master_tue\Internship\internship_github\Toos_simplified_species\results\NEWW',num2str(i),'.avi');
     filename = VideoWriter(path_Results)
     filename.FrameRate = 3;
 

@@ -1,7 +1,7 @@
 function [u, u2, d_u, b, SP, Su, relax_rho, relax_f, Dt, u_old] = param_init(NPI, u_in);
 %     m_in    = 1;
 %     m_out   = 1;
-    Dt = 0.5;
+    Dt = 0.05;
     for I=1:NPI+2
         i = I;
         u(i)    = u_in;         % Velocity in x-direction

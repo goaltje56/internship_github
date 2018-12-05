@@ -31,6 +31,8 @@ X_in2 = moles2/sum(moles);
 sink  = [1  1  1  1];
 % P_n   = [7.155; 1.255]*10^(-9);
 P_n   = [28; 350; 1750; 21]*10^(-9);  % Permeability of species
+% P_n   = [28; 350; 1750; 31.5]*10^(-9);  % Permeability of species
+
 Gamma = [ThermProp(300,Sp(iO2),'Gamma','Mass') ThermProp(300,Sp(iCO2),'Gamma','Mass') ThermProp(350,Sp(iH2O),'Gamma','Mass') ThermProp(350,Sp(iAr),'Gamma','Mass')];
 rho_s = [1.429 1.98 1.2504 1.784];          % 'Real' density of species [kg/m^3]
 % rho_s = [1.429 1.2504];          % 'Real' density of species [kg/m^3]

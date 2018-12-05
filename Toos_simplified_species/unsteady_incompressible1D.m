@@ -42,7 +42,7 @@ Patm        = 101325;           % athmosphesric pressure [Pa]
 Runiv        = 8.314;
 
 NPI         = 200;              % number of grid cells in x-direction [-] 
-XMAX        = 1;                % length of the domain [m]
+XMAX        = 2;                % length of the domain [m]
 u_in        = 1;              % inflow velocity [m/s]
 T           = 298;              % temperature
 A           = 1;                % area of one cell [m^2]
@@ -221,24 +221,28 @@ hold on
 grid on
 xlabel('Stage cut, \Theta [-] ','LineWidth', 2)
 ylabel('X_{permeate} [-] ','LineWidth', 2)
-% axis([0 XMAX+Dx 0 2]);
+% axis([0 0.3 0 1]);
+ylim([0 1])
 p11 = plot((x_dummy(1:NPI+1,2)')/(rho_real(1)*u_in), X2_k(1,2:NPI+2),'r','LineWidth',2);
 p12 = plot((x_dummy(1:NPI+1,2)')/(rho_real(1)*u_in), X2_k(2,2:NPI+2),'b','LineWidth',2);
 p13 = plot((x_dummy(1:NPI+1,2)')/(rho_real(1)*u_in), X2_k(3,2:NPI+2),'k','LineWidth',2);
 p14 = plot((x_dummy(1:NPI+1,2)')/(rho_real(1)*u_in), X2_k(4,2:NPI+2),'c','LineWidth',2);
 set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
+% legend([p11, p12, p13, p14],'O_2','CO2','H_2O','AR','Location','Best')
 
 figure(9)
 hold on
 grid on
 xlabel('Stage cut, \Theta [-] ','LineWidth', 2)
 ylabel('X_{retentate} [-] ','LineWidth', 2)
-% axis([0 XMAX+Dx 0 2]);
+ylim([0 1])
+% axis([0 0.3 0 1]);
 p11 = plot((x_dummy(1:NPI+1,2)')/(rho_real(1)*u_in), X_k(1,2:NPI+2),'r','LineWidth',2);
 p12 = plot((x_dummy(1:NPI+1,2)')/(rho_real(1)*u_in), X_k(2,2:NPI+2),'b','LineWidth',2);
 p13 = plot((x_dummy(1:NPI+1,2)')/(rho_real(1)*u_in), X_k(3,2:NPI+2),'k','LineWidth',2);
 p14 = plot((x_dummy(1:NPI+1,2)')/(rho_real(1)*u_in), X_k(4,2:NPI+2),'c','LineWidth',2);
-set(gca, 'box', 'on', 'LineWidth', 2, 'FontSize', 15)
+set(gca,'box', 'on', 'LineWidth', 2, 'FontSize', 15)
+% legend([p11, p12, p13, p14],'O_2','CO2','H_2O','AR','Location','Best')
 
 Mp = Y_sink(2,:)+Y_sink(4,:);
 
