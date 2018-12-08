@@ -129,7 +129,7 @@ Fall = struct('CO2',X_k1_new,'AR',X_k2_new);
 
 fields = fieldnames(Fall);
 
-for i = 1%:numel(fields)
+for i = 3%:numel(fields)
 %     fields(i);
     path_Results = strcat('C:\Users\s137280\Documents\Master_tue\Internship\internship_github\Toos_Simplified_3membranes\results\3membranes_transient',num2str(i),'.avi');
     filename = VideoWriter(path_Results)
@@ -139,7 +139,7 @@ for i = 1%:numel(fields)
     for n = 1:1:col
         
     %% mass fraction
-    h1 = figure(10,'visible','off');
+    h1 = figure('visible','off');
 
     subplot(2,2,1)
     hold on
@@ -222,7 +222,7 @@ for i = 1%:numel(fields)
     
 end
 
-for i = 2%:numel(fields)
+for i = 4%:numel(fields)
 %     fields(i);
     path_Results = strcat('C:\Users\s137280\Documents\Master_tue\Internship\internship_github\Toos_Simplified_3membranes\results\3membranes_transient',num2str(i),'.avi');
     filename = VideoWriter(path_Results)
@@ -232,7 +232,7 @@ for i = 2%:numel(fields)
     for n = 1:1:col
         
     %% mass fraction
-    h1 = figure(10,'visible','off');
+    h1 = figure('visible','off');
     
     subplot(2,2,1)
     hold on

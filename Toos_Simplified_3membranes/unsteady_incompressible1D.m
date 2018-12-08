@@ -90,14 +90,14 @@ M2 =    (rho2_real(2)*u_in) ;        % initial mass at permeate side
 %% The main calculation part
 for time = 0:Dt:Total_time
 
-    if time> Tstart(tt) && time < Tend(tt)
-        z = z+1;
-        Y_in(1) = profile(z);
+%     if time> Tstart(tt) && time < Tend(tt)
+%         z = z+1;
+        Y_in(1) = 0.5 +0.5*sin(0.3*time).*cos(0.15*time).*cos(0.5*time).*cos(0.02*time).*sin(0.25*time);
         Y_in(2) = 1 - Y_in(1);
-    end
-    if time > Tend(tt) && tt < length(Tend)
-        tt =tt+1;
-    end
+%     end
+%     if time > Tend(tt) && tt < length(Tend)
+%         tt =tt+1;
+%     end
 %-------------------------------------------------------------------------%
 %% 1st membrane
 %-------------------------------------------------------------------------%
