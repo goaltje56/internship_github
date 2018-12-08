@@ -30,7 +30,7 @@ moles = [16.667; 83.333];
 moles2 =[0  ; 1];
 
 X_in  = moles/sum(moles);
-X_in2 = moles2/sum(moles); 
+X_in2 = moles2/sum(moles2); 
     
 sink  = [1  1];
 % P_n   = [7.155; 1.255]*10^(-9);

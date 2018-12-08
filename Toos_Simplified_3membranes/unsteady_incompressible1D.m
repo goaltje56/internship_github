@@ -20,17 +20,17 @@ path_Results3 = 'C:\Users\s137280\Documents\Master_tue\Internship\internship_git
 
 % add name taggs to created file and close file again.
 test = fopen(path_Results1,'w');
-fprintf(test,'%-12s %-12s %-12s %-12s %-12s %-12s %-12s \n', 'Time','Position', 'u_Position', 'species1', 'species2', 'species3','species4');
+fprintf(test,'%-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s\n', 'Time','Position', 'u_Position', 'X_k1', 'X_k2', 'X2_k1', 'X2_k2', 'stagecut1');
 fclose(test);
 
 % add name taggs to created file and close file again.
 test = fopen(path_Results2,'w');
-fprintf(test,'%-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s\n','Dspecies1', 'Dspecies2', 'Dspecies3','Dspecies4','Yp1', 'Yp2', 'Yp3','Yp4');
+fprintf(test,'%-12s %-12s %-12s %-12s %-12s %-12s %-12s\n','Position2', 'u_Position2', 'X3_k1', 'X3_k2', 'X4_k1', 'X4_k2', 'stagecut2');
 fclose(test);
 
 % add name taggs to created file and close file again.
 test = fopen(path_Results3,'w');
-fprintf(test,'%-12s %-12s %-12s %-12s %-12s %-12s %-12s\n','Mr', 'Mp', 'permated1', 'permated2', 'permated3', 'permated4', 'stagecut');
+fprintf(test,'%-12s %-12s %-12s %-12s %-12s %-12s %-12s\n','Position3', 'u_Position3', 'X5_k1', 'X5_k2', 'X6_k1', 'X6_k2', 'stagecut3');
 fclose(test);
 % -------------------------------------------------------------------------
 %% set timer to indicate the computation time
@@ -72,8 +72,16 @@ z = 0;
 
 
 %% generating disturbance profile
-abc = disturbance(150, 40, Dt, Y_in(2), 0.05);
+Tstart  = [30 60 90  120 160];
+Tend    = [55 85 115 155 185];
+down1   = disturbance(Tend(1), Tstart(1), Dt, Y_in(1), 0.05);
+up1     = disturbance(Tend(2), Tstart(2), Dt, Y_in(1), 0.18);
+down2   = disturbance(Tend(3), Tstart(3), Dt, Y_in(1), 0.08);
+up2     = disturbance(Tend(4), Tstart(4), Dt, Y_in(1), 0.18);
+up3     = disturbance(Tend(5), Tstart(5), Dt, Y_in(1), 0.30);
 
+profile = [down1 up1 down2 up2 up3];
+tt      = 1; 
 %% storage 
 store_times = [0:0.5:Total_time];      % define sample points to save data
 ii          = 1;
@@ -82,10 +90,14 @@ M2 =    (rho2_real(2)*u_in) ;        % initial mass at permeate side
 %% The main calculation part
 for time = 0:Dt:Total_time
 
-%     if time> dSTART && time < dEND
-%         z = z+1;
-%         Y_in(2) = abc(z);
-%     end
+    if time> Tstart(tt) && time < Tend(tt)
+        z = z+1;
+        Y_in(1) = profile(z);
+        Y_in(2) = 1 - Y_in(1);
+    end
+    if time > Tend(tt) && tt < length(Tend)
+        tt =tt+1;
+    end
 %-------------------------------------------------------------------------%
 %% 1st membrane
 %-------------------------------------------------------------------------%
@@ -98,7 +110,7 @@ for time = 0:Dt:Total_time
         Y_k(i,:) = solve_eq(NPI1,aE_f(i,:), aW_f(i,:), aP_f(i,:), b_f(i,:), Y_k(i,:), 2);
     end
     for j = 1:n
-        for i = 1:NPI1+1
+        for i = 1:NPI1+2
             if Y_k(j,i) <0
                 Y_k(j,i) = 0;
                 Y_sink(j,i) = 0;
@@ -128,8 +140,8 @@ for time = 0:Dt:Total_time
     [Y_k, Y2_k,rho_real, rho2_real ]        = bound(NPI1, Y_in, Y2_in, Y_k, Y2_k, rho_real, rho2_real);  
     
     %% determine stage cut of first membrane
-    for i = 2:NPI1+1
-        [x_dummy1(i,:), theta1(i)] = stagecut((rho_real(1)*u_in), Y_sink(:,1:i));
+    for i = 2:NPI1+2
+        [x_dummy1(i,:), theta1(i)] = stagecut((rho_real(1)*u_in), Y_sink(:,1:i-1));
     end
 
      Y_in = species_bound(NPI1, n, Y_in);
@@ -150,7 +162,7 @@ Y3_k = species_bound(NPI2, n, Y3_k);
         Y3_k(i,:) = solve_eq(NPI2,aE_f3(i,:), aW_f3(i,:), aP_f3(i,:), b_f3(i,:), Y3_k(i,:), 2);
     end
     for j = 1:n
-        for i = 1:NPI2+1
+        for i = 1:NPI2+2
             if Y3_k(j,i) <0
                 Y3_k(j,i) = 0;
                 Y_sink2(j,i) = 0;
@@ -171,7 +183,7 @@ Y3_k = species_bound(NPI2, n, Y3_k);
         
     %% Species Permeate
     for i = 1:n
-        [aE_f4(i,:), aW_f4(i,:), aP_f4(i,:), b_f4(i,:), Istart_f, Y_sink2(i,:)] = F2coeff(NPI2, rho,rho_s, A, x2, x_u2, u2, Y3_k(i,:), Y4_k(i,:),T, rho3_real, rho4_real, P_k(i,:), D4_k(i,:), relax_f, Dt, f4_old(i,:), Dx, rho4_old, sink(i), Y_sink2(i,:), sum(Y_sink2), n);
+        [aE_f4(i,:), aW_f4(i,:), aP_f4(i,:), b_f4(i,:), Istart_f, Y2_sink2(i,:)] = F2coeff(NPI2, rho,rho_s, A, x2, x_u2, u2, Y3_k(i,:), Y4_k(i,:),T, rho3_real, rho4_real, P_k(i,:), D4_k(i,:), relax_f, Dt, f4_old(i,:), Dx, rho4_old, sink(i), Y_sink2(i,:), sum(Y_sink2), n);
         Y4_k(i,:) = solve_eq(NPI2,aE_f4(i,:), aW_f4(i,:), aP_f4(i,:), b_f4(i,:), Y4_k(i,:), 2);
     end    
     
@@ -179,8 +191,8 @@ Y3_k = species_bound(NPI2, n, Y3_k);
     [Y3_k, Y4_k,rho3_real, rho4_real ]        = bound(NPI2, Y3_in, Y4_in, Y3_k, Y4_k, rho3_real, rho4_real);  
     
     %% determine stage cut of 2nd membrane
-    for i = 2:NPI2+1
-        [x_dummy2(i,:), theta2(i)] = stagecut((rho3_real(1)*u_in), Y_sink2(:,1:i));
+    for i = 2:NPI2+2
+        [x_dummy2(i,:), theta2(i)] = stagecut((rho3_real(1)*u_in), Y_sink2(:,1:i-1));
     end
 
 %-------------------------------------------------------------------------%
@@ -198,7 +210,7 @@ Y5_k = species_bound(NPI3, n, Y5_k);
         Y5_k(i,:) = solve_eq(NPI3,aE_f5(i,:), aW_f5(i,:), aP_f5(i,:), b_f5(i,:), Y5_k(i,:), 2);
     end
     for j = 1:n
-        for i = 1:NPI3+1
+        for i = 1:NPI3+2
             if Y5_k(j,i) <0
                 Y5_k(j,i) = 0;
                 Y_sink3(j,i) = 0;
@@ -219,7 +231,7 @@ Y5_k = species_bound(NPI3, n, Y5_k);
         
     %% Species Permeate
     for i = 1:n
-        [aE_f6(i,:), aW_f6(i,:), aP_f6(i,:), b_f6(i,:), Istart_f, Y_sink3(i,:)] = F2coeff(NPI3, rho,rho_s, A, x3, x_u3, u2, Y5_k(i,:), Y6_k(i,:),T, rho5_real, rho6_real, P_k(i,:), D6_k(i,:), relax_f, Dt, f6_old(i,:), Dx, rho6_old, sink(i), Y_sink3(i,:), sum(Y_sink3), n);
+        [aE_f6(i,:), aW_f6(i,:), aP_f6(i,:), b_f6(i,:), Istart_f, Y2_sink3(i,:)] = F2coeff(NPI3, rho,rho_s, A, x3, x_u3, u2, Y5_k(i,:), Y6_k(i,:),T, rho5_real, rho6_real, P_k(i,:), D6_k(i,:), relax_f, Dt, f6_old(i,:), Dx, rho6_old, sink(i), Y_sink3(i,:), sum(Y_sink3), n);
         Y6_k(i,:) = solve_eq(NPI3,aE_f6(i,:), aW_f6(i,:), aP_f6(i,:), b_f6(i,:), Y6_k(i,:), 2);
     end    
     
@@ -227,8 +239,8 @@ Y5_k = species_bound(NPI3, n, Y5_k);
     [Y5_k, Y6_k,rho5_real, rho6_real ]        = bound(NPI3, Y5_in, Y6_in, Y5_k, Y6_k, rho5_real, rho6_real);  
     
     %% determine stage cut of 3th membrane
-    for i = 2:NPI3+1
-        [x_dummy3(i,:), theta3(i)] = stagecut((rho5_real(1)*u_in), Y_sink3(:,1:i));
+    for i = 2:NPI3+2
+        [x_dummy3(i,:), theta3(i)] = stagecut((rho5_real(1)*u_in), Y_sink3(:,1:i-1));
     end
     
 %% updating + storing data    
@@ -249,19 +261,19 @@ Y5_k = species_bound(NPI3, n, Y5_k);
     if time == store_times(ii)
         time_x = time*ones(1,length(u));
         test = fopen(path_Results1,'a');
-        fprintf(test,'%-12.6f %-12.6f %-12.6f %-12.6f %-12.6f \n',[time_x; x1; x_u1; X_k(1,:); X_k(2,:)]);    
+        fprintf(test,'%-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f \n',[time_x; x1; x_u1; X_k(1,:); X_k(2,:); X2_k(1,:); X2_k(2,:); theta1]);    
         fprintf(test,'\n');        
         fclose(test);
 
         file2 = fopen(path_Results2,'a');
-        fprintf(file2,'%-12.12f %-12.12f %-12.12f %-12.12f \n',[D_k(1,:); D_k(2,:); X2_k(1,:); X2_k(2,:)]);    
+        fprintf(file2,'%-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f \n',[x2; x_u2; X3_k(1,:); X3_k(2,:); X4_k(1,:); X4_k(2,:); theta2]);    
         fprintf(file2,'\n');        
         fclose(file2);
         
-%         file3 = fopen(path_Results3,'a');
-%         fprintf(file3,'%-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f\n',[x_dummy(:,1)'; x_dummy(:,3)'; x_dummy(:,8)'; x_dummy(:,9)'; x_dummy(:,10)'; x_dummy(:,11)'; x_dummy(:,2)'/(rho_real(1)*u_in)]);    
-%         fprintf(file3,'\n');        
-%         fclose(file3);        
+        file3 = fopen(path_Results3,'a');
+        fprintf(file2,'%-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f %-12.12f \n',[x3; x_u3; X5_k(1,:); X5_k(2,:); X6_k(1,:); X6_k(2,:); theta3]);    
+        fprintf(file2,'\n');        
+        fclose(file2);       
         
     ii = ii +1;
     end
