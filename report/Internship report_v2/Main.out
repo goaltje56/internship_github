@@ -1,0 +1,31 @@
+\BOOKMARK [1][-]{section*.1}{Acknowledgement}{}% 1
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 2
+\BOOKMARK [1][-]{section.2}{Theory}{}% 3
+\BOOKMARK [2][-]{subsection.2.1}{Membrane gas separation theory}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.2}{Discretization schemes}{section.2}% 5
+\BOOKMARK [2][-]{subsection.2.3}{Numerical solver}{section.2}% 6
+\BOOKMARK [3][-]{subsubsection.2.3.1}{Gaus-Seidel}{subsection.2.3}% 7
+\BOOKMARK [3][-]{subsubsection.2.3.2}{TDMA}{subsection.2.3}% 8
+\BOOKMARK [1][-]{section.3}{Membrane model}{}% 9
+\BOOKMARK [2][-]{subsection.3.1}{Governing Equations}{section.3}% 10
+\BOOKMARK [2][-]{subsection.3.2}{Boundary conditions}{section.3}% 11
+\BOOKMARK [2][-]{subsection.3.3}{Numerical method}{section.3}% 12
+\BOOKMARK [2][-]{subsection.3.4}{Validation}{section.3}% 13
+\BOOKMARK [3][-]{subsubsection.3.4.1}{The solver}{subsection.3.4}% 14
+\BOOKMARK [3][-]{subsubsection.3.4.2}{Model}{subsection.3.4}% 15
+\BOOKMARK [1][-]{section.4}{Sensitivity}{}% 16
+\BOOKMARK [2][-]{subsection.4.1}{Pressure ratio}{section.4}% 17
+\BOOKMARK [2][-]{subsection.4.2}{Permeability}{section.4}% 18
+\BOOKMARK [1][-]{section.5}{Numerical Simulations}{}% 19
+\BOOKMARK [2][-]{subsection.5.1}{Stationary single membrane model}{section.5}% 20
+\BOOKMARK [2][-]{subsection.5.2}{Stationary 3 membrane model}{section.5}% 21
+\BOOKMARK [2][-]{subsection.5.3}{Transient 3 membrane model}{section.5}% 22
+\BOOKMARK [1][-]{section.6}{Discussion}{}% 23
+\BOOKMARK [1][-]{section.7}{Conclusion}{}% 24
+\BOOKMARK [1][-]{section.8}{Code manual}{}% 25
+\BOOKMARK [2][-]{subsection.8.1}{Data storage}{section.8}% 26
+\BOOKMARK [2][-]{subsection.8.2}{Initializing variables}{section.8}% 27
+\BOOKMARK [3][-]{subsubsection.8.2.1}{Variables in main code}{subsection.8.2}% 28
+\BOOKMARK [3][-]{subsubsection.8.2.2}{Species\137init\(\)}{subsection.8.2}% 29
+\BOOKMARK [3][-]{subsubsection.8.2.3}{Param\137init\(\)}{subsection.8.2}% 30
+\BOOKMARK [1][-]{section.9}{Grid generation}{}% 31

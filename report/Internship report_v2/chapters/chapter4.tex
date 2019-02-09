@@ -1,0 +1,12 @@
+\section{Discussion}
+At the start of this project the SIMPLE algorithm was used due to its ease of implementation. One of the main features of the SIMPLE algorithm is the fact that it solves for conservation of mass. However, it turned out that in case of membrane transport the SIMPLE algorithm might not be the most convenient choice due to this feature, as will be explained below. \\
+
+Consider a pipe with a membrane such that a species A is going from on side to the other side. Once the mass-flow in this pipe is determined at the first node, the SIMPLE algorithm forces the momentum and pressure equation to behave such that the mass flow rate stays constant. Meaning, if there is a species leaking from side A to side B then the density at both sides changes. As a consequence of the SIMPLE algorithm, the velocity also changes because of the change in density. Physically this is not what would happen. The velocity should remain (almost) constant and the pressure should change due to the change in density. \\
+
+Since the SIMPLE algorithm was not giving stable, reliable results for the problem of interest, it was decided to simplify the problem to constant velocity and constant pressure. For future work it is worthwhile to develop a code that overcomes the shortcommings described above. \\
+
+The accuracy of hybrid and upwind schemes is only first-order in terms of Taylor series truncation error. The use of upwind quantities ensures that the schemes are very stable and obey the transportiveness requirement, but the first-order accuracy makes them prone to numerical diffusion errors. Such errors can be minimised by employing higher-order discretisation. Higher-order schemes involve more neighbore points and reduce the discretisation errors by bringing in a wider influence. The central differencing scheme, which has second-order accuracy, proved to be unstable and does not possess the transportiveness property. Formulations that do not take into account the flow direction are unstable and, therefore, more accurate higher order schemes, which preserve upwinding for stability and sensitivity to the flow direction, are recommended. 
+
+\newpage
+
+\section{Conclusion}

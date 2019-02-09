@@ -22,28 +22,23 @@ n = length(iAll);
 
 %% mole flow rate in system and sink term
 moles = [1.541694; 10.329175; 0.973272;  87.155861];
-% moles2 =[0.01  ;  0.35 ; 0.05 ; 0.59];
-moles2 =[0  ;  0 ; 0 ; 1];
+moles2 =[0  ;  0 ; 0 ; 1];    % code will crash if everything is set to 0
 
 X_in  = moles/sum(moles);
 X_in2 = moles2/sum(moles); 
     
-sink  = [1  1  1  1];
-% P_n   = [7.155; 1.255]*10^(-9);
+sink  = [1  1  1  1];         % this array can prevent species from leakage
 P_n   = [28; 350; 1750; 21]*10^(-9);  % Permeability of species
-% P_n   = [28; 350; 1750; 31.5]*10^(-9);  % Permeability of species
 
 Gamma = [ThermProp(300,Sp(iO2),'Gamma','Mass') ThermProp(300,Sp(iCO2),'Gamma','Mass') ThermProp(350,Sp(iH2O),'Gamma','Mass') ThermProp(350,Sp(iAr),'Gamma','Mass')];
-rho_s = [1.429 1.98 1.2504 1.784];          % 'Real' density of species [kg/m^3]
-% rho_s = [1.429 1.2504];          % 'Real' density of species [kg/m^3]
-
-
+rho_s = [1.429 1.98 1.2504 1.784];    % 'Real' density of species [kg/m^3]
 
     for i = 1:n
         Y(i,:) = X_in(i)*MW(i)/(MW*X_in);                
         Y2(i,:) = X_in2(i)*MW(i)/(MW*X_in2);
 
     end
+    
 Y_in  = Y(:,1);
 Y_in2 = [0;0;0;0];
 

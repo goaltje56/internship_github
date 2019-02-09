@@ -1,0 +1,10 @@
+\section{Conclusion}
+This report is a study on the quality of the FGM manifold compared to the detailed chemistry and Peters flamespeed model. This study is performed on a jalousie burner case and a turbulent combustor case.
+With regards to the laminar case it is observed that the FGM method was able to produce results which were quite accurate compared to the detailed mechanism for higher inlet velocities. One of the problems encountered with the FGM method was the heat flow towards the walls and stretch effects. This can be improved by increasing the dimension of the manifold. Another problem was the high equivalence ratio. Higher equivalence ratios produces flames with a stronger curvature in the 
+flame tip. This is not accurately modelled by the FGM method since it uses a one-dimensional approximation of the flame. At the end, FGM is much cheaper in term of computation costs with respect to the detailed reaction mechanism and still giving a qualitative indication of the flame. For more detailed properties it is suggested to increase the dimensions of the manifold. \\ \\ 
+The second case regards the turbulent combustor. In this case, the FGM method is compared to the Peters turbulent flame speed model. It was found that the flame speed model gave different results.
+The flame speed model predicted flame formation over a larger part of the domain compared to the FGM results. However, in order to draw a conclusion regarded the correctness of both models for turbulent combustion one should investigate the results of a detailed mechanism. Also the use of baffles is examined and it was found that baffles could be used to control the position where the flame arises.  
+For further simulations it is recommended to patch the cold
+flow using an error function. For now, a rectangular region is selected, however, creating a smooth function would most likely decrease the
+time until convergence is reached.
+

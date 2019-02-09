@@ -1,0 +1,32 @@
+\select@language {english}
+\contentsline {section}{\numberline {}Acknowledgement}{1}{section*.1}
+\contentsline {section}{\numberline {1}Introduction}{1}{section.1}
+\contentsline {section}{\numberline {2}Theory}{3}{section.2}
+\contentsline {subsection}{\numberline {2.1}Membrane gas separation theory}{3}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}Discretization schemes}{4}{subsection.2.2}
+\contentsline {subsection}{\numberline {2.3}Numerical solver}{5}{subsection.2.3}
+\contentsline {subsubsection}{\numberline {2.3.1}Gaus-Seidel}{5}{subsubsection.2.3.1}
+\contentsline {subsubsection}{\numberline {2.3.2}TDMA}{5}{subsubsection.2.3.2}
+\contentsline {section}{\numberline {3}Membrane model}{6}{section.3}
+\contentsline {subsection}{\numberline {3.1}Governing Equations}{6}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Boundary conditions}{7}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.3}Numerical method}{7}{subsection.3.3}
+\contentsline {subsection}{\numberline {3.4}Validation}{8}{subsection.3.4}
+\contentsline {subsubsection}{\numberline {3.4.1}The solver}{8}{subsubsection.3.4.1}
+\contentsline {subsubsection}{\numberline {3.4.2}Model}{8}{subsubsection.3.4.2}
+\contentsline {section}{\numberline {4}Sensitivity}{12}{section.4}
+\contentsline {subsection}{\numberline {4.1}Pressure ratio}{12}{subsection.4.1}
+\contentsline {subsection}{\numberline {4.2}Permeability}{14}{subsection.4.2}
+\contentsline {section}{\numberline {5}Numerical Simulations}{16}{section.5}
+\contentsline {subsection}{\numberline {5.1}Stationary single membrane model}{16}{subsection.5.1}
+\contentsline {subsection}{\numberline {5.2}Stationary 3 membrane model}{16}{subsection.5.2}
+\contentsline {subsection}{\numberline {5.3}Transient 3 membrane model}{17}{subsection.5.3}
+\contentsline {section}{\numberline {6}Discussion}{18}{section.6}
+\contentsline {section}{\numberline {7}Conclusion}{19}{section.7}
+\contentsline {section}{\numberline {8}Code manual}{20}{section.8}
+\contentsline {subsection}{\numberline {8.1}Data storage}{20}{subsection.8.1}
+\contentsline {subsection}{\numberline {8.2}Initializing variables}{21}{subsection.8.2}
+\contentsline {subsubsection}{\numberline {8.2.1}Variables in main code}{21}{subsubsection.8.2.1}
+\contentsline {subsubsection}{\numberline {8.2.2}Species\_init()}{22}{subsubsection.8.2.2}
+\contentsline {subsubsection}{\numberline {8.2.3}Param\_init()}{25}{subsubsection.8.2.3}
+\contentsline {section}{\numberline {9}Grid generation}{25}{section.9}

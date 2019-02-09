@@ -1,0 +1,195 @@
+\section{1D incompressible pipe flow}
+First a simple 1D pipe flow is modelled without any source terms in order to check the stability of the discretization scheme. \\
+This simplifies the continuity, momentum and energy equation to:
+\begin{equation}
+	\frac{\partial}{\partial x} (\rho v) = 0
+\end{equation}
+\begin{equation}
+\frac{\partial}{\partial x} (\rho v^2) = -\frac{\partial p}{\partial x} + \frac{\partial}{\partial x}\left(\mu \frac{\partial v}{\partial x}\right)
+\end{equation}
+\begin{equation}
+	\frac{\partial}{\partial x}(\rho v T) =\frac{ \partial}{\partial x}\left(\frac{k}{c_p}\frac{\partial T}{\partial x}\right)
+\end{equation}
+Note that these equation can be written in a general form as:
+\begin{equation}
+\frac{\partial}{\partial x }(\rho v \phi) = \frac{\partial}{\partial x}\left(\Gamma \frac{\partial \phi}{\partial x}\right) + S_\phi
+\end{equation}
+
+Where $\phi$ denotes the transported property. In the table below an expression is given for the terms in case $\phi$ represents density, velocity or temperature. 
+\begin{table}[H]
+	\begin{tabular}{|l|l|l|}
+		\hline
+		$\phi$ 	& $\Gamma$ 	& $S_\phi$        \\ \hline
+		1   	& 0     	& 0        \\
+		v   	& $\mu$    	& -$\frac{\partial p}{\partial x} +\frac{\partial}{\partial x}\left[\mu \frac{\partial u}{\partial x}+\lambda  \frac{\partial u}{\partial x} \right]$\\
+		T   	& $k/c_p$   & S    \\ \hline  
+	\end{tabular}
+\end{table}
+First an elaboration on the discretization of these equations will be provided. The SIMPLE algorithm will be used to solve the equations and to account for pressure and velocity corrections. When using the SIMPLE algorithm it is most convenient to start the derivation of the discretizated equation with the momentum equation.  
+
+\subsection{1D steady incompressible momentum}
+For the momentum equation, integrate the equation over space:
+\begin{equation}
+\frac{\partial}{\partial x} (\rho v^2) + \frac{\partial p}{\partial x}  =\int_{V_C} \left[ \frac{\partial}{\partial x} (\rho v^2) + \frac{\partial p}{\partial x} \right]d\boldsymbol{V}
+\end{equation}
+
+Using divergence theorem to change the volume integral to a surface integral:
+\begin{align}
+	\int_{V_C} \left[\frac{\partial}{\partial x} (\rho v^2) + \frac{\partial p}{\partial x} \right]d\boldsymbol{V} = \int_{w}^{e} \left[\frac{\partial}{\partial x} (\rho v^2) + \frac{\partial p}{\partial x} \right]d\boldsymbol{A}d\boldsymbol{x}
+\end{align}
+
+
+Use as terms for the convective mass-flux:
+\begin{align}
+	F_w &= (\rho u)_w 	&&F_e = (\rho u)_e \nonumber \\
+	F_w &= \rho_{I-1} \left(\frac{u_{i-1}+u_{i}}{2}\right) 	&&F_e = \rho_{I} \left(\frac{u_{i}+u_{i+1}}{2}\right) 
+\end{align}
+
+
+Substituting the convective mass-flux term in the convective part of the momentum equation and integrating over space gives:
+\begin{align}
+	\int_{w}^{e}  \frac{\partial }{\partial x} (F v) \boldsymbol{A} d\boldsymbol{x} dt &= 	(FvA)_e-(FvA)_w 
+\end{align}
+
+The volume integral of the pressure term is written as:
+\begin{align}
+	\int_{w}^{e} \frac{\partial p}{\partial x}  \boldsymbol{A}d\boldsymbol{x}dt &= 	 (p_I - p_{I-1})A_i
+\end{align}
+
+Combining the discretized terms gives:
+\begin{align}
+	(FuA)_e-(FuA)_w + (p_I - p_{I-1})A_i  = 0 
+\end{align}
+At this point only the velocity variables have to be discretized, which is done with the hybrid differencing scheme. The hybrid differencing is a combination of the central differencing scheme and the upwind differencing scheme. For clarification, the central differencing scheme and the upwind scheme of this equation will be shown.
+
+
+which can be written in the generalized form as:
+\begin{equation}
+a_i u_i = \sum a_{nb} u_{nb} + (p_I - p_{I-1})A_i + b_i
+\label{u}
+\end{equation}
+
+To initiate the SIMPLE calculation process a pressure field $p^*$ is guessed. The discretized momentum equation is solved using the guessed pressure field:
+\begin{equation}
+a_iu^*_i = \sum a_{nb} u^*_{nb} + (p^*_I - p^*_{I-1})A_i + b_i
+\label{u_guess}
+\end{equation}
+Defining the correction $p'$ and $u'$ as the difference between the correct field and the guessed field, so that:
+\begin{align}
+	p &= p^* + p' \nonumber \\
+	u &= u^* +u' \nonumber
+\end{align}
+\newpage 
+The correct velocity field is now obtained by substitution of the correct pressure field $p$ into the momentum equation. \\ \\
+Subtraction of equation \ref{u_guess} from \ref{u} gives:
+\begin{equation}
+a_i(u_i - u^*_i ) = \sum a_{nb} (u_{nb} - u^*_{nb}) + [(p_{I-1} - p^*_{I-1}) - (p_I -p^*_I )]A_i
+\end{equation}
+Using the correction formula above this can be rewritten as:
+\begin{equation}
+a_iu'_i = \sum a_{nb} u'_{nb} + (p'_{I-1}  - p'_I )A_i
+\end{equation}
+At this point an approximation will be introduced:\\ $\sum a_{nb} u'_{nb}$ is dropped to simplify the equation for the velocity correction. This does not affect the final solution as the correction should be zero if the velocity is correct. This results in:
+\begin{equation}
+u'_i = d_i(p'_{I-1}  - p'_I )
+\end{equation}
+with $d_i = \frac{A_i}{a_i}$ \\
+The correct velocity now becomes:
+\begin{equation}
+	u_i = u^*_i + d_i(p'_{I-1}  - p'_I )
+\end{equation}
+\subsection{1D steady incompressible continuity}
+Integrate this equation over space:
+\begin{equation}
+	\int_{V_C} \frac{\partial}{\partial x} (\rho v)d\boldsymbol{V} = 0
+\end{equation}
+Using divergence theorem to change the volume integral to a surface integral:
+\begin{align}
+	\int_{V_C} \left[ \frac{\partial}{\partial x} (\rho v)\right]d\boldsymbol{V} =\int_{w}^{e} \left[ \frac{\partial}{\partial x} (\rho v)\right]d\boldsymbol{A}d\boldsymbol{x}
+\end{align}
+
+Use an upwind discretization scheme
+\begin{align}
+	\int_{w}^{e}  \frac{\partial }{\partial x} (\rho v) \boldsymbol{A} d\boldsymbol{x}  &= 	  ((\rho v A)_e-(\rho v A)_w)  \nonumber \\
+	&= 	  ((\rho v A)_{i+1}-(\rho v A)_i)
+\end{align}
+
+Substitution of the corrected velocities into the discretized continuity equation gives:
+\begin{align}
+	\left[\rho_{i+1}A_{i+1} (u^*_{i+1} + d_{i+1}(p'_{I-1}  - p'_I ))- \rho_{i}A_{i} (u^*_{i} + d_{i}(p'_{I-1}  - p'_I ))\right] = 0
+\end{align}
+\newpage 
+This can be rearranged to:
+\begin{align}
+	\left[(\rho d A)_{i+1}+ (\rho d A)_{i+1}\right]p'_I =(\rho d A)_{i+1}p'_{I+1} + (\rho d A)_{i}p'_{I-1} + \left[(\rho u^*A)_i - (\rho u^*A)_{i+1}\right]
+\end{align}
+This may be written as:
+\begin{equation}
+	a_Ip_I = a_{I+1}p'_{I+1} + a_{I-1}p'_{I-1}+ b'_I
+\end{equation}
+where $a_I = a_{I+1} + a_{I-1} $ and the coefficients are given below:
+
+\begin{table}[H]
+	\begin{tabular}{|l|l|l|}
+		\hline
+		$a_{I+1}$			& $a_{I-1}$ 			& $b^'_i$      \\ \hline
+		$(\rho d A)_{i+1}$  & $(\rho d A)_{i-1}$  	& $(\rho u^*A)_i - (\rho u^*A)_{i+1}$        \\ \hline  
+	\end{tabular}
+\end{table}
+
+\subsection{Simple Energy equation }
+\begin{equation}
+	\frac{\partial}{\partial x}(\rho c_p v T) =\frac{ \partial}{\partial x}\left(k\frac{\partial T}{\partial x}\right)
+\end{equation}
+
+Integration over the spatial domains yields:
+\begin{equation}
+\int_{V_C} \rho v\frac{\partial T}{\partial x} \ d\boldsymbol{V_C}= \int_{V_C}\frac{\partial}{\partial x}\left(\frac{k}{c_p}\frac{\partial T}{\partial x}\right)  \ d\boldsymbol{V_C}
+\end{equation}
+Replace the spatial volume integral by a surface integral such that:
+\begin{equation}
+\int_{w}^{e}\rho v\frac{\partial T}{\partial x} \boldsymbol{A} \ d\boldsymbol{x} = \int_{w}^{e} \frac{\partial}{\partial x}\left(\frac{k}{c_p}\frac{\partial T}{\partial x}\right) \boldsymbol{A} \ d\boldsymbol{x} 
+\end{equation}
+
+For the temperature convection term, use is made of the expressions $F_w$ and $F_e$. 
+\begin{align}
+	\int_{w}^{e}\frac{\partial }{\partial x}\left(FT\right)\ \boldsymbol{A}\ d\boldsymbol{x}
+	&= \left(FTA\right)_e - \left(FTA\right)_w
+\end{align}
+First a new term for $D_e$ and $D_w$ will be introduced:
+\begin{align}
+	D_w = \frac{\Gamma_{I-1}*\Gamma_I}{\left(\Gamma_{I-1}*\left(x_I - x_i\right)+\Gamma_{I}*\left(x_i - x_{I-1}\right)\right)} A
+\end{align}
+\begin{align}
+	D_e = \frac{\Gamma_{I}*\Gamma_{I+1}}{\left(\Gamma_{I}*\left(x_{I+1} - x_{i+1}\right)+\Gamma_{I+1}*\left(x_{i+1} - x_{I}\right)\right)}A 
+\end{align}
+Note that $\Gamma = \frac{k}{c_p}$ as mentioned in the table and that $\Gamma$ is calculated with the use of a harmonic mean. 
+Integrating the temperature diffusion term over space gives now:
+\begin{align}
+	\int_{w}^{e}\left[\frac{\partial}{\partial x}\left(\frac{k}{c_p} \frac{\partial T}{\partial x}\right)\right]\ \boldsymbol{A}\ d\boldsymbol{x}\  &= \int_{w}^{e}D\frac{\partial T}{\partial x}\ \boldsymbol{A}\ d\boldsymbol{x}\  \nonumber \\
+	&= \left(DT\right)_{e}-\left(DT\right)_{w}\ 
+\end{align}
+Combining both terms leads to:
+\begin{align}
+	\left(FTA\right)_e - \left(FTA\right)_w = \left(DT\right)_{e}-\left(DT\right)_{w}
+\end{align}
+which can be written in the generalized form as:
+$a_IT_I = \sum a_{nb}T_{nb}$
+
+\newpage
+\section{Closure 1D discretized equations}
+The discretized 1D equations without source term and dissipation are given by:
+\begin{equation}
+	\rho^{t+\Delta t} = \rho^{t}- \frac{\Delta t}{\Delta x} \left((\rho v)_C - (\rho v)_W\right)
+\end{equation}
+
+\begin{equation}
+	(\rho v)^{t+\Delta t} = (\rho v)^{t} - \frac{\Delta t}{\Delta x}\left[((\rho v^2 )_C-(\rho v^2 )_W)^t - \left(p_E-p_C\right)^t\right]
+\end{equation}
+
+\begin{align}
+	&T_C^{t +\Delta t} = \left[1 - \left(\frac{(\rho R_{Specific})^{t + \Delta t}}{(\rho c_p)^{t}}\right)_C\right]^{-1} \Biggl( T_C^{t} + \frac{\Delta t}{\left(\rho c_p\right)_C \Delta x}\biggl[- \left(\rho c_p v \right)_C^{t}\left(T_C-T_W\right)^{t} \nonumber  \\
+	& \ \ \ \ \ \ \ \ + \left(k_e \frac{T_E -T_C}{\Delta x}-k_w\frac{T_C - T_W}{\Delta x}\right)^{t} - \frac{\Delta x}{\Delta t}p^{t}_C + \left(v_C\left(p_E-p_C\right)\right)^{t}\  \biggr] \Biggr) 
+\end{align}
+
+To close the system of equation the ideal gas law must be used. 
